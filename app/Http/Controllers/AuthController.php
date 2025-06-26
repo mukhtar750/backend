@@ -3,18 +3,81 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
+use App\Models\User;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Validator;
 
 class AuthController extends Controller
 {
+    public function showRegistrationForm()
+    {
+        return view('auth.register');
+    }
+
+    public function register(Request $request)
+    {
+        $validator = Validator::make($request->all(), [
+            'name' => 'required|string|max:255',
+            'email' => 'required|string|email|max:255|unique:users',
+            'password' => 'required|string|min:8|confirmed',
+            'role' => 'required|string|in:bdsp,entrepreneur,investor',
+        ]);
+
+        if ($validator->fails()) {
+            return redirect()->back()->withErrors($validator)->withInput();
+        }
+
+        $user = User::create([
+            'name' => $request->name,
+            'email' => $request->email,
+            'password' => Hash::make($request->password),
+            'role' => $request->role,
+            'isApproved' => false,
+        ]);
+
+        return redirect()->route('login')->with('success', 'Registration successful! Please wait for admin approval.');
+    }
+
+    public function showLoginForm()
+    {
+        return view('auth.login');
+    }
+
     public function login(Request $request)
     {
         $credentials = $request->only('email', 'password');
 
-        if (Auth::attempt($credentials)) {
-            return response()->json(['message' => 'Login successful']);
+        if (!Auth::attempt($credentials)) {
+            return redirect()->back()->withErrors(['email' => 'Invalid login credentials'])->withInput();
         }
 
-        return response()->json(['message' => 'Invalid credentials'], 401);
+        $user = Auth::user();
+
+        if (!$user->isApproved) {
+            Auth::logout();
+            return redirect()->back()->withErrors(['email' => 'Your account is awaiting admin approval.'])->withInput();
+        }
+
+        // Redirect based on role
+        if ($user->role === 'admin') {
+            return redirect()->route('admin.users');
+        } else {
+            return redirect()->route('dashboard');
+        }
+    }
+
+    public function logout(Request $request)
+    {
+        Auth::logout();
+        $request->session()->invalidate();
+        $request->session()->regenerateToken();
+
+        return redirect('/');
+    }
+
+    public function dashboard()
+    {
+        return view('dashboard');
     }
 }
