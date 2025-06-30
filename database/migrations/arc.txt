@@ -1,0 +1,19 @@
+resources/views/
+├── layouts/           // Main layouts
+│   └── app.blade.php
+├── components/        // Reusable Blade components
+│   ├── card.blade.php
+│   ├── navigation.blade.php
+│   └── forms/
+│       └── input.blade.php
+├── auth/              // Authentication views (login, register)
+├── dashboard/         // Dashboard views per role
+│   ├── admin.blade.php
+│   ├── entrepreneur.blade.php
+│   └── investor.blade.php
+├── public/            // Public-facing pages
+│   ├── landing.blade.php
+│   ├── programs.blade.php
+│   ├── success-stories.blade.php
+│   └── blog.blade.php
+└── welcome.blade.php

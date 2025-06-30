@@ -10,7 +10,7 @@
                 Register for an account
             </h2>
         </div>
-        <form class="mt-8 space-y-6" action="{{ route('register') }}" method="POST">
+        <form class="mt-8 space-y-6" action="{{ route('register.role') }}" method="POST">
             @csrf
             <div class="rounded-md shadow-sm -space-y-px">
                 <div>
@@ -25,14 +25,31 @@
                            class="appearance-none rounded-none relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 focus:z-10 sm:text-sm"
                            placeholder="Email address" value="{{ old('email') }}">
                 </div>
-                <div>
-                    <label for="role" class="sr-only">Role</label>
-                    <select id="role" name="role" required
-                            class="appearance-none rounded-none relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 focus:z-10 sm:text-sm">
-                        <option value="entrepreneur" {{ old('role') == 'entrepreneur' ? 'selected' : '' }}>Entrepreneur</option>
-                        <option value="bdsp" {{ old('role') == 'bdsp' ? 'selected' : '' }}>BDSP</option>
-                        <option value="investor" {{ old('role') == 'investor' ? 'selected' : '' }}>Investor</option>
+                <div class="mt-4">
+                    <label for="role" class="block text-sm font-medium text-gray-700">I am a:</label>
+                    <select id="role" name="role" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50">
+                        <option value="entrepreneur">Entrepreneur</option>
+                        <option value="bdsp">BDSP</option>
+                        <option value="investor">Investor</option>
                     </select>
+                </div>
+
+                <div id="entrepreneur-fields" class="role-fields mt-4 hidden">
+                    <label for="business_name" class="block text-sm font-medium text-gray-700">Business Name</label>
+                    <input type="text" name="business_name" id="business_name" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50">
+                    <!-- Other entrepreneur-specific fields -->
+                </div>
+
+                <div id="bdsp-fields" class="role-fields mt-4 hidden">
+                    <label for="service_offering" class="block text-sm font-medium text-gray-700">Service Offering</label>
+                    <input type="text" name="service_offering" id="service_offering" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50">
+                    <!-- Other BDSP-specific fields -->
+                </div>
+
+                <div id="investor-fields" class="role-fields mt-4 hidden">
+                    <label for="investment_focus" class="block text-sm font-medium text-gray-700">Investment Focus</label>
+                    <input type="text" name="investment_focus" id="investment_focus" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50">
+                    <!-- Other investor-specific fields -->
                 </div>
                 <div>
                     <label for="password" class="sr-only">Password</label>
@@ -70,4 +87,27 @@
         </div>
     </div>
 </div>
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+        const roleSelect = document.getElementById('role');
+        const roleFields = document.querySelectorAll('.role-fields');
+
+        function toggleRoleFields() {
+            const selectedRole = roleSelect.value;
+            roleFields.forEach(function (fieldDiv) {
+                if (fieldDiv.id === selectedRole + '-fields') {
+                    fieldDiv.classList.remove('hidden');
+                } else {
+                    fieldDiv.classList.add('hidden');
+                }
+            });
+        }
+
+        // Initial call to set visibility based on default selection
+        toggleRoleFields();
+
+        // Listen for changes to the role dropdown
+        roleSelect.addEventListener('change', toggleRoleFields);
+    });
+</script>
 @endsection

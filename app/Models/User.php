@@ -21,6 +21,14 @@ class User extends Authenticatable
         'name',
         'email',
         'password',
+        'role',
+        'is_approved',
+        // Investor
+        'phone', 'type_of_investor', 'interest_areas', 'company', 'investor_linkedin',
+        // BDSP
+        'services_provided', 'years_of_experience', 'organization', 'certifications', 'bdsp_linkedin',
+        // Entrepreneur
+        'business_name', 'sector', 'cac_number', 'funding_stage', 'website', 'entrepreneur_phone', 'entrepreneur_linkedin',
     ];
 
     /**
@@ -43,6 +51,7 @@ class User extends Authenticatable
         return [
             'email_verified_at' => 'datetime',
             'password' => 'hashed',
+            'is_approved' => 'boolean',
         ];
     }
 }

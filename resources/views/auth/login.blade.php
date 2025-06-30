@@ -46,7 +46,7 @@
             </div>
         </form>
         <div class="text-center text-sm text-gray-600">
-            Don't have an account? <a href="{{ route('register') }}" class="font-medium text-indigo-600 hover:text-indigo-500">Register</a>
+            Don't have an account? <a href="{{ route('register.role') }}" class="font-medium text-indigo-600 hover:text-indigo-500">Register</a>
         </div>
     </div>
 </div>

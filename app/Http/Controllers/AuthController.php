@@ -33,7 +33,7 @@ class AuthController extends Controller
             'email' => $request->email,
             'password' => Hash::make($request->password),
             'role' => $request->role,
-            'isApproved' => false,
+            'is_approved' => false,
         ]);
 
         return redirect()->route('login')->with('success', 'Registration successful! Please wait for admin approval.');
@@ -54,14 +54,14 @@ class AuthController extends Controller
 
         $user = Auth::user();
 
-        if (!$user->isApproved) {
+        if (!$user->is_approved) {
             Auth::logout();
             return redirect()->back()->withErrors(['email' => 'Your account is awaiting admin approval.'])->withInput();
         }
 
         // Redirect based on role
         if ($user->role === 'admin') {
-            return redirect()->route('admin.users');
+            return redirect()->route('admin.dashboard');
         } else {
             return redirect()->route('dashboard');
         }

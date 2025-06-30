@@ -1,3 +1,85 @@
+# AWN Portal - Project Phase Checklist
+
+## PHASE 1: Project Foundation
+- [x] Laravel installation
+- [x] Git repo (GitHub/Bitbucket)
+- [x] .env file and database connection
+
+## PHASE 2: Basic Auth Setup
+- [x] Install Laravel Breeze or Laravel UI
+- [x] Confirm working login/registration
+
+## PHASE 3: Multi-Role Architecture
+- [ ] Modify users table or create related profile tables
+- [x] Add role column (e.g., enum or string)
+- [ ] Optional: investor_profiles, bdsp_profiles, entrepreneur_profiles tables
+- [x] Run php artisan migrate
+
+## PHASE 4: Registration Flow
+- [x] Create 3 separate registration views: /register/investor, /register/bdsp, /register/entrepreneur
+- [x] Add basic validation & error display
+
+## PHASE 5: Role Assignment Logic
+- [ ] In each controller/store method, assign the correct role
+- [ ] Optional: Use Laravel Policies or Gates for access control
+
+## PHASE 6: Homepage & Navigation Flow
+- [ ] Modern, professional landing page
+- [x] Button: "Who Are You?" → leads to role selection
+- [x] "I am an Investor / BDSP / Entrepreneur" → respective form
+
+## PHASE 7: Routing & Controllers
+- [x] Setup all routes in web.php (with naming conventions)
+- [ ] Route middleware for role-specific redirection after login
+
+## PHASE 8: Dashboard for Each Role
+- [x] Create 3 dashboard pages: dashboard-investor.blade.php, dashboard-bdsp.blade.php, dashboard-entrepreneur.blade.php
+- [ ] Route users based on role after login
+
+## PHASE 9: Admin Panel (Optional but Recommended)
+- [ ] User management (view/edit/deactivate)
+- [ ] Statistics: number of each role registered
+- [ ] Role switcher or impersonation (if needed)
+
+## PHASE 10: Features & Enhancements
+- [ ] After registration, redirect to "Complete Profile" (different fields per role)
+- [ ] Use forms + validation for profile completion
+- [ ] Laravel notifications (e.g., successful registration)
+- [ ] Admin alert on new user registration
+- [ ] Enable email verification
+- [ ] Set up email template branding
+
+## PHASE 11: Deployment & Optimization
+- [ ] Choose host: Shared hosting / VPS / Laravel Forge / Render / Vercel (frontend only)
+- [ ] Set up .env and database on production
+- [ ] Migrate & seed initial data
+- [ ] Use Laravel Mix/Vite for assets
+- [ ] Minify CSS/JS
+- [ ] Enable caching
+
+---
+
+### Tools & Best Practices
+- Use Git and create branches per feature
+- Keep README.md updated
+- Follow MVC structure
+- Use Laravel's built-in validation, middleware, and Auth guards
+
+### Suggested Timeline (if solo developer)
+| Phase                | Duration   | Status |
+|----------------------|------------|--------|
+| Foundation           | 1 day      | ✅     |
+| Multi-role Setup     | 2–3 days   | ⏳     |
+| Homepage & Flow      | 2 days     | ⏳     |
+| Dashboards           | 2 days     | ⏳     |
+| Admin Panel          | 3 days     | ⏳     |
+| Profile & Email Features | 2–3 days | ⏳     |
+| Deployment & Testing | 1–2 days   | ⏳     |
+
+---
+
+# AWN Portal
+
 <p align="center"><a href="https://laravel.com" target="_blank"><img src="https://raw.githubusercontent.com/laravel/art/master/logo-lockup/5%20SVG/2%20CMYK/1%20Full%20Color/laravel-logolockup-cmyk-red.svg" width="400" alt="Laravel Logo"></a></p>
 
 <p align="center">
