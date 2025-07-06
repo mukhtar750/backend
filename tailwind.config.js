@@ -1,4 +1,10 @@
 module.exports = {
+  content: [
+    './resources/**/*.blade.php',
+    './resources/**/*.js',
+    './resources/**/*.vue',
+    './resources/**/*.css',
+  ],
   theme: {
     extend: {
       colors: {
@@ -6,7 +12,7 @@ module.exports = {
           DEFAULT: '#b81d8f',
           100: '#f3e5f6',
           200: '#e1bee7',
-          700: '#7b1fa2',
+          700: '#9a1b76',
         },
       },
     },
@@ -17,4 +23,5 @@ module.exports = {
     'bg-green-500',
     // Add all possible dynamic color combinations here
   ],
+  plugins: [],
 }

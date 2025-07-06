@@ -3,7 +3,7 @@
 @section('content')
 <div class="flex justify-between items-center mb-6">
     <h1 class="text-3xl font-bold text-gray-800">User Management</h1>
-    <a href="#" class="bg-custom-purple text-white px-4 py-2 rounded-lg shadow hover:bg-custom-purple-700 transition flex items-center">
+    <a href="#" class="bg-magenta text-white px-4 py-2 rounded-lg shadow hover:bg-magenta-700 transition flex items-center">
         <i class="bi bi-download mr-2"></i> Export Data
     </a>
 </div>
@@ -11,8 +11,8 @@
 <div class="bg-white p-6 rounded-lg shadow mb-6">
     {{-- Filters --}}
     <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-4">
-        <input type="text" placeholder="Search users..." class="form-input rounded-lg border-gray-300 shadow-sm focus:border-custom-purple focus:ring focus:ring-custom-purple-200 focus:ring-opacity-50">
-        <select class="form-select rounded-lg border-gray-300 shadow-sm focus:border-custom-purple focus:ring focus:ring-custom-purple-200 focus:ring-opacity-50">
+        <input type="text" placeholder="Search users..." class="form-input rounded-lg border-gray-300 shadow-sm focus:border-magenta focus:ring focus:ring-magenta-200 focus:ring-opacity-50">
+        <select class="form-select rounded-lg border-gray-300 shadow-sm focus:border-magenta focus:ring focus:ring-magenta-200 focus:ring-opacity-50">
             <option>All Roles</option>
             <option>Entrepreneur</option>
             <option>BDSP</option>
@@ -143,7 +143,7 @@
                 <div class="text-gray-500">{{ $card['label'] }}</div>
                 <div class="text-2xl font-bold">{{ $card['value'] }}</div>
             </div>
-            <i class="bi {{ $card['icon'] }} text-custom-purple text-4xl"></i>
+            <i class="bi {{ $card['icon'] }} text-magenta text-4xl"></i>
         </div>
     @endforeach
 </div>

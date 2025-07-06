@@ -90,6 +90,29 @@ This log details the modifications made to the Laravel backend to integrate with
 - Replaced the <x-auth-validation-errors> Blade component with the standard Laravel error display block in all role-based registration views (`register-investor.blade.php`, `register-bdsp.blade.php`, and `register-entrepreneur.blade.php`).
 - This resolves the "Unable to locate a class or view for component [auth-validation-errors]" error and ensures validation errors are displayed properly.
 
+### Changed
+- Ran `npm run dev` to compile assets and apply styling.
+- Fixed styling issue by updating `tailwind.config.js` for content paths and `vite.config.js` for `outDir`, ensuring correct compilation and serving of assets with Tailwind CSS styling on the dashboard after restarting `npm run dev`.
+- Updated `resources/views/dashboard/investor.blade.php` to reflect the new investor dashboard design, including changes to stats cards, investment opportunities, and opportunities by sector sections.
+
+- **Updated `AuthController.php`**: Modified the `login` method to redirect users to role-based dashboards (investor, bdsp, entrepreneur) after successful login.
+
+- **Updated `investor.blade.php`**: Replaced the basic welcome message with a comprehensive investor dashboard layout, including sections for welcome, investor dashboard stats (Startup Profiles, Pitch Events, Success Stories, Profile Views), investment opportunities with filtering options, and startup cards.
+
+- **Updated `dashboard.blade.php`**: Transformed into an investors dashboard, including relevant statistics (Startup Profiles, Pitch Events, Success Stories, Profile Views), quick actions (Browse Startups, Upcoming Pitches), sections for investment opportunities with filtering options (Sector, Stage), and upcoming pitch events, all styled with the `magenta` color.
+
+- **Updated `content_management.blade.php`**: Implemented a content management system with features for creating, editing, and publishing articles, news, and updates, styled with the `magenta` color.
+
+- **Updated `analytics.blade.php`**: Developed an analytics dashboard to display key metrics and insights related to platform usage, user engagement, and content performance, styled with the `magenta` color.
+
+- **Updated `pitch_events.blade.php`**: Created a dedicated section for managing and displaying pitch events, including event details, registration forms, and participant lists, styled with the `magenta` color.
+
+- **Updated `mentorship.blade.php`**: Designed a mentorship platform to connect entrepreneurs with experienced mentors, featuring mentor profiles, booking systems, and feedback mechanisms, styled with the `magenta` color.
+
+- **Updated `training_programs.blade.php`**: Developed a module for managing and delivering training programs and workshops, including course outlines, schedules, and progress tracking, styled with the `magenta` color.
+
+- **Color Scheme Update**: Changed the primary color scheme to `magenta` across various dashboard elements for a consistent and vibrant look.
+
 - Created an `AdminUserSeeder` to easily seed an admin user for testing and management purposes.
 - Documented the admin login process:
   - Admin login URL: `/login`
