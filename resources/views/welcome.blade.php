@@ -159,7 +159,7 @@
         <div class="container mx-auto px-6">
             <div class="flex flex-col md:flex-row items-center">
                 <div class="md:w-1/2 mb-12 md:mb-0">
-                    <img src="/images/about.png" alt="About AWN" 
+                    <img src="/images/about.jpg" alt="About AWN" 
                          class="rounded-lg shadow-lg w-full h-auto object-cover">
                 </div>
                 <div class="md:w-1/2 md:pl-12">
@@ -167,10 +167,10 @@
                         Our <span class="text-[#b81d8f]">Mission</span>
                     </h2>
                     <p class="text-lg text-gray-600 mb-6">
-                        The AWN Venture Readiness Portal is dedicated to bridging the gap for female entrepreneurs by providing the tools, resources, and networks needed to build successful, scalable ventures.
+                    At Arya Women Nigeria (AWN) our mission is to empower women-led ventures by providing a structured and supportive environment for business growth and investment readiness. Through a blend of initiatives including training, mentoring, peer learning, and ecosystem building, we equip female founders with the skills, resources, and networks they need to succeed.
                     </p>
                     <p class="text-lg text-gray-600 mb-8">
-                        We believe in the power of women-led innovation and are committed to creating equal opportunities in the entrepreneurial ecosystem through targeted capacity building and direct investor access.
+                    The AWN Venture Ready Portal is a key tool in this mission: a centralized, interactive platform that helps entrepreneurs navigate their investment journey with clarity and confidence. By connecting them to expert Business Development Support Providers (BDSPs), curated resources, and investor access, we're bridging the gap between potential and opportunity; building a future where women-led businesses can thrive, scale, and lead lasting impact.
                     </p>
                     <div class="flex items-center">
                         <div class="w-12 h-12 rounded-full bg-[#b81d8f] flex items-center justify-center text-white mr-4">

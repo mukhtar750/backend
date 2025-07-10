@@ -29,8 +29,9 @@
     <div class="abstract-shape shape-3"></div>
     <!-- Header -->
     <header class="py-8 px-4 sm:px-6 lg:px-8 text-center">
-        <h1 class="text-4xl md:text-5xl font-bold text-gray-800 mb-3">Who Are You?</h1>
-        <p class="text-xl md:text-2xl text-gray-600">Choose your path to venture success</p>
+        <h1 class="text-4xl md:text-5xl font-bold text-gray-800 mb-3">Step In. Define Your Role. Unlock Your Journey.
+        </h1>
+        <p class="text-xl md:text-2xl text-gray-600">Whether you're building, guiding, or investing, your journey starts here</p>
     </header>
     <!-- Main Content -->
     <main class="flex-grow container mx-auto px-4 sm:px-6 lg:px-8 py-8">
