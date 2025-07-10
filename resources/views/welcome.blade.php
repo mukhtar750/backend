@@ -134,7 +134,7 @@
             <div class="flex flex-col md:flex-row items-center">
                 <div class="md:w-1/2 mb-12 md:mb-0 fade-in">
                     <h1 class="text-4xl md:text-5xl lg:text-6xl font-bold text-gray-800 leading-tight mb-6">
-                        AWN Venture <span class="text-[#b81d8f]">Ready Portal</span>
+                        AWN  <span class="text-[#b81d8f]">Venture Ready </span>Portal
                     </h1>
                     <h2 class="text-2xl md:text-3xl text-gray-600 mb-6 delay-1 fade-in">
                         Your Gateway to Venture Success

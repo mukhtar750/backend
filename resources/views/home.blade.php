@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>AWN Venture Readiness Portal</title>
+    <title>AWN Venture Ready Portal</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
@@ -93,7 +93,7 @@
                     <div class="w-12 h-12 rounded-full bg-[#b81d8f] flex items-center justify-center text-white font-bold text-xl">
                         AWN
                     </div>
-                    <span class="ml-3 text-xl font-semibold">Venture Portal</span>
+                    <span class="ml-3 text-xl font-semibold">Venture Ready Portal</span>
                 </div>
                 
                 <!-- Mobile menu button -->
