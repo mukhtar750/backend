@@ -100,3 +100,58 @@ Route::post('/register/entrepreneur', [EntrepreneurRegisterController::class, 'r
 Route::view('/dashboard/investor', 'dashboard.investor')->middleware('auth')->name('dashboard.investor');
 Route::view('/dashboard/bdsp', 'dashboard.bdsp')->middleware('auth')->name('dashboard.bdsp');
 Route::view('/dashboard/entrepreneur', 'dashboard.entrepreneur')->middleware('auth')->name('dashboard.entrepreneur');
+
+// BDSP Dashboard
+Route::get('/bdsp/dashboard', function () {
+    return view('bdsp.dashboard');
+})->name('bdsp.dashboard');
+
+// My Mentees
+Route::get('/bdsp/mentees', function () {
+    return view('bdsp.mentees'); // placeholder view
+})->name('bdsp.mentees');
+
+// Upload Resources
+Route::get('/bdsp/upload-resources', function () {
+    return view('bdsp.upload-resources'); // placeholder view
+})->name('bdsp.upload-resources');
+
+// Sessions
+Route::get('/bdsp/sessions', function () {
+    return view('bdsp.sessions'); // placeholder view
+})->name('bdsp.sessions');
+
+// Reports
+Route::get('/bdsp/reports', function () {
+    return view('bdsp.reports'); // placeholder view
+})->name('bdsp.reports');
+
+// Messages
+Route::get('/bdsp/messages', function () {
+    return view('bdsp.messages'); // placeholder view
+})->name('bdsp.messages');
+
+Route::get('/dashboard/entrepreneur-messages', function () {
+    return view('dashboard.entrepreneur-messages');
+})->middleware('auth')->name('entrepreneur.messages');
+
+Route::get('/dashboard/entrepreneur-hub', function () {
+    return view('dashboard.entrepreneur-hub');
+})->middleware('auth')->name('entrepreneur.hub');
+
+// Entrepreneur Dashboard Sections
+Route::middleware(['auth'])->group(function () {
+    Route::view('/dashboard/entrepreneur-progress', 'dashboard.entrepreneur-progress')->name('entrepreneur.progress');
+    Route::view('/dashboard/entrepreneur-calendar', 'dashboard.entrepreneur-calendar')->name('entrepreneur.calendar');
+    Route::view('/dashboard/entrepreneur-mentorship', 'dashboard.entrepreneur-mentorship')->name('entrepreneur.mentorship');
+    Route::view('/dashboard/entrepreneur-pitch', 'dashboard.entrepreneur-pitch')->name('entrepreneur.pitch');
+    Route::view('/dashboard/entrepreneur-feedback', 'dashboard.entrepreneur-feedback')->name('entrepreneur.feedback');
+});
+
+// Investor Dashboard Sections
+Route::middleware(['auth'])->group(function () {
+    Route::view('/dashboard/investor-startup-profiles', 'dashboard.investor-startup-profiles')->name('investor.startup_profiles');
+    Route::view('/dashboard/investor-pitch-events', 'dashboard.investor-pitch-events')->name('investor.pitch_events');
+    Route::view('/dashboard/investor-success-stories', 'dashboard.investor-success-stories')->name('investor.success_stories');
+    Route::view('/dashboard/investor-messages', 'dashboard.investor-messages')->name('investor.messages');
+});

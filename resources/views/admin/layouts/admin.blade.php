@@ -4,101 +4,110 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>@yield('title', 'Admin Dashboard')</title>
-    <!-- Fonts -->
-    <link rel="preconnect" href="https://fonts.bunny.net">
-    <link href="https://fonts.bunny.net/css?family=figtree:400,600&display=swap" rel="stylesheet" />
-    <!-- Tailwind CSS CDN for prototyping -->
+
+    <!-- Tailwind CSS CDN -->
     <script src="https://cdn.tailwindcss.com"></script>
     <!-- Bootstrap Icons CDN -->
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css">
-    <!-- Styles -->
-    <link rel="stylesheet" href="{{ asset('css/app.css') }}">
+    <style>
+        .active {
+            @apply bg-white text-purple-800 font-semibold shadow-sm;
+        }
+    </style>
 </head>
-<body class="font-sans antialiased bg-gray-100">
-    <div class="flex h-screen bg-gray-100">
-        <!-- Sidebar -->
-        <div class="w-64 bg-purple-800 text-white flex flex-col">
-            <div class="p-4 text-2xl font-bold border-b border-purple-700">
-                Innovation Portal
+<body class="bg-gray-100 font-sans antialiased">
+
+<div class="flex h-screen">
+    <!-- Sidebar -->
+    <aside class="w-64 bg-purple-800 text-white flex flex-col">
+        <div class="px-6 py-4 text-2xl font-bold">Innovation Portal</div>
+        <div class="px-6 text-sm mb-4">Admin Panel</div>
+        <nav class="flex-1 px-4 space-y-2">
+            @php $route = Route::currentRouteName(); @endphp
+
+            <a href="{{ route('admin.dashboard') }}" class="flex items-center gap-3 px-4 py-2 rounded-lg hover:bg-purple-700 {{ $route == 'admin.dashboard' ? 'active' : '' }}">
+                <i class="bi bi-grid-fill"></i> Dashboard
+            </a>
+            <a href="{{ route('admin.user-management') }}" class="flex items-center gap-3 px-4 py-2 rounded-lg hover:bg-purple-700 {{ $route == 'admin.user-management' ? 'active' : '' }}">
+                <i class="bi bi-people-fill"></i> User Management
+            </a>
+            <a href="{{ route('admin.training_programs') }}" class="flex items-center gap-3 px-4 py-2 rounded-lg hover:bg-purple-700 {{ $route == 'admin.training_programs' ? 'active' : '' }}">
+                <i class="bi bi-book-fill"></i> Training Programs
+            </a>
+            <a href="{{ route('admin.mentorship') }}" class="flex items-center gap-3 px-4 py-2 rounded-lg hover:bg-purple-700 {{ $route == 'admin.mentorship' ? 'active' : '' }}">
+                <i class="bi bi-person-check-fill"></i> Mentorship
+            </a>
+            <a href="{{ route('admin.pitch_events') }}" class="flex items-center gap-3 px-4 py-2 rounded-lg hover:bg-purple-700 {{ $route == 'admin.pitch_events' ? 'active' : '' }}">
+                <i class="bi bi-megaphone-fill"></i> Pitch Events
+            </a>
+            <a href="{{ route('admin.analytics') }}" class="flex items-center gap-3 px-4 py-2 rounded-lg hover:bg-purple-700 {{ $route == 'admin.analytics' ? 'active' : '' }}">
+                <i class="bi bi-graph-up"></i> Analytics
+            </a>
+            <a href="{{ route('admin.content_management') }}" class="flex items-center gap-3 px-4 py-2 rounded-lg hover:bg-purple-700 {{ $route == 'admin.content_management' ? 'active' : '' }}">
+                <i class="bi bi-file-earmark-text-fill"></i> Content Management
+            </a>
+            </a>
+            <a href="" class="flex items-center gap-3 px-4 py-2 rounded-lg hover:bg-purple-700 {{ $route == 'admin.messages' ? 'active' : '' }}">
+                <i class="bi bi-envelope-fill"></i> Messages
+            </a>
+        </nav>
+
+        <div class="p-4 border-t border-purple-700">
+            <div class="flex items-center mb-2">
+                <img class="h-10 w-10 rounded-full mr-3" src="https://via.placeholder.com/40" alt="Sarah Admin">
+                <div>
+                    <div class="font-semibold">Sarah Admin</div>
+                    <div class="text-sm text-gray-300">admin@awn.org</div>
+                </div>
             </div>
-            <div class="p-4 text-sm border-b border-purple-700">
-                Admin Panel
+            <a href="{{ route('admin.settings') }}" class="flex items-center gap-3 px-4 py-2 text-gray-200 hover:bg-purple-700 rounded-md">
+                <i class="bi bi-gear-fill"></i> Settings
+            </a>
+            <form method="POST" action="{{ route('logout') }}" class="mt-1">
+                @csrf
+                <button type="submit" class="flex items-center gap-3 w-full px-4 py-2 text-gray-200 hover:bg-purple-700 rounded-md">
+                    <i class="bi bi-box-arrow-right"></i> Logout
+                </button>
+            </form>
+        </div>
+    </aside>
+
+    <!-- Main Content -->
+    <div class="flex-1 flex flex-col">
+        <!-- Top Navigation -->
+        <header class="flex items-center justify-between bg-white p-4 shadow-sm border-b">
+            <div class="flex items-center gap-3">
+                <img src="https://cdn-icons-png.flaticon.com/512/616/616494.png" alt="Logo" class="h-7 w-7 mr-2">
+                <h2 class="text-2xl font-semibold text-gray-800">Dashboard</h2>
             </div>
-            <nav class="flex-1 px-2 py-4 space-y-2">
-                <a href="{{ route('admin.dashboard') }}" class="flex items-center px-4 py-2 text-gray-200 hover:bg-purple-700 rounded-md">
-                    <i class="bi bi-grid-fill mr-3"></i> Dashboard
+            <div class="flex items-center gap-4 flex-1 justify-end">
+                <div class="relative w-80 max-w-xs mr-4">
+                    <input type="text" placeholder="Search..." class="w-full pl-10 pr-4 py-2 border rounded-lg focus:ring-2 focus:ring-purple-500 focus:outline-none">
+                    <i class="bi bi-bell text-gray-400 absolute left-3 top-1/2 transform -translate-y-1/2"></i>
+                </div>
+                <a href="#" class="relative text-gray-600 hover:text-gray-800 mr-2">
+                    <i class="bi bi-chat-dots text-xl"></i>
                 </a>
-                <a href="{{ route('admin.user-management') }}" class="flex items-center px-4 py-2 text-gray-200 hover:bg-purple-700 rounded-md">
-                    <i class="bi bi-people-fill mr-3"></i> User Management
+                <a href="#" class="relative text-gray-600 hover:text-gray-800 mr-2">
+                    <i class="bi bi-bell-fill text-xl"></i>
+                    <span class="absolute -top-2 -right-2 inline-flex items-center justify-center px-1 text-xs font-bold text-white bg-red-500 rounded-full">2</span>
                 </a>
-                <a href="{{ route('admin.training_programs') }}" class="flex items-center px-4 py-2 text-gray-200 hover:bg-purple-700 rounded-md">
-                    <i class="bi bi-book-fill mr-3"></i> Training Programs
-                </a>
-                <a href="{{ route('admin.mentorship') }}" class="flex items-center px-4 py-2 text-gray-200 hover:bg-purple-700 rounded-md">
-                    <i class="bi bi-person-check-fill mr-3"></i> Mentorship
-                </a>
-                <a href="{{ route('admin.pitch_events') }}" class="flex items-center px-4 py-2 text-gray-200 hover:bg-purple-700 rounded-md">
-                    <i class="bi bi-megaphone-fill mr-3"></i> Pitch Events
-                </a>
-                <a href="{{ route('admin.analytics') }}" class="flex items-center px-4 py-2 text-gray-200 hover:bg-purple-700 rounded-md">
-                    <i class="bi bi-graph-up mr-3"></i> Analytics
-                </a>
-                <a href="{{ route('admin.content_management') }}" class="flex items-center px-4 py-2 text-gray-200 hover:bg-purple-700 rounded-md">
-                    <i class="bi bi-file-earmark-text-fill mr-3"></i> Content Management
-                </a>
-            </nav>
-            <div class="p-4 border-t border-purple-700">
                 <div class="flex items-center">
-                    <img class="h-10 w-10 rounded-full mr-3" src="https://via.placeholder.com/40" alt="Sarah Admin">
+                    <img class="h-8 w-8 rounded-full mr-2" src="https://via.placeholder.com/32" alt="Sarah Admin">
                     <div>
-                        <div class="font-semibold">Sarah Admin</div>
-                        <div class="text-sm text-gray-400">admin@awn.org</div>
+                        <div class="font-semibold text-gray-800 text-sm">Sarah Admin</div>
+                        <div class="text-xs text-gray-500">Admin</div>
                     </div>
                 </div>
-                <a href="{{ route('admin.settings') }}" class="flex items-center px-4 py-2 text-gray-200 hover:bg-purple-700 rounded-md mt-2">
-                    <i class="bi bi-gear-fill mr-3"></i> Settings
-                </a>
-                <form action="{{ route('logout') }}" method="POST" class="flex items-center px-4 py-2 text-gray-200 hover:bg-purple-700 rounded-md mt-1">
-@csrf
-<button type="submit" class="flex items-center">
-<i class="bi bi-box-arrow-right mr-3"></i> Logout
-</button>
-</form>
-                </a>
             </div>
-        </div>
+        </header>
 
-        <!-- Main content -->
-        <div class="flex-1 flex flex-col overflow-hidden">
-            <!-- Header -->
-            <header class="flex items-center justify-between p-4 bg-white border-b shadow-sm">
-                <div class="flex items-center">
-                    <h1 class="text-2xl font-semibold text-gray-800"><i class="bi bi-grid-fill mr-2"></i> Dashboard</h1>
-                </div>
-                <div class="flex items-center space-x-4">
-                    <div class="relative">
-                        <input type="text" placeholder="Search..." class="border border-gray-300 rounded-md py-2 px-4 pl-10 focus:outline-none focus:ring-2 focus:ring-purple-500">
-                        <i class="bi bi-search absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400"></i>
-                    </div>
-                    <a href="#" class="relative text-gray-600 hover:text-gray-800">
-                        <i class="bi bi-bell-fill text-xl"></i>
-                        <span class="absolute top-0 right-0 inline-flex items-center justify-center px-2 py-1 text-xs font-bold leading-none text-red-100 bg-red-600 rounded-full">2</span>
-                    </a>
-                    <div class="flex items-center">
-                        <img class="h-8 w-8 rounded-full mr-2" src="https://via.placeholder.com/32" alt="Sarah Admin">
-                        <div>
-                            <div class="font-semibold text-gray-800">Sarah Admin</div>
-                            <div class="text-sm text-gray-500">Admin</div>
-                        </div>
-                    </div>
-                </div>
-            </header>
-
-            <!-- Page Content -->
-            <main class="flex-1 overflow-x-hidden overflow-y-auto bg-gray-100 p-6">
-                @yield('content')
-            </main>
-        </div>
+        <!-- Page Content -->
+        <main class="flex-1 p-6 bg-gray-100 overflow-y-auto">
+            @yield('content')
+        </main>
     </div>
+</div>
+
 </body>
 </html>

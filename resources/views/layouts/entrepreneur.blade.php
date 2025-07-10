@@ -21,12 +21,23 @@
                 Entrepreneur Panel
             </div>
             <nav class="flex-1 px-2 py-4 space-y-2">
-                <a href="#" class="flex items-center px-4 py-2 text-white hover:bg-[#a01a7d] rounded-lg font-medium"><i class="bi bi-grid-fill mr-3"></i> Dashboard</a>
-                <a href="#" class="flex items-center px-4 py-2 text-white hover:bg-[#a01a7d] rounded-lg font-medium"><i class="bi bi-bar-chart-fill mr-3"></i> My Progress</a>
-                <a href="#" class="flex items-center px-4 py-2 text-white hover:bg-[#a01a7d] rounded-lg font-medium"><i class="bi bi-calendar-event-fill mr-3"></i> Training Calendar</a>
-                <a href="#" class="flex items-center px-4 py-2 text-white hover:bg-[#a01a7d] rounded-lg font-medium"><i class="bi bi-people-fill mr-3"></i> Mentorship</a>
-                <a href="#" class="flex items-center px-4 py-2 text-white hover:bg-[#a01a7d] rounded-lg font-medium"><i class="bi bi-easel-fill mr-3"></i> Pitch Preparation</a>
-                <a href="#" class="flex items-center px-4 py-2 text-white hover:bg-[#a01a7d] rounded-lg font-medium"><i class="bi bi-chat-dots-fill mr-3"></i> Feedback</a>
+                <a href="{{ route('dashboard.entrepreneur') }}" class="flex items-center px-4 py-2 text-white hover:bg-[#a01a7d] rounded-lg font-medium"><i class="bi bi-grid-fill mr-3"></i> Dashboard</a>
+                <a href="{{ route('entrepreneur.progress') }}" class="flex items-center px-4 py-2 text-white hover:bg-[#a01a7d] rounded-lg font-medium"><i class="bi bi-bar-chart-fill mr-3"></i> My Progress</a>
+                <a href="{{ route('entrepreneur.calendar') }}" class="flex items-center px-4 py-2 text-white hover:bg-[#a01a7d] rounded-lg font-medium"><i class="bi bi-calendar-event-fill mr-3"></i> Training Calendar</a>
+                <a href="{{ route('entrepreneur.mentorship') }}" class="flex items-center px-4 py-2 text-white hover:bg-[#a01a7d] rounded-lg font-medium"><i class="bi bi-people-fill mr-3"></i> Mentorship</a>
+                <a href="{{ route('entrepreneur.pitch') }}" class="flex items-center px-4 py-2 text-white hover:bg-[#a01a7d] rounded-lg font-medium"><i class="bi bi-easel-fill mr-3"></i> Pitch Preparation</a>
+                <!-- Messages Dropdown -->
+                <div x-data="{ open: false }" class="relative">
+                    <button @click="open = !open" class="flex items-center w-full px-4 py-2 text-white hover:bg-[#a01a7d] rounded-lg font-medium focus:outline-none">
+                        <i class="bi bi-chat-dots mr-3"></i> Messages
+                        <i class="bi bi-chevron-down ml-auto"></i>
+                    </button>
+                    <div x-show="open" class="ml-8 mt-1 space-y-1" style="display: none;">
+                        <a href="/dashboard/entrepreneur-messages" class="block px-4 py-2 text-white hover:bg-[#a01a7d] rounded-lg font-medium">Direct</a>
+                        <a href="/dashboard/entrepreneur-hub" class="block px-4 py-2 text-white hover:bg-[#a01a7d] rounded-lg font-medium">Hub</a>
+                    </div>
+                </div>
+                <a href="{{ route('entrepreneur.feedback') }}" class="flex items-center px-4 py-2 text-white hover:bg-[#a01a7d] rounded-lg font-medium"><i class="bi bi-chat-dots-fill mr-3"></i> Feedback</a>
             </nav>
             <div class="p-4 border-t border-[#a01a7d]">
                 <div class="flex items-center mb-3">
@@ -76,5 +87,6 @@
             </main>
         </div>
     </div>
+    <script src="//unpkg.com/alpinejs" defer></script>
 </body>
 </html> 

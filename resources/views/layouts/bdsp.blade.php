@@ -20,18 +20,25 @@
             <div class="p-4 text-sm border-b border-[#512e5f] tracking-wide">
                 BDSP Panel
             </div>
-            <nav class="flex-1 px-2 py-4 space-y-2">
-                <a href="#" class="flex items-center px-4 py-2 text-white hover:bg-[#512e5f] rounded-lg transition-all font-medium">
-                    <i class="bi bi-grid-fill mr-3"></i> Dashboard
+            <nav class="flex-1 px-4 space-y-2 mt-4">
+                @php $route = Route::currentRouteName(); @endphp
+                <a href="{{ route('bdsp.dashboard') }}" class="flex items-center gap-3 px-4 py-2 rounded-lg hover:bg-purple-700 {{ $route == 'bdsp.dashboard' ? 'bg-white text-purple-800 font-semibold shadow-sm' : '' }}">
+                    <i class="bi bi-grid-fill"></i> Dashboard
                 </a>
-                <a href="#" class="flex items-center px-4 py-2 text-white hover:bg-[#512e5f] rounded-lg transition-all font-medium">
-                    <i class="bi bi-briefcase-fill mr-3"></i> Services
+                <a href="{{ route('bdsp.mentees') }}" class="flex items-center gap-3 px-4 py-2 rounded-lg hover:bg-purple-700 {{ $route == 'bdsp.mentees' ? 'bg-white text-purple-800 font-semibold shadow-sm' : '' }}">
+                    <i class="bi bi-person-lines-fill"></i> My Mentees
                 </a>
-                <a href="#" class="flex items-center px-4 py-2 text-white hover:bg-[#512e5f] rounded-lg transition-all font-medium">
-                    <i class="bi bi-calendar-event-fill mr-3"></i> Events
+                <a href="{{ route('bdsp.upload-resources') }}" class="flex items-center gap-3 px-4 py-2 rounded-lg hover:bg-purple-700 {{ $route == 'bdsp.upload-resources' ? 'bg-white text-purple-800 font-semibold shadow-sm' : '' }}">
+                    <i class="bi bi-upload"></i> Upload Resources
                 </a>
-                <a href="#" class="flex items-center px-4 py-2 text-white hover:bg-[#512e5f] rounded-lg transition-all font-medium">
-                    <i class="bi bi-award-fill mr-3"></i> Success Stories
+                <a href="{{ route('bdsp.sessions') }}" class="flex items-center gap-3 px-4 py-2 rounded-lg hover:bg-purple-700 {{ $route == 'bdsp.sessions' ? 'bg-white text-purple-800 font-semibold shadow-sm' : '' }}">
+                    <i class="bi bi-calendar-event"></i> Sessions
+                </a>
+                <a href="{{ route('bdsp.reports') }}" class="flex items-center gap-3 px-4 py-2 rounded-lg hover:bg-purple-700 {{ $route == 'bdsp.reports' ? 'bg-white text-purple-800 font-semibold shadow-sm' : '' }}">
+                    <i class="bi bi-file-earmark-text"></i> Reports
+                </a>
+                <a href="{{ route('bdsp.messages') }}" class="flex items-center gap-3 px-4 py-2 rounded-lg hover:bg-purple-700 {{ $route == 'bdsp.messages' ? 'bg-white text-purple-800 font-semibold shadow-sm' : '' }}">
+                    <i class="bi bi-chat-dots"></i> Messages
                 </a>
             </nav>
             <div class="p-4 border-t border-[#512e5f]">
@@ -78,11 +85,42 @@
                     </div>
                 </div>
             </header>
-            <!-- Page Content -->
+            <!-- age Content -->
             <main class="flex-1 overflow-x-hidden overflow-y-auto bg-gray-100 p-6">
                 @yield('content')
             </main>
         </div>
     </div>
+    <script src="//unpkg.com/alpinejs" defer></script>
+    <script src="https://cdn.jsdelivr.net/npm/@joeattardi/emoji-button@latest/dist/index.min.js"></script>
+    <script>
+    document.addEventListener('DOMContentLoaded', function () {
+        // Find all emoji buttons
+        const emojiButtons = document.querySelectorAll('.bi-emoji-smile');
+        if (!emojiButtons.length) {
+            console.log('No emoji button found.');
+            return;
+        }
+        emojiButtons.forEach(function(button) {
+            // Find the closest input in the same form
+            const form = button.closest('form');
+            const input = form ? form.querySelector('input[placeholder="Type your message..."]') : null;
+            if (!input) {
+                console.log('No input found for emoji button.');
+                return;
+            }
+            const picker = new EmojiButton();
+            button.addEventListener('click', function(e) {
+                e.preventDefault();
+                picker.togglePicker(button);
+            });
+            picker.on('emoji', function(emoji) {
+                input.value += emoji;
+                input.focus();
+            });
+        });
+        console.log('Emoji picker initialized.');
+    });
+    </script>
 </body>
 </html> 

@@ -120,3 +120,13 @@ This log details the modifications made to the Laravel backend to integrate with
 - Admin credentials (default for local/dev):
   - Email: `admin@example.com`
   - Password: `password`
+
+### Added
+- Entrepreneur Dashboard: Modular, professional UI with program journey, mentorship booking, training calendar, feedback modal, and messaging (direct & group).
+- Entrepreneur Messaging: Added group chat (Hub) page at /dashboard/entrepreneur-hub, with sidebar dropdown for Messages (Direct & Hub).
+- Sidebar: All main sections now have clear navigation; Messages uses Alpine.js dropdown for Direct and Hub chat.
+- Alpine.js: Now included in entrepreneur layout for dropdowns and interactivity.
+
+### Changed
+- Cleaned up and modularized all dashboard sections for maintainability and scalability.
+- Improved sidebar navigation and UX for entrepreneurs.

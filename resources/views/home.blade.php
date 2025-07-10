@@ -1,125 +1,463 @@
-@extends('layouts.app')
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AWN Venture Readiness Portal</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        :root {
+            --primary: #b81d8f;
+            --primary-light: #e8a4d5;
+            --dark: #333333;
+            --light: #f8f9fa;
+        }
+        
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            scroll-behavior: smooth;
+        }
+        
+        .btn-primary {
+            background-color: var(--primary);
+            transition: all 0.3s ease;
+        }
+        
+        .btn-primary:hover {
+            background-color: #9e1878;
+            transform: translateY(-2px);
+            box-shadow: 0 10px 20px -10px var(--primary);
+        }
+        
+        .feature-card {
+            transition: all 0.3s ease;
+        }
+        
+        .feature-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 25px -5px rgba(184, 29, 143, 0.2);
+        }
+        
+        .testimonial-card {
+            transition: all 0.3s ease;
+        }
+        
+        .testimonial-card:hover {
+            transform: scale(1.02);
+        }
+        
+        .hero-section {
+            background: linear-gradient(135deg, rgba(184, 29, 143, 0.1) 0%, rgba(255, 255, 255, 1) 100%);
+        }
+        
+        .nav-link {
+            position: relative;
+        }
+        
+        .nav-link::after {
+            content: '';
+            position: absolute;
+            width: 0;
+            height: 2px;
+            bottom: -2px;
+            left: 0;
+            background-color: var(--primary);
+            transition: width 0.3s ease;
+        }
+        
+        .nav-link:hover::after {
+            width: 100%;
+        }
+        
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        
+        .fade-in {
+            animation: fadeIn 1s ease forwards;
+        }
+        
+        .delay-1 { animation-delay: 0.2s; }
+        .delay-2 { animation-delay: 0.4s; }
+        .delay-3 { animation-delay: 0.6s; }
+    </style>
+</head>
+<body class="bg-white text-gray-800">
+    <!-- Navigation -->
+    <nav class="bg-white shadow-md sticky top-0 z-50">
+        <div class="container mx-auto px-6 py-4">
+            <div class="flex items-center justify-between">
+                <div class="flex items-center">
+                    <div class="w-12 h-12 rounded-full bg-[#b81d8f] flex items-center justify-center text-white font-bold text-xl">
+                        AWN
+                    </div>
+                    <span class="ml-3 text-xl font-semibold">Venture Portal</span>
+                </div>
+                
+                <!-- Mobile menu button -->
+                <div class="md:hidden">
+                    <button id="menu-btn" class="text-gray-800 focus:outline-none">
+                        <svg class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"/>
+                        </svg>
+                    </button>
+                </div>
+                
+                <!-- Desktop Menu -->
+                <div class="hidden md:flex space-x-8">
+                    <a href="#home" class="nav-link text-gray-800 hover:text-[#b81d8f]">Home</a>
+                    <a href="#about" class="nav-link text-gray-800 hover:text-[#b81d8f]">About</a>
+                    <a href="#features" class="nav-link text-gray-800 hover:text-[#b81d8f]">Features</a>
+                    <a href="#testimonials" class="nav-link text-gray-800 hover:text-[#b81d8f]">Success Stories</a>
+                    <a href="#contact" class="nav-link text-gray-800 hover:text-[#b81d8f]">Contact</a>
+                </div>
+            </div>
+            
+            <!-- Mobile Menu -->
+            <div id="mobile-menu" class="hidden md:hidden mt-4">
+                <a href="#home" class="block py-2 text-gray-800 hover:text-[#b81d8f]">Home</a>
+                <a href="#about" class="block py-2 text-gray-800 hover:text-[#b81d8f]">About</a>
+                <a href="#features" class="block py-2 text-gray-800 hover:text-[#b81d8f]">Features</a>
+                <a href="#testimonials" class="block py-2 text-gray-800 hover:text-[#b81d8f]">Success Stories</a>
+                <a href="#contact" class="block py-2 text-gray-800 hover:text-[#b81d8f]">Contact</a>
+            </div>
+        </div>
+    </nav>
 
-@section('content')
-    @include('layouts.partials.header')
-
-    {{-- Hero Section --}}
-    <section class="bg-light py-5 text-center">
-        <div class="container">
-            <h1 class="display-5 fw-bold mb-3">Empowering Women Entrepreneurs, BDSPs, and Investors</h1>
-            <p class="lead mb-4">Join our ecosystem and unlock growth opportunities tailored for your role.</p>
-            <a href="{{ route('register.role') }}" class="btn btn-lg btn-success px-5 py-3 mb-3">Who Are You?</a>
+    <!-- Hero Section -->
+    <section id="home" class="hero-section py-20 md:py-32">
+        <div class="container mx-auto px-6">
+            <div class="flex flex-col md:flex-row items-center">
+                <div class="md:w-1/2 mb-12 md:mb-0 fade-in">
+                    <h1 class="text-4xl md:text-5xl lg:text-6xl font-bold text-gray-800 leading-tight mb-6">
+                        AWN Venture <span class="text-[#b81d8f]">Readiness Portal</span>
+                    </h1>
+                    <h2 class="text-2xl md:text-3xl text-gray-600 mb-6 delay-1 fade-in">
+                        Your Gateway to Venture Success
+                    </h2>
+                    <p class="text-lg text-gray-600 mb-8 delay-2 fade-in">
+                        Empowering female-led ventures through capacity building and investor access
+                    </p>
+                    <button class="btn-primary text-white font-semibold px-8 py-3 rounded-full delay-3 fade-in">
+                        Get Started
+                    </button>
+                </div>
+                <div class="md:w-1/2 fade-in delay-3">
+                    <img src="https://images.unsplash.com/photo-1521791055366-0d40387274f0?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1470&q=80" 
+                         alt="Women entrepreneurs" 
+                         class="rounded-lg shadow-xl w-full h-auto object-cover">
+                </div>
+            </div>
         </div>
     </section>
 
-    {{-- Role-Based Section --}}
-    <section class="container py-5">
-        <div class="row justify-content-center mb-4">
-            <div class="col-12 text-center mb-4">
-                <h2 class="fw-bold">Choose Your Role</h2>
+    <!-- About Section -->
+    <section id="about" class="py-20 bg-gray-50">
+        <div class="container mx-auto px-6">
+            <div class="flex flex-col md:flex-row items-center">
+                <div class="md:w-1/2 mb-12 md:mb-0">
+                    <img src="https://images.unsplash.com/photo-1529333164857-423483e4a8a1?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1469&q=80" 
+                         alt="About AWN" 
+                         class="rounded-lg shadow-lg w-full h-auto object-cover">
+                </div>
+                <div class="md:w-1/2 md:pl-12">
+                    <h2 class="text-3xl font-bold text-gray-800 mb-6">
+                        Our <span class="text-[#b81d8f]">Mission</span>
+                    </h2>
+                    <p class="text-lg text-gray-600 mb-6">
+                        The AWN Venture Readiness Portal is dedicated to bridging the gap for female entrepreneurs by providing the tools, resources, and networks needed to build successful, scalable ventures.
+                    </p>
+                    <p class="text-lg text-gray-600 mb-8">
+                        We believe in the power of women-led innovation and are committed to creating equal opportunities in the entrepreneurial ecosystem through targeted capacity building and direct investor access.
+                    </p>
+                    <div class="flex items-center">
+                        <div class="w-12 h-12 rounded-full bg-[#b81d8f] flex items-center justify-center text-white mr-4">
+                            <i class="fas fa-venus text-xl"></i>
+                        </div>
+                        <p class="text-gray-600 font-medium">
+                            Empowering women to lead in business and innovation
+                        </p>
+                    </div>
+                </div>
             </div>
-            <div class="col-md-4 mb-3">
-                <a href="{{ route('register.investor') }}" class="text-decoration-none">
-                    <div class="card h-100 shadow-sm border-0 hover-shadow">
-                        <div class="card-body text-center">
-                            <div class="mb-3">
-                                <i class="bi bi-currency-exchange display-4 text-primary"></i>
-                            </div>
-                            <h5 class="card-title fw-bold">I am an Investor</h5>
-                            <p class="card-text text-muted">Support and empower women-led businesses.</p>
+        </div>
+    </section>
+
+    <!-- Features Section -->
+    <section id="features" class="py-20">
+        <div class="container mx-auto px-6">
+            <div class="text-center mb-16">
+                <h2 class="text-3xl font-bold text-gray-800 mb-4">
+                    How We <span class="text-[#b81d8f]">Support</span> You
+                </h2>
+                <p class="text-xl text-gray-600 max-w-2xl mx-auto">
+                    Comprehensive resources designed specifically for female entrepreneurs
+                </p>
+            </div>
+            
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+                <!-- Feature 1 -->
+                <div class="feature-card bg-white p-8 rounded-xl shadow-md text-center hover:border-l-4 hover:border-[#b81d8f]">
+                    <div class="w-20 h-20 bg-[#f8e0f0] rounded-full flex items-center justify-center mx-auto mb-6">
+                        <i class="fas fa-graduation-cap text-[#b81d8f] text-2xl"></i>
+                    </div>
+                    <h3 class="text-xl font-semibold mb-4">Capacity Building</h3>
+                    <p class="text-gray-600">
+                        Access to tailored training programs, workshops, and mentorship to develop essential entrepreneurial skills.
+                    </p>
+                </div>
+                
+                <!-- Feature 2 -->
+                <div class="feature-card bg-white p-8 rounded-xl shadow-md text-center hover:border-l-4 hover:border-[#b81d8f]">
+                    <div class="w-20 h-20 bg-[#f8e0f0] rounded-full flex items-center justify-center mx-auto mb-6">
+                        <i class="fas fa-hand-holding-usd text-[#b81d8f] text-2xl"></i>
+                    </div>
+                    <h3 class="text-xl font-semibold mb-4">Investor Access</h3>
+                    <p class="text-gray-600">
+                        Direct connections to a network of investors specifically interested in supporting women-led ventures.
+                    </p>
+                </div>
+                
+                <!-- Feature 3 -->
+                <div class="feature-card bg-white p-8 rounded-xl shadow-md text-center hover:border-l-4 hover:border-[#b81d8f]">
+                    <div class="w-20 h-20 bg-[#f8e0f0] rounded-full flex items-center justify-center mx-auto mb-6">
+                        <i class="fas fa-users text-[#b81d8f] text-2xl"></i>
+                    </div>
+                    <h3 class="text-xl font-semibold mb-4">Community Support</h3>
+                    <p class="text-gray-600">
+                        Join a vibrant community of like-minded female entrepreneurs for collaboration and peer learning.
+                    </p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Testimonials Section -->
+    <section id="testimonials" class="py-20 bg-gray-50">
+        <div class="container mx-auto px-6">
+            <div class="text-center mb-16">
+                <h2 class="text-3xl font-bold text-gray-800 mb-4">
+                    Success <span class="text-[#b81d8f]">Stories</span>
+                </h2>
+                <p class="text-xl text-gray-600 max-w-2xl mx-auto">
+                    Hear from women who have transformed their ventures through our portal
+                </p>
+            </div>
+            
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+                <!-- Testimonial 1 -->
+                <div class="testimonial-card bg-white p-8 rounded-xl shadow-md">
+                    <div class="flex items-center mb-6">
+                        <img src="https://randomuser.me/api/portraits/women/43.jpg" 
+                             alt="Amina Johnson" 
+                             class="w-16 h-16 rounded-full object-cover mr-4">
+                        <div>
+                            <h4 class="font-semibold">Amina Johnson</h4>
+                            <p class="text-gray-500 text-sm">Founder, GreenTech Solutions</p>
                         </div>
                     </div>
-                </a>
-            </div>
-            <div class="col-md-4 mb-3">
-                <a href="{{ route('register.bdsp') }}" class="text-decoration-none">
-                    <div class="card h-100 shadow-sm border-0 hover-shadow">
-                        <div class="card-body text-center">
-                            <div class="mb-3">
-                                <i class="bi bi-briefcase display-4 text-warning"></i>
-                            </div>
-                            <h5 class="card-title fw-bold">I am a BDSP</h5>
-                            <p class="card-text text-muted">Offer your expertise to help businesses grow.</p>
+                    <p class="text-gray-600 italic">
+                        "The investor connections I made through AWN were game-changing. Within 6 months, I secured funding that allowed me to scale my clean energy startup."
+                    </p>
+                    <div class="mt-4 text-[#b81d8f]">
+                        <i class="fas fa-star"></i>
+                        <i class="fas fa-star"></i>
+                        <i class="fas fa-star"></i>
+                        <i class="fas fa-star"></i>
+                        <i class="fas fa-star"></i>
+                    </div>
+                </div>
+                
+                <!-- Testimonial 2 -->
+                <div class="testimonial-card bg-white p-8 rounded-xl shadow-md">
+                    <div class="flex items-center mb-6">
+                        <img src="https://randomuser.me/api/portraits/women/65.jpg" 
+                             alt="Sarah Chen" 
+                             class="w-16 h-16 rounded-full object-cover mr-4">
+                        <div>
+                            <h4 class="font-semibold">Sarah Chen</h4>
+                            <p class="text-gray-500 text-sm">CEO, HealthBridge Africa</p>
                         </div>
                     </div>
-                </a>
-            </div>
-            <div class="col-md-4 mb-3">
-                <a href="{{ route('register.entrepreneur') }}" class="text-decoration-none">
-                    <div class="card h-100 shadow-sm border-0 hover-shadow">
-                        <div class="card-body text-center">
-                            <div class="mb-3">
-                                <i class="bi bi-lightbulb display-4 text-success"></i>
-                            </div>
-                            <h5 class="card-title fw-bold">I am an Entrepreneur</h5>
-                            <p class="card-text text-muted">Access resources and funding for your business.</p>
+                    <p class="text-gray-600 italic">
+                        "The mentorship program helped me refine my business model and go-to-market strategy. I've doubled my revenue since joining the portal."
+                    </p>
+                    <div class="mt-4 text-[#b81d8f]">
+                        <i class="fas fa-star"></i>
+                        <i class="fas fa-star"></i>
+                        <i class="fas fa-star"></i>
+                        <i class="fas fa-star"></i>
+                        <i class="fas fa-star-half-alt"></i>
+                    </div>
+                </div>
+                
+                <!-- Testimonial 3 -->
+                <div class="testimonial-card bg-white p-8 rounded-xl shadow-md">
+                    <div class="flex items-center mb-6">
+                        <img src="https://randomuser.me/api/portraits/women/32.jpg" 
+                             alt="Fatima Ndiaye" 
+                             class="w-16 h-16 rounded-full object-cover mr-4">
+                        <div>
+                            <h4 class="font-semibold">Fatima Ndiaye</h4>
+                            <p class="text-gray-500 text-sm">Founder, AgriWomen Co-op</p>
                         </div>
                     </div>
+                    <p class="text-gray-600 italic">
+                        "Being part of this community gave me the confidence to expand my agricultural cooperative. The peer support is invaluable."
+                    </p>
+                    <div class="mt-4 text-[#b81d8f]">
+                        <i class="fas fa-star"></i>
+                        <i class="fas fa-star"></i>
+                        <i class="fas fa-star"></i>
+                        <i class="fas fa-star"></i>
+                        <i class="fas fa-star"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- CTA Section -->
+    <section id="contact" class="py-20 bg-[#b81d8f] text-white">
+        <div class="container mx-auto px-6 text-center">
+            <h2 class="text-3xl md:text-4xl font-bold mb-6">Ready to grow your venture?</h2>
+            <p class="text-xl mb-8 max-w-2xl mx-auto">
+                Join hundreds of women entrepreneurs who are transforming their businesses through the AWN Venture Readiness Portal.
+            </p>
+            <button class="bg-white text-[#b81d8f] font-semibold px-8 py-3 rounded-full hover:bg-gray-100 hover:shadow-lg transition-all duration-300">
+                Join Now
+            </button>
+            
+            <div class="mt-12 flex justify-center space-x-6">
+                <a href="#" class="text-white hover:text-gray-200 text-2xl">
+                    <i class="fab fa-facebook"></i>
+                </a>
+                <a href="#" class="text-white hover:text-gray-200 text-2xl">
+                    <i class="fab fa-twitter"></i>
+                </a>
+                <a href="#" class="text-white hover:text-gray-200 text-2xl">
+                    <i class="fab fa-linkedin"></i>
+                </a>
+                <a href="#" class="text-white hover:text-gray-200 text-2xl">
+                    <i class="fab fa-instagram"></i>
                 </a>
             </div>
         </div>
     </section>
 
-    {{-- How It Works Section --}}
-    <section class="bg-light py-5">
-        <div class="container">
-            <h2 class="text-center fw-bold mb-4">How It Works</h2>
-            <div class="row text-center">
-                <div class="col-md-4 mb-4">
-                    <div class="mb-2"><span class="badge bg-primary rounded-pill fs-5">1</span></div>
-                    <h5 class="fw-bold">Join</h5>
-                    <p class="text-muted">Sign up and select your role to get started.</p>
+    <!-- Footer -->
+    <footer class="bg-gray-900 text-white py-12">
+        <div class="container mx-auto px-6">
+            <div class="grid grid-cols-1 md:grid-cols-4 gap-8">
+                <div>
+                    <div class="w-12 h-12 rounded-full bg-[#b81d8f] flex items-center justify-center text-white font-bold text-xl mb-4">
+                        AWN
+                    </div>
+                    <p class="text-gray-400">
+                        Empowering female entrepreneurs to build successful, scalable ventures.
+                    </p>
                 </div>
-                <div class="col-md-4 mb-4">
-                    <div class="mb-2"><span class="badge bg-warning text-dark rounded-pill fs-5">2</span></div>
-                    <h5 class="fw-bold">Connect</h5>
-                    <p class="text-muted">Network with entrepreneurs, BDSPs, and investors.</p>
+                
+                <div>
+                    <h4 class="text-lg font-semibold mb-4">Quick Links</h4>
+                    <ul class="space-y-2">
+                        <li><a href="#home" class="text-gray-400 hover:text-white">Home</a></li>
+                        <li><a href="#about" class="text-gray-400 hover:text-white">About</a></li>
+                        <li><a href="#features" class="text-gray-400 hover:text-white">Features</a></li>
+                        <li><a href="#testimonials" class="text-gray-400 hover:text-white">Success Stories</a></li>
+                    </ul>
                 </div>
-                <div class="col-md-4 mb-4">
-                    <div class="mb-2"><span class="badge bg-success rounded-pill fs-5">3</span></div>
-                    <h5 class="fw-bold">Grow</h5>
-                    <p class="text-muted">Access resources, funding, and support to scale.</p>
+                
+                <div>
+                    <h4 class="text-lg font-semibold mb-4">Resources</h4>
+                    <ul class="space-y-2">
+                        <li><a href="#" class="text-gray-400 hover:text-white">Blog</a></li>
+                        <li><a href="#" class="text-gray-400 hover:text-white">FAQs</a></li>
+                        <li><a href="#" class="text-gray-400 hover:text-white">Events</a></li>
+                        <li><a href="#" class="text-gray-400 hover:text-white">Mentorship</a></li>
+                    </ul>
                 </div>
+                
+                <div>
+                    <h4 class="text-lg font-semibold mb-4">Contact Us</h4>
+                    <ul class="space-y-2">
+                        <li class="flex items-center">
+                            <i class="fas fa-envelope text-gray-400 mr-2"></i>
+                            <span class="text-gray-400">contact@awnventure.org</span>
+                        </li>
+                        <li class="flex items-center">
+                            <i class="fas fa-phone text-gray-400 mr-2"></i>
+                            <span class="text-gray-400">+1 (234) 567-8900</span>
+                        </li>
+                        <li class="flex items-center">
+                            <i class="fas fa-map-marker-alt text-gray-400 mr-2"></i>
+                            <span class="text-gray-400">123 Entrepreneur St, Innovation City</span>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+            
+            <div class="border-t border-gray-800 mt-12 pt-8 text-center text-gray-400">
+                <p>&copy; 2023 AWN Venture Readiness Portal. All rights reserved.</p>
             </div>
         </div>
-    </section>
+    </footer>
 
-    {{-- Testimonials Section (Optional) --}}
-    <section class="container py-5">
-        <h2 class="text-center fw-bold mb-4">Success Stories</h2>
-        <div class="row justify-content-center">
-            <div class="col-md-4 mb-3">
-                <div class="card border-0 shadow-sm h-100">
-                    <div class="card-body">
-                        <blockquote class="blockquote mb-0">
-                            <p>"AWN helped me connect with the right investors and scale my business."</p>
-                            <footer class="blockquote-footer mt-2">Aisha, Entrepreneur</footer>
-                        </blockquote>
-                    </div>
-                </div>
-            </div>
-            <div class="col-md-4 mb-3">
-                <div class="card border-0 shadow-sm h-100">
-                    <div class="card-body">
-                        <blockquote class="blockquote mb-0">
-                            <p>"Through AWN, I've mentored dozens of women-led startups."</p>
-                            <footer class="blockquote-footer mt-2">Ngozi, BDSP</footer>
-                        </blockquote>
-                    </div>
-                </div>
-            </div>
-            <div class="col-md-4 mb-3">
-                <div class="card border-0 shadow-sm h-100">
-                    <div class="card-body">
-                        <blockquote class="blockquote mb-0">
-                            <p>"A fantastic platform for impact investing in Nigeria."</p>
-                            <footer class="blockquote-footer mt-2">Chinwe, Investor</footer>
-                        </blockquote>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </section>
-
-    @include('layouts.partials.footer')
-@endsection 
+    <script>
+        // Mobile menu toggle
+        const menuBtn = document.getElementById('menu-btn');
+        const mobileMenu = document.getElementById('mobile-menu');
+        
+        menuBtn.addEventListener('click', () => {
+            mobileMenu.classList.toggle('hidden');
+        });
+        
+        // Smooth scrolling for anchor links
+        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+            anchor.addEventListener('click', function (e) {
+                e.preventDefault();
+                
+                const targetId = this.getAttribute('href');
+                const targetElement = document.querySelector(targetId);
+                
+                window.scrollTo({
+                    top: targetElement.offsetTop - 80,
+                    behavior: 'smooth'
+                });
+                
+                // Close mobile menu if open
+                if (!mobileMenu.classList.contains('hidden')) {
+                    mobileMenu.classList.add('hidden');
+                }
+            });
+        });
+        
+        // Scroll animation
+        const fadeElements = document.querySelectorAll('.fade-in');
+        
+        const fadeInOnScroll = () => {
+            fadeElements.forEach(element => {
+                const elementTop = element.getBoundingClientRect().top;
+                const windowHeight = window.innerHeight;
+                
+                if (elementTop < windowHeight - 100) {
+                    element.style.opacity = '1';
+                    element.style.transform = 'translateY(0)';
+                }
+            });
+        };
+        
+        // Initialize elements as invisible
+        fadeElements.forEach(element => {
+            element.style.opacity = '0';
+            element.style.transform = 'translateY(20px)';
+        });
+        
+        // Run on load and scroll
+        window.addEventListener('load', fadeInOnScroll);
+        window.addEventListener('scroll', fadeInOnScroll);
+    </script>
+</body>
+</html>

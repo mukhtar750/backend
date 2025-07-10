@@ -17,42 +17,50 @@
 <body class="font-sans antialiased bg-gray-100">
     <div class="flex h-screen bg-gray-100">
         <!-- Sidebar -->
-        <div class="w-64 bg-[#b81d8f] text-white flex flex-col">
-            <div class="p-4 text-2xl font-bold border-b border-[#a01a7d]">
-                Innovation Portal
-            </div>
-            <div class="p-4 text-sm border-b border-[#a01a7d] tracking-wide">
-                Investor Panel
-            </div>
-            <nav class="flex-1 px-2 py-4 space-y-2">
-                <a href="#" class="flex items-center px-4 py-2 text-white hover:bg-[#a01a7d] rounded-lg transition-all font-medium">
-                    <i class="bi bi-grid-fill mr-3"></i> Dashboard
-                </a>
-                <a href="#" class="flex items-center px-4 py-2 text-white hover:bg-[#a01a7d] rounded-lg transition-all font-medium">
-                    <i class="bi bi-people-fill mr-3"></i> Startup Profiles
-                </a>
-                <a href="#" class="flex items-center px-4 py-2 text-white hover:bg-[#a01a7d] rounded-lg transition-all font-medium">
-                    <i class="bi bi-calendar-event-fill mr-3"></i> Pitch Events
-                </a>
-                <a href="#" class="flex items-center px-4 py-2 text-white hover:bg-[#a01a7d] rounded-lg transition-all font-medium">
-                    <i class="bi bi-award-fill mr-3"></i> Success Stories
-                </a>
-            </nav>
-            <div class="p-4 border-t border-[#a01a7d]">
-                <div class="flex items-center mb-3">
-                    <img class="h-10 w-10 rounded-full mr-3 border border-white" src="https://i.pravatar.cc/40" alt="Grace Investor">
+        <div class="w-64 bg-[#b81d8f] text-white flex flex-col justify-between py-4">
+            <!-- Branding/Header -->
+            <div>
+                <div class="flex items-center gap-3 px-6 pb-2">
+                    <span class="bg-yellow-400 text-white rounded-full p-2 flex items-center justify-center"><i class="bi bi-award-fill text-xl"></i></span>
                     <div>
-                        <div class="font-semibold">{{ Auth::user()->name }}</div>
-                        <div class="text-sm text-pink-100">{{ Auth::user()->email }}</div>
+                        <div class="text-lg font-bold leading-tight">AWN Portal</div>
+                        <div class="text-xs text-pink-100">Investor Panel</div>
                     </div>
                 </div>
-                <a href="#" class="flex items-center px-4 py-2 text-white hover:bg-[#a01a7d] rounded-lg transition-all font-medium">
-                    <i class="bi bi-gear-fill mr-3"></i> Settings
+                <nav class="mt-8 flex flex-col gap-1 px-2">
+                    <a href="{{ route('dashboard.investor') }}" class="flex items-center gap-3 px-4 py-3 rounded-lg font-semibold {{ request()->routeIs('dashboard.investor') ? 'bg-[#a01a7d] shadow-sm' : 'hover:bg-[#a01a7d] transition' }}">
+                        <i class="bi bi-grid-fill text-lg"></i> Dashboard
+                    </a>
+                    <a href="{{ route('investor.startup_profiles') }}" class="flex items-center gap-3 px-4 py-3 rounded-lg font-medium {{ request()->routeIs('investor.startup_profiles') ? 'bg-[#a01a7d] shadow-sm' : 'hover:bg-[#a01a7d] transition' }}">
+                        <i class="bi bi-graph-up-arrow text-lg"></i> Startup Profiles
+                    </a>
+                    <a href="{{ route('investor.pitch_events') }}" class="flex items-center gap-3 px-4 py-3 rounded-lg font-medium {{ request()->routeIs('investor.pitch_events') ? 'bg-[#a01a7d] shadow-sm' : 'hover:bg-[#a01a7d] transition' }}">
+                        <i class="bi bi-calendar-event text-lg"></i> Pitch Events
+                    </a>
+                    <a href="{{ route('investor.success_stories') }}" class="flex items-center gap-3 px-4 py-3 rounded-lg font-medium {{ request()->routeIs('investor.success_stories') ? 'bg-[#a01a7d] shadow-sm' : 'hover:bg-[#a01a7d] transition' }}">
+                        <i class="bi bi-award text-lg"></i> Success Stories
+                    </a>
+                    <a href="{{ route('investor.messages') }}" class="flex items-center gap-3 px-4 py-3 rounded-lg font-medium {{ request()->routeIs('investor.messages') ? 'bg-[#a01a7d] shadow-sm' : 'hover:bg-[#a01a7d] transition' }}">
+                        <i class="bi bi-chat-left-text text-lg"></i> Messages
+                    </a>
+                </nav>
+            </div>
+            <!-- User Profile Section -->
+            <div class="px-6 pt-6 pb-2 border-t border-[#a01a7d] mt-8">
+                <div class="flex items-center gap-3 mb-3">
+                    <img class="h-10 w-10 rounded-full border-2 border-white" src="https://i.pravatar.cc/40" alt="Grace Investor">
+                    <div>
+                        <div class="font-semibold leading-tight">{{ Auth::user()->name }}</div>
+                        <div class="text-xs text-pink-100">{{ Auth::user()->email }}</div>
+                    </div>
+                </div>
+                <a href="#" class="flex items-center gap-2 px-3 py-2 rounded-lg hover:bg-[#a01a7d] transition text-sm font-medium">
+                    <i class="bi bi-gear text-base"></i> Settings
                 </a>
                 <form action="{{ route('logout') }}" method="POST" class="mt-1">
                     @csrf
-                    <button type="submit" class="flex items-center w-full px-4 py-2 text-white hover:bg-[#a01a7d] rounded-lg transition-all font-medium">
-                        <i class="bi bi-box-arrow-right mr-3"></i> Logout
+                    <button type="submit" class="flex items-center gap-2 w-full px-3 py-2 rounded-lg hover:bg-[#a01a7d] transition text-sm font-medium">
+                        <i class="bi bi-box-arrow-right text-base"></i> Logout
                     </button>
                 </form>
             </div>
