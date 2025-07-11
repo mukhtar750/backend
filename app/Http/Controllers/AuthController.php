@@ -70,6 +70,10 @@ class AuthController extends Controller
                 return redirect()->route('dashboard.bdsp');
             } elseif ($user->role === 'entrepreneur') {
                 return redirect()->route('dashboard.entrepreneur');
+            } elseif ($user->role === 'mentor') {
+                return redirect()->route('dashboard.mentor');
+            } elseif ($user->role === 'mentee') {
+                return redirect()->route('dashboard.mentee');
             } else {
                 // Fallback for other roles or if role is not explicitly handled
                 return redirect()->route('dashboard');

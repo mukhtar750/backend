@@ -30,8 +30,6 @@ class EntrepreneurRegisterController extends Controller
             'entrepreneur_linkedin' => $request->entrepreneur_linkedin,
         ]);
 
-        Auth::login($user);
-
-        return redirect()->route('dashboard.entrepreneur')->with('success', 'Registration successful!');
+        return redirect()->route('registration.success')->with('success', 'Registration successful! Please wait for admin approval.');
     }
 } 

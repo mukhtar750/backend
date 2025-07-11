@@ -28,8 +28,6 @@ class BDSPRegisterController extends Controller
             'bdsp_linkedin' => $request->bdsp_linkedin,
         ]);
 
-        Auth::login($user);
-
-        return redirect()->route('dashboard.bdsp')->with('success', 'Registration successful!');
+        return redirect()->route('registration.success')->with('success', 'Registration successful! Please wait for admin approval.');
     }
 } 

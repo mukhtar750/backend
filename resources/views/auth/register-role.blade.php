@@ -109,6 +109,54 @@
                     <a href="{{ route('register.investor') }}" class="mt-6 w-full bg-blue-100 hover:bg-blue-200 text-blue-800 font-medium py-2 px-4 rounded-lg transition duration-300 block text-center">Explore Path</a>
                 </div>
             </div>
+            <!-- Mentor Card -->
+            <div class="character-card bg-white rounded-xl shadow-md overflow-hidden glow-hover">
+                <div class="relative h-64 bg-gradient-to-b from-green-50 to-white flex items-center justify-center">
+                    <div class="absolute inset-0 flex items-center justify-center">
+                        <div class="w-40 h-40 rounded-full bg-green-100 opacity-30"></div>
+                    </div>
+                    <div class="relative z-10">
+                        <div class="w-32 h-32 mx-auto bg-white rounded-full shadow-lg flex items-center justify-center overflow-hidden">
+                            <img src="https://images.unsplash.com/photo-1511367461989-f85a21fda167?auto=format&fit=crop&w=500&q=80" alt="Mentor" class="w-full h-full object-cover">
+                        </div>
+                    </div>
+                </div>
+                <div class="p-6">
+                    <div class="character-tag absolute -mt-8 ml-6 bg-white text-green-800 font-semibold px-4 py-2 rounded-full shadow-md border border-green-200">Mentor</div>
+                    <div class="mt-6">
+                        <h3 class="text-xl font-semibold text-gray-800 mb-2">Mentor</h3>
+                        <p class="text-gray-600 mb-4">Experienced professionals guiding and empowering the next generation of entrepreneurs.</p>
+                        <div class="flex items-center text-green-600 mb-2"><i class="fas fa-chalkboard-teacher mr-2"></i><span>Expert guidance</span></div>
+                        <div class="flex items-center text-green-600 mb-2"><i class="fas fa-user-friends mr-2"></i><span>Personalized support</span></div>
+                        <div class="flex items-center text-green-600"><i class="fas fa-lightbulb mr-2"></i><span>Inspire growth</span></div>
+                    </div>
+                    <a href="{{ route('register.mentor') }}" class="mt-6 w-full bg-green-100 hover:bg-green-200 text-green-800 font-medium py-2 px-4 rounded-lg transition duration-300 block text-center">Explore Path</a>
+                </div>
+            </div>
+            <!-- Mentee Card -->
+            <div class="character-card bg-white rounded-xl shadow-md overflow-hidden glow-hover">
+                <div class="relative h-64 bg-gradient-to-b from-yellow-50 to-white flex items-center justify-center">
+                    <div class="absolute inset-0 flex items-center justify-center">
+                        <div class="w-40 h-40 rounded-full bg-yellow-100 opacity-30"></div>
+                    </div>
+                    <div class="relative z-10">
+                        <div class="w-32 h-32 mx-auto bg-white rounded-full shadow-lg flex items-center justify-center overflow-hidden">
+                            <img src="https://images.unsplash.com/photo-1506744038136-46273834b3fb?auto=format&fit=crop&w=500&q=80" alt="Mentee" class="w-full h-full object-cover">
+                        </div>
+                    </div>
+                </div>
+                <div class="p-6">
+                    <div class="character-tag absolute -mt-8 ml-6 bg-white text-yellow-800 font-semibold px-4 py-2 rounded-full shadow-md border border-yellow-200">Mentee</div>
+                    <div class="mt-6">
+                        <h3 class="text-xl font-semibold text-gray-800 mb-2">Mentee</h3>
+                        <p class="text-gray-600 mb-4">Aspiring entrepreneurs seeking guidance, skills, and growth through mentorship.</p>
+                        <div class="flex items-center text-yellow-600 mb-2"><i class="fas fa-user-graduate mr-2"></i><span>Learn from experts</span></div>
+                        <div class="flex items-center text-yellow-600 mb-2"><i class="fas fa-seedling mr-2"></i><span>Grow your venture</span></div>
+                        <div class="flex items-center text-yellow-600"><i class="fas fa-network-wired mr-2"></i><span>Expand your network</span></div>
+                    </div>
+                    <a href="{{ route('register.mentee') }}" class="mt-6 w-full bg-yellow-100 hover:bg-yellow-200 text-yellow-800 font-medium py-2 px-4 rounded-lg transition duration-300 block text-center">Explore Path</a>
+                </div>
+            </div>
         </div>
     </main>
     <!-- Footer -->

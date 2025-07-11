@@ -155,3 +155,21 @@ Route::middleware(['auth'])->group(function () {
     Route::view('/dashboard/investor-success-stories', 'dashboard.investor-success-stories')->name('investor.success_stories');
     Route::view('/dashboard/investor-messages', 'dashboard.investor-messages')->name('investor.messages');
 });
+
+// Mentor Registration & Dashboard
+Route::get('/register/mentor', [\App\Http\Controllers\MentorRegisterController::class, 'showRegistrationForm'])->name('register.mentor');
+Route::post('/register/mentor', [\App\Http\Controllers\MentorRegisterController::class, 'register']);
+Route::get('/dashboard/mentor', function () {
+    return view('dashboard.mentor');
+})->middleware(['auth'])->name('dashboard.mentor');
+
+// Mentee Registration & Dashboard
+Route::get('/register/mentee', [\App\Http\Controllers\MenteeRegisterController::class, 'showRegistrationForm'])->name('register.mentee');
+Route::post('/register/mentee', [\App\Http\Controllers\MenteeRegisterController::class, 'register']);
+Route::get('/dashboard/mentee', function () {
+    return view('dashboard.mentee');
+})->middleware(['auth'])->name('dashboard.mentee');
+
+Route::get('/registration-success', function () {
+    return view('auth.registration-success');
+})->name('registration.success');
