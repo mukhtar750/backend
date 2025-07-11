@@ -51,8 +51,8 @@
                 <div class="p-6">
                     <div class="character-tag absolute -mt-8 ml-6 bg-white text-purple-800 font-semibold px-4 py-2 rounded-full shadow-md border border-purple-200">BDSP</div>
                     <div class="mt-6">
-                        <h3 class="text-xl font-semibold text-gray-800 mb-2">Professional Advisor</h3>
-                        <p class="text-gray-600 mb-4">Experts who guide businesses with strategic insights and professional advice.</p>
+                        <h3 class="text-xl font-semibold text-gray-800 mb-2">Business Growth Partner</h3>
+                        <p class="text-gray-600 mb-4">Seasoned professionals who provide strategic guidance, mentorship, and technical support to help ventures grow and scale.</p>
                         <div class="flex items-center text-purple-600 mb-2"><i class="fas fa-tablet-alt mr-2"></i><span>Digital tools</span></div>
                         <div class="flex items-center text-purple-600 mb-2"><i class="fas fa-chart-line mr-2"></i><span>Strategic planning</span></div>
                         <div class="flex items-center text-purple-600"><i class="fas fa-handshake mr-2"></i><span>Professional network</span></div>
@@ -76,7 +76,8 @@
                     <div class="character-tag absolute -mt-8 ml-6 bg-white text-pink-800 font-semibold px-4 py-2 rounded-full shadow-md border border-pink-200">Entrepreneur</div>
                     <div class="mt-6">
                         <h3 class="text-xl font-semibold text-gray-800 mb-2">Visionary Founder</h3>
-                        <p class="text-gray-600 mb-4">Innovators who turn ideas into reality with passion and determination.</p>
+                        <p class="text-gray-600 mb-4">Bold innovators transforming ideas into impactful businesses with passion, resilience, and purpose.</p>
+                        <br/>
                         <div class="flex items-center text-pink-600 mb-2"><i class="fas fa-lightbulb mr-2"></i><span>Creative ideas</span></div>
                         <div class="flex items-center text-pink-600 mb-2"><i class="fas fa-rocket mr-2"></i><span>Startup growth</span></div>
                         <div class="flex items-center text-pink-600"><i class="fas fa-users mr-2"></i><span>Team building</span></div>
@@ -99,8 +100,8 @@
                 <div class="p-6">
                     <div class="character-tag absolute -mt-8 ml-6 bg-white text-blue-800 font-semibold px-4 py-2 rounded-full shadow-md border border-blue-200">Investor</div>
                     <div class="mt-6">
-                        <h3 class="text-xl font-semibold text-gray-800 mb-2">Strategic Investor</h3>
-                        <p class="text-gray-600 mb-4">Financial experts who identify and support promising business opportunities.</p>
+                        <h3 class="text-xl font-semibold text-gray-800 mb-2">Catalyst for Growth</h3>
+                        <p class="text-gray-600 mb-4">Individuals or institutions who fuel promising ventures with capital, networks, and strategic insight to drive scalable success.</p>
                         <div class="flex items-center text-blue-600 mb-2"><i class="fas fa-chart-pie mr-2"></i><span>Market analysis</span></div>
                         <div class="flex items-center text-blue-600 mb-2"><i class="fas fa-search-dollar mr-2"></i><span>Opportunity spotting</span></div>
                         <div class="flex items-center text-blue-600"><i class="fas fa-piggy-bank mr-2"></i><span>Capital growth</span></div>

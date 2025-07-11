@@ -86,16 +86,17 @@
 </head>
 <body class="bg-white text-gray-800">
     <!-- Navigation -->
-    <nav class="bg-white shadow-md sticky top-0 z-50">
-        <div class="container mx-auto px-6 py-4">
-            <div class="flex items-center justify-between">
-                <div class="flex items-center">
-                    <div class="w-12 h-12 rounded-full bg-[#b81d8f] flex items-center justify-center text-white font-bold text-xl">
-                        AWN
-                    </div>
-                    <span class="ml-3 text-xl font-semibold">Venture Portal</span>
-                </div>
-                
+<nav class="bg-white shadow-md sticky top-0 z-50">
+    <div class="container mx-auto px-6 py-4">
+        <div class="flex items-center justify-between">
+            <div class="flex items-center space-x-4">
+            <img src="/images/logo.jpg" alt="AWN Logo" class="w-14 h-14 object-contain rounded-full shadow-lg transition-transform hover:scale-105">
+                    <div>
+                <span class="text-xl font-semibold">AWN Venture Ready Portal</span>
+    </div>
+            
+            <!-- Add nav links or buttons here on the right -->
+        </div>          
                 <!-- Mobile menu button -->
                 <div class="md:hidden">
                     <button id="menu-btn" class="text-gray-800 focus:outline-none">
@@ -134,7 +135,7 @@
             <div class="flex flex-col md:flex-row items-center">
                 <div class="md:w-1/2 mb-12 md:mb-0 fade-in">
                     <h1 class="text-4xl md:text-5xl lg:text-6xl font-bold text-gray-800 leading-tight mb-6">
-                        AWN  <span class="text-[#b81d8f]">Venture Ready </span>Portal
+                        AWN  <br/><span class="text-[#b81d8f]">Venture Ready </span><br/>Portal
                     </h1>
                     <h2 class="text-2xl md:text-3xl text-gray-600 mb-6 delay-1 fade-in">
                         Your Gateway to Venture Success

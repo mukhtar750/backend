@@ -31,7 +31,7 @@
         <!-- Logo Section -->
         <div class="text-center mb-8">
             <div class="flex justify-center mb-4">
-            <a href="/" aria-label="Go to home">
+            <a href="#" aria-label="Go to home">
                 <img src="/images/logo.jpg" alt="AWN Logo" class="w-20 h-20 object-contain rounded-full shadow-lg">
             </div>
             <h1 class="text-3xl font-bold logo-text mb-1">AWN Venture Ready Portal</h1>
