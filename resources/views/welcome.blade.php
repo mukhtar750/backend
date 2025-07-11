@@ -149,7 +149,7 @@
                 </div>
                 <div class="md:w-1/2 fade-in delay-3">
                     <!-- AWN Team Photo -->
-                    <img src="/images/awn.png" alt="AWN Team - Venture Ready Portal" class="rounded-lg shadow-xl w-full h-auto object-cover">
+                    <img src="/images/awn.jpg" alt="AWN Team - Venture Ready Portal" class="rounded-lg shadow-xl w-full h-auto object-cover">
                 </div>
             </div>
         </div>
