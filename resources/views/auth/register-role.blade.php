@@ -124,8 +124,9 @@
                 <div class="p-6">
                     <div class="character-tag absolute -mt-8 ml-6 bg-white text-green-800 font-semibold px-4 py-2 rounded-full shadow-md border border-green-200">Mentor</div>
                     <div class="mt-6">
-                        <h3 class="text-xl font-semibold text-gray-800 mb-2">Mentor</h3>
-                        <p class="text-gray-600 mb-4">Experienced professionals guiding and empowering the next generation of entrepreneurs.</p>
+                        <h3 class="text-xl font-semibold text-gray-800 mb-2">Trusted Guide</h3>
+                        <p class="text-gray-600 mb-4">
+                      Experienced professionals who share knowledge, wisdom, and encouragement to help growth-stage founders scale with clarity and confidence.</p>
                         <div class="flex items-center text-green-600 mb-2"><i class="fas fa-chalkboard-teacher mr-2"></i><span>Expert guidance</span></div>
                         <div class="flex items-center text-green-600 mb-2"><i class="fas fa-user-friends mr-2"></i><span>Personalized support</span></div>
                         <div class="flex items-center text-green-600"><i class="fas fa-lightbulb mr-2"></i><span>Inspire growth</span></div>
@@ -148,8 +149,9 @@
                 <div class="p-6">
                     <div class="character-tag absolute -mt-8 ml-6 bg-white text-yellow-800 font-semibold px-4 py-2 rounded-full shadow-md border border-yellow-200">Mentee</div>
                     <div class="mt-6">
-                        <h3 class="text-xl font-semibold text-gray-800 mb-2">Mentee</h3>
-                        <p class="text-gray-600 mb-4">Aspiring entrepreneurs seeking guidance, skills, and growth through mentorship.</p>
+                        <h3 class="text-xl font-semibold text-gray-800 mb-2">Growth-Driven Founder</h3>
+                        <p class="text-gray-600 mb-4">
+                        Ambitious entrepreneurs committed to refining their ventures, strengthening capacity, and preparing for investment with the support of experienced mentors.</p>
                         <div class="flex items-center text-yellow-600 mb-2"><i class="fas fa-user-graduate mr-2"></i><span>Learn from experts</span></div>
                         <div class="flex items-center text-yellow-600 mb-2"><i class="fas fa-seedling mr-2"></i><span>Grow your venture</span></div>
                         <div class="flex items-center text-yellow-600"><i class="fas fa-network-wired mr-2"></i><span>Expand your network</span></div>
