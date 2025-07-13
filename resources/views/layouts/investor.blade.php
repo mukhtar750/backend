@@ -40,7 +40,7 @@
                     <a href="{{ route('investor.success_stories') }}" class="flex items-center gap-3 px-4 py-3 rounded-lg font-medium {{ request()->routeIs('investor.success_stories') ? 'bg-[#a01a7d] shadow-sm' : 'hover:bg-[#a01a7d] transition' }}">
                         <i class="bi bi-award text-lg"></i> Success Stories
                     </a>
-                    <a href="{{ route('investor.messages') }}" class="flex items-center gap-3 px-4 py-3 rounded-lg font-medium {{ request()->routeIs('investor.messages') ? 'bg-[#a01a7d] shadow-sm' : 'hover:bg-[#a01a7d] transition' }}">
+                    <a href="{{ route('messages.index') }}" class="flex items-center gap-3 px-4 py-3 rounded-lg font-medium {{ request()->routeIs('messages.index') ? 'bg-[#a01a7d] shadow-sm' : 'hover:bg-[#a01a7d] transition' }}">
                         <i class="bi bi-chat-left-text text-lg"></i> Messages
                     </a>
                 </nav>
