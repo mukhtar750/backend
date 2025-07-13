@@ -72,8 +72,10 @@
             <p class="font-semibold text-sm text-gray-700">Pitch Events</p>
         </div>
         <div class="bg-indigo-50 p-4 rounded-lg text-center shadow-sm hover:shadow-md transition">
-            <i class="bi bi-chat-dots-fill text-indigo-600 text-2xl mb-2 block"></i>
-            <p class="font-semibold text-sm text-gray-700">Messages</p>
+            <a href="{{ route('messages.index') }}" class="block">
+                <i class="bi bi-chat-dots-fill text-indigo-600 text-2xl mb-2 block"></i>
+                <p class="font-semibold text-sm text-gray-700">Messages</p>
+            </a>
         </div>
     </div>
 

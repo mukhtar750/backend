@@ -7,6 +7,7 @@ use App\Http\Controllers\InvestorRegisterController;
 use App\Http\Controllers\BDSPRegisterController;
 use App\Http\Controllers\EntrepreneurRegisterController;
 use App\Http\Controllers\AdminDashboardController;
+use App\Http\Controllers\NotificationController;
 
 /*
 |--------------------------------------------------------------------------
@@ -34,6 +35,32 @@ Route::post('/logout', [AuthController::class, 'logout'])->name('logout');
 // Protected Routes
 Route::middleware(['auth'])->group(function () {
     Route::get('/dashboard', [AuthController::class, 'dashboard'])->name('dashboard');
+});
+
+// Notification Routes
+Route::middleware(['auth'])->group(function () {
+    Route::get('/notifications', [NotificationController::class, 'index'])->name('notifications.index');
+    Route::get('/notifications/recent', [NotificationController::class, 'recent'])->name('notifications.recent');
+    Route::post('/notifications/{id}/mark-as-read', [NotificationController::class, 'markAsRead'])->name('notifications.markAsRead');
+    Route::post('/notifications/mark-all-as-read', [NotificationController::class, 'markAllAsRead'])->name('notifications.markAllAsRead');
+    Route::delete('/notifications/{id}', [NotificationController::class, 'delete'])->name('notifications.delete');
+    Route::get('/notifications/unread-count', [NotificationController::class, 'getUnreadCount'])->name('notifications.unreadCount');
+    
+    // Test route for creating notifications
+    Route::post('/test/create-notification', [\App\Http\Controllers\TestController::class, 'createTestNotification'])->name('test.createNotification');
+});
+
+// Messaging Routes
+Route::middleware(['auth'])->group(function () {
+    Route::get('/messages', [\App\Http\Controllers\MessageController::class, 'index'])->name('messages.index');
+    Route::get('/messages/{conversation}', [\App\Http\Controllers\MessageController::class, 'show'])->name('messages.show');
+    Route::post('/messages', [\App\Http\Controllers\MessageController::class, 'store'])->name('messages.store');
+    Route::get('/messages/conversations', [\App\Http\Controllers\MessageController::class, 'getConversations'])->name('messages.conversations');
+    Route::get('/messages/{conversation}/messages', [\App\Http\Controllers\MessageController::class, 'getMessages'])->name('messages.getMessages');
+    Route::post('/messages/{conversation}/mark-as-read', [\App\Http\Controllers\MessageController::class, 'markAsRead'])->name('messages.markAsRead');
+    Route::get('/messages/unread-count', [\App\Http\Controllers\MessageController::class, 'getUnreadCount'])->name('messages.unreadCount');
+    Route::get('/messages/{message}/download', [\App\Http\Controllers\MessageController::class, 'downloadFile'])->name('messages.download');
+    Route::delete('/messages/{message}', [\App\Http\Controllers\MessageController::class, 'deleteMessage'])->name('messages.delete');
 });
 
 Route::middleware(['auth', 'verified'])->prefix('admin')->name('admin.')->group(function () {
@@ -64,6 +91,10 @@ Route::middleware(['auth', 'verified'])->prefix('admin')->name('admin.')->group(
     Route::get('/content-management', function () {
         return view('admin.content_management'); // Placeholder for content management page
     })->name('content_management');
+
+    Route::get('/messages', function () {
+        return view('admin.messages'); // Placeholder for messages page
+    })->name('messages');
 
     Route::get('/settings', function () {
         return view('admin.settings'); // Placeholder for settings page

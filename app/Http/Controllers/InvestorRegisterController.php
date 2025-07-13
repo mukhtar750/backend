@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Http\Requests\InvestorRegisterRequest;
 use App\Models\User;
+use App\Notifications\UserRegistrationNotification;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
 
@@ -27,6 +28,12 @@ class InvestorRegisterController extends Controller
             'company' => $request->company,
             'investor_linkedin' => $request->investor_linkedin,
         ]);
+
+        // Send notification to all admins
+        $admins = User::where('role', 'admin')->get();
+        foreach ($admins as $admin) {
+            $admin->notify(new UserRegistrationNotification($user));
+        }
 
         return redirect()->route('registration.success')->with('success', 'Registration successful! Please wait for admin approval.');
     }

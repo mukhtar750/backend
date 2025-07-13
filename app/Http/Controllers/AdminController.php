@@ -3,6 +3,8 @@
 namespace App\Http\Controllers;
 
 use App\Models\User;
+use App\Notifications\AccountApprovedNotification;
+use App\Notifications\AccountRejectedNotification;
 use Illuminate\Http\Request;
 
 class AdminController extends Controller
@@ -52,6 +54,9 @@ class AdminController extends Controller
         $user->is_approved = true;
         $user->save();
 
+        // Send approval notification to user
+        $user->notify(new AccountApprovedNotification());
+
         return redirect()->back()->with('success', 'User approved successfully.');
     }
 
@@ -64,6 +69,9 @@ class AdminController extends Controller
 
         $user->is_approved = false;
         $user->save();
+
+        // Send rejection notification to user
+        $user->notify(new AccountRejectedNotification());
 
         return redirect()->back()->with('success', 'User rejected successfully.');
     }

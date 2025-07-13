@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Http\Requests\MentorRegisterRequest;
 use App\Models\User;
+use App\Notifications\UserRegistrationNotification;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
 
@@ -21,12 +22,16 @@ class MentorRegisterController extends Controller
             'email' => $request->email,
             'role' => 'mentor',
             'password' => Hash::make($request->password),
-            'bio' => $request->bio,
-            'expertise' => $request->expertise,
-            'years_of_experience' => $request->years_of_experience,
             'linkedin' => $request->linkedin,
-            'is_approved' => false,
+            'interests' => $request->interests,
+            'goals' => $request->goals,
         ]);
+
+        // Send notification to all admins
+        $admins = User::where('role', 'admin')->get();
+        foreach ($admins as $admin) {
+            $admin->notify(new UserRegistrationNotification($user));
+        }
 
         return redirect()->route('registration.success')->with('success', 'Registration successful! Please wait for admin approval.');
     }

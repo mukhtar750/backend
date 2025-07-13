@@ -3,12 +3,15 @@
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="csrf-token" content="{{ csrf_token() }}">
     <title>@yield('title', 'Admin Dashboard')</title>
 
     <!-- Tailwind CSS CDN -->
     <script src="https://cdn.tailwindcss.com"></script>
     <!-- Bootstrap Icons CDN -->
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css">
+    <!-- Alpine.js CDN -->
+    <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"></script>
     <style>
         .active {
             @apply bg-white text-purple-800 font-semibold shadow-sm;
@@ -46,8 +49,7 @@
             <a href="{{ route('admin.content_management') }}" class="flex items-center gap-3 px-4 py-2 rounded-lg hover:bg-purple-700 {{ $route == 'admin.content_management' ? 'active' : '' }}">
                 <i class="bi bi-file-earmark-text-fill"></i> Content Management
             </a>
-            </a>
-            <a href="" class="flex items-center gap-3 px-4 py-2 rounded-lg hover:bg-purple-700 {{ $route == 'admin.messages' ? 'active' : '' }}">
+            <a href="{{ route('admin.messages') }}" class="flex items-center gap-3 px-4 py-2 rounded-lg hover:bg-purple-700 {{ $route == 'admin.messages' ? 'active' : '' }}">
                 <i class="bi bi-envelope-fill"></i> Messages
             </a>
         </nav>
@@ -83,15 +85,12 @@
             <div class="flex items-center gap-4 flex-1 justify-end">
                 <div class="relative w-80 max-w-xs mr-4">
                     <input type="text" placeholder="Search..." class="w-full pl-10 pr-4 py-2 border rounded-lg focus:ring-2 focus:ring-purple-500 focus:outline-none">
-                    <i class="bi bi-bell text-gray-400 absolute left-3 top-1/2 transform -translate-y-1/2"></i>
+                    <i class="bi bi-search text-gray-400 absolute left-3 top-1/2 transform -translate-y-1/2"></i>
                 </div>
                 <a href="#" class="relative text-gray-600 hover:text-gray-800 mr-2">
                     <i class="bi bi-chat-dots text-xl"></i>
                 </a>
-                <a href="#" class="relative text-gray-600 hover:text-gray-800 mr-2">
-                    <i class="bi bi-bell-fill text-xl"></i>
-                    <span class="absolute -top-2 -right-2 inline-flex items-center justify-center px-1 text-xs font-bold text-white bg-red-500 rounded-full">2</span>
-                </a>
+                @include('components.notification-badge')
                 <div class="flex items-center">
                     <img class="h-8 w-8 rounded-full mr-2" src="https://via.placeholder.com/32" alt="Sarah Admin">
                     <div>

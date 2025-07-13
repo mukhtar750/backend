@@ -3,117 +3,54 @@
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>@yield('title', 'Investor Dashboard')</title>
+    <meta name="csrf-token" content="{{ csrf_token() }}">
+    <title>@yield('title', 'Innovation Portal')</title>
 
-    <!-- Fonts -->
-    <link rel="preconnect" href="https://fonts.bunny.net">
-    <link href="https://fonts.bunny.net/css?family=figtree:400,600&display=swap" rel="stylesheet" />
-
-    <!-- Tailwind CSS -->
+    <!-- Tailwind CSS CDN -->
     <script src="https://cdn.tailwindcss.com"></script>
-
-    <!-- Bootstrap Icons -->
+    <!-- Bootstrap Icons CDN -->
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css">
-
-    <!-- Custom Styles -->
-    <link rel="stylesheet" href="{{ asset('css/app.css') }}">
+    <!-- Alpine.js CDN -->
+    <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"></script>
 </head>
-<body class="font-sans antialiased bg-gray-100">
-
-<div class="flex h-screen overflow-hidden">
-    <!-- Sidebar -->
-    <aside class="w-64 bg-gradient-to-b from-[#b81d8f] via-[#a01a7d] to-[#86156c] text-white flex flex-col">
-        <div class="p-4 text-2xl font-bold border-b border-[#a01a7d]">Innovation Portal</div>
-        <div class="p-4 text-sm border-b border-[#a01a7d]">Investor Panel</div>
-
-        <nav class="flex-1 px-2 py-4 space-y-2">
-            @foreach ([
-                ['icon' => 'bi-grid-fill', 'text' => 'Dashboard'],
-                ['icon' => 'bi-people-fill', 'text' => 'Startup Profiles'],
-                ['icon' => 'bi-calendar-event-fill', 'text' => 'Pitch Events'],
-                ['icon' => 'bi-award-fill', 'text' => 'Success Stories'],
-            ] as $item)
-                <a href="#" class="flex items-center px-4 py-2 hover:bg-[#a01a7d] rounded-lg font-medium transition">
-                    <i class="bi {{ $item['icon'] }} mr-3"></i> {{ $item['text'] }}
-                </a>
-            @endforeach
-        </nav>
-
-        <div class="p-4 border-t border-[#a01a7d]">
-            <div class="flex items-center mb-3">
-                <img class="h-10 w-10 rounded-full mr-3 border border-white" src="https://i.pravatar.cc/40" alt="User avatar">
-                <div>
-                    <div class="font-semibold">Grace Investor</div>
-                    <div class="text-sm text-pink-100">investor@example.com</div>
-                </div>
-            </div>
-            <a href="#" class="flex items-center px-4 py-2 hover:bg-[#a01a7d] rounded-lg font-medium transition">
-                <i class="bi bi-gear-fill mr-3"></i> Settings
-            </a>
-            <form action="#" method="POST" class="mt-1">
-                <button type="submit" class="flex items-center w-full px-4 py-2 hover:bg-[#a01a7d] rounded-lg font-medium transition">
-                    <i class="bi bi-box-arrow-right mr-3"></i> Logout
-                </button>
-            </form>
-        </div>
-    </aside>
-
-    <!-- Main Content Area -->
-    <div class="flex-1 flex flex-col overflow-hidden">
-        <!-- Header -->
-        <header class="flex items-center justify-between p-4 bg-white border-b shadow-sm">
-            <h1 class="text-2xl font-semibold text-gray-800 flex items-center">
-                <i class="bi bi-grid-fill mr-2 text-[#b81d8f]"></i> Dashboard
-            </h1>
-
-            <div class="flex items-center space-x-4">
-                <!-- Search Bar -->
-                <div class="relative text-gray-600">
-                    <input type="text" aria-label="Search" placeholder="Search..." class="pl-10 pr-4 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-[#b81d8f]">
-                    <i class="bi bi-search absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400"></i>
-                </div>
-
-                <!-- Notifications -->
-                <a href="#" class="relative hover:text-gray-800" aria-label="Notifications">
-                    <i class="bi bi-bell-fill text-xl"></i>
-                    <span class="absolute top-0 right-0 px-2 py-1 text-xs font-bold text-white bg-[#b81d8f] rounded-full">2</span>
-                </a>
-
-                <!-- Profile Summary -->
+<body class="bg-gray-100 font-sans antialiased">
+    <!-- Navigation -->
+    <nav class="bg-white shadow-sm border-b">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex justify-between h-16">
                 <div class="flex items-center">
-                    <img class="h-8 w-8 rounded-full mr-2" src="https://i.pravatar.cc/32" alt="User Avatar">
-                    <div>
-                        <div class="font-semibold text-gray-800">Grace Investor</div>
-                        <div class="text-sm text-gray-500">Investor</div>
+                    <a href="{{ route('dashboard') }}" class="flex items-center space-x-2">
+                        <img src="https://cdn-icons-png.flaticon.com/512/616/616494.png" alt="Logo" class="h-8 w-8">
+                        <span class="text-xl font-bold text-gray-800">Innovation Portal</span>
+                    </a>
+                </div>
+                
+                <div class="flex items-center space-x-4">
+                    <a href="{{ route('messages.index') }}" class="text-gray-600 hover:text-gray-800 relative">
+                        <i class="bi bi-chat-dots text-xl"></i>
+                        @if(auth()->user()->getUnreadMessageCount() > 0)
+                            <span class="absolute -top-1 -right-1 bg-red-500 text-white text-xs px-1.5 py-0.5 rounded-full">{{ auth()->user()->getUnreadMessageCount() }}</span>
+                        @endif
+                    </a>
+                    @include('components.notification-badge')
+                    <div class="flex items-center space-x-2">
+                        <img class="h-8 w-8 rounded-full" src="https://via.placeholder.com/32" alt="User">
+                        <span class="text-sm font-medium text-gray-700">{{ auth()->user()->name }}</span>
                     </div>
+                    <form method="POST" action="{{ route('logout') }}" class="inline">
+                        @csrf
+                        <button type="submit" class="text-sm text-gray-500 hover:text-gray-700">
+                            <i class="bi bi-box-arrow-right"></i> Logout
+                        </button>
+                    </form>
                 </div>
             </div>
-        </header>
+        </div>
+    </nav>
 
-        <!-- Main Content -->
-        <main class="flex-1 overflow-y-auto p-6 bg-gray-100">
-            <!-- Welcome Banner -->
-            <section class="rounded-xl p-8 bg-gradient-to-br from-[#b81d8f] via-[#a01a7d] to-[#86156c] text-white shadow-lg mb-6">
-                <div class="flex flex-col md:flex-row items-center justify-between gap-6">
-                    <div>
-                        <h2 class="text-3xl font-bold mb-2">Welcome, Grace! 👋</h2>
-                        <p class="text-lg text-pink-100 max-w-xl">
-                            Discover the next generation of African startups ready for investment.
-                            Explore innovative ideas, connect with founders, and make informed investment decisions.
-                        </p>
-                    </div>
-                    <div class="flex flex-col sm:flex-row gap-3 mt-4 md:mt-0">
-                        <a href="#" class="inline-block px-6 py-3 rounded-lg bg-white text-[#b81d8f] font-semibold text-sm shadow hover:bg-pink-50 transition">Browse Startups</a>
-                        <a href="#" class="inline-block px-6 py-3 rounded-lg border border-white text-white font-semibold text-sm hover:bg-white hover:text-[#b81d8f] transition">Upcoming Pitches</a>
-                    </div>
-                </div>
-            </section>
-
-            <!-- Dynamic Content Slot -->
-            @yield('content')
-        </main>
-    </div>
-</div>
-
+    <!-- Page Content -->
+    <main>
+        @yield('content')
+    </main>
 </body>
 </html>

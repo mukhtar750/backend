@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Http\Requests\BDSPRegisterRequest;
 use App\Models\User;
+use App\Notifications\UserRegistrationNotification;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
 
@@ -27,6 +28,12 @@ class BDSPRegisterController extends Controller
             'certifications' => $request->certifications,
             'bdsp_linkedin' => $request->bdsp_linkedin,
         ]);
+
+        // Send notification to all admins
+        $admins = User::where('role', 'admin')->get();
+        foreach ($admins as $admin) {
+            $admin->notify(new UserRegistrationNotification($user));
+        }
 
         return redirect()->route('registration.success')->with('success', 'Registration successful! Please wait for admin approval.');
     }
