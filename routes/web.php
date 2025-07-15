@@ -70,14 +70,19 @@ Route::middleware(['auth', 'verified'])->prefix('admin')->name('admin.')->group(
 
     Route::get('/user-management', [AdminController::class, 'userManagement'])->name('user-management');
     Route::get('/user-management/{id}/edit', [AdminController::class, 'editUser'])->name('editUser');
+    Route::put('/user-management/{id}', [AdminController::class, 'updateUser'])->name('updateUser');
 
-    Route::get('/training-programs', function () {
-        return view('admin.training_programs'); // Placeholder for training programs page
-    })->name('training_programs');
+    // Admin Training Schedules CRUD
+    Route::get('/training-programs', [AdminController::class, 'trainingPrograms'])->name('training_programs');
+    Route::get('/training-programs/create', [AdminController::class, 'createTraining'])->name('training_programs.create');
+    Route::post('/training-programs', [AdminController::class, 'storeTraining'])->name('training_programs.store');
+    Route::get('/training-programs/{id}/edit', [AdminController::class, 'editTraining'])->name('training_programs.edit');
+    Route::put('/training-programs/{id}', [AdminController::class, 'updateTraining'])->name('training_programs.update');
+    Route::delete('/training-programs/{id}', [AdminController::class, 'destroyTraining'])->name('training_programs.destroy');
 
-    Route::get('/mentorship', function () {
-        return view('admin.mentorship'); // Placeholder for mentorship page
-    })->name('mentorship');
+    Route::get('/mentorship', [AdminController::class, 'mentorship'])->name('mentorship');
+
+    Route::get('/mentorship-sessions', [AdminController::class, 'mentorshipSessions'])->name('mentorship_sessions');
 
     Route::get('/pitch-events', function () {
         return view('admin.pitch_events'); // Placeholder for pitch events page
@@ -88,9 +93,7 @@ Route::middleware(['auth', 'verified'])->prefix('admin')->name('admin.')->group(
     })
     ->name('analytics');
 
-    Route::get('/content-management', function () {
-        return view('admin.content_management'); // Placeholder for content management page
-    })->name('content_management');
+    Route::get('/content-management', [\App\Http\Controllers\ContentController::class, 'index'])->name('content_management');
 
     Route::get('/messages', function () {
         return view('admin.messages'); // Placeholder for messages page
@@ -100,10 +103,31 @@ Route::middleware(['auth', 'verified'])->prefix('admin')->name('admin.')->group(
         return view('admin.settings'); // Placeholder for settings page
     })->name('settings');
 
+    Route::get('/ideas-bank', function () {
+        return view('admin.ideas_bank'); // Placeholder for Ideas Bank section
+    })->name('ideas_bank');
+
     // User approval routes
     Route::patch('/users/{user}/approve', [AdminController::class, 'approve'])->name('approve');
     Route::patch('/users/{user}/reject', [AdminController::class, 'reject'])->name('reject');
     Route::delete('/users/{user}', [AdminController::class, 'destroy'])->name('destroy');
+
+    // Admin Pairings Management
+    Route::get('/pairings/create', [\App\Http\Controllers\AdminController::class, 'createPairing'])->name('pairings.create');
+    Route::post('/pairings', [\App\Http\Controllers\AdminController::class, 'storePairing'])->name('pairings.store');
+    Route::delete('/pairings/{pairing}', [\App\Http\Controllers\AdminController::class, 'destroyPairing'])->name('pairings.destroy');
+
+    Route::get('/feedback', [AdminController::class, 'feedback'])->name('feedback');
+    Route::patch('/feedback/{id}', [AdminController::class, 'updateFeedbackStatus'])->name('feedback.update');
+    Route::delete('/feedback/{id}', [AdminController::class, 'destroyFeedback'])->name('feedback.destroy');
+
+    // Admin Learning Resources Moderation
+    Route::get('/resources', [AdminController::class, 'resources'])->name('resources');
+    Route::patch('/resources/{id}/approve', [AdminController::class, 'approveResource'])->name('resources.approve');
+    Route::patch('/resources/{id}/reject', [AdminController::class, 'rejectResource'])->name('resources.reject');
+    Route::delete('/resources/{id}', [AdminController::class, 'destroyResource'])->name('resources.destroy');
+
+    Route::post('/contents', [\App\Http\Controllers\ContentController::class, 'store'])->name('contents.store');
 });
 
 Route::get('/dashboard', function () {
@@ -130,7 +154,14 @@ Route::post('/register/entrepreneur', [EntrepreneurRegisterController::class, 'r
 // Dashboards
 Route::view('/dashboard/investor', 'dashboard.investor')->middleware('auth')->name('dashboard.investor');
 Route::view('/dashboard/bdsp', 'dashboard.bdsp')->middleware('auth')->name('dashboard.bdsp');
-Route::view('/dashboard/entrepreneur', 'dashboard.entrepreneur')->middleware('auth')->name('dashboard.entrepreneur');
+Route::get('/dashboard/entrepreneur', function () {
+    $user = auth()->user();
+    $pairings = \App\Models\Pairing::with(['userOne', 'userTwo'])
+        ->where('user_one_id', $user->id)
+        ->orWhere('user_two_id', $user->id)
+        ->get();
+    return view('dashboard.entrepreneur', compact('pairings'));
+})->middleware('auth')->name('dashboard.entrepreneur');
 
 // BDSP Dashboard
 Route::get('/bdsp/dashboard', function () {
@@ -143,9 +174,13 @@ Route::get('/bdsp/mentees', function () {
 })->name('bdsp.mentees');
 
 // Upload Resources
-Route::get('/bdsp/upload-resources', function () {
-    return view('bdsp.upload-resources'); // placeholder view
-})->name('bdsp.upload-resources');
+Route::middleware(['auth'])->group(function () {
+    Route::get('/bdsp/upload-resources', [\App\Http\Controllers\ResourceController::class, 'index'])->name('bdsp.resources.index');
+    Route::post('/bdsp/upload-resources', [\App\Http\Controllers\ResourceController::class, 'store'])->name('bdsp.resources.store');
+    Route::get('/bdsp/resources/{resource}/edit', [\App\Http\Controllers\ResourceController::class, 'edit'])->name('bdsp.resources.edit');
+    Route::put('/bdsp/resources/{resource}', [\App\Http\Controllers\ResourceController::class, 'update'])->name('bdsp.resources.update');
+    Route::delete('/bdsp/resources/{resource}', [\App\Http\Controllers\ResourceController::class, 'destroy'])->name('bdsp.resources.destroy');
+});
 
 // Sessions
 Route::get('/bdsp/sessions', function () {
@@ -173,10 +208,18 @@ Route::get('/dashboard/entrepreneur-hub', function () {
 // Entrepreneur Dashboard Sections
 Route::middleware(['auth'])->group(function () {
     Route::view('/dashboard/entrepreneur-progress', 'dashboard.entrepreneur-progress')->name('entrepreneur.progress');
-    Route::view('/dashboard/entrepreneur-calendar', 'dashboard.entrepreneur-calendar')->name('entrepreneur.calendar');
+    Route::get('/dashboard/entrepreneur-calendar', function () {
+        $user = auth()->user();
+        $sessions = \App\Models\TrainingSession::orderBy('date_time', 'asc')->get();
+        $registrations = \DB::table('training_session_participants')
+            ->where('user_id', $user->id)
+            ->pluck('training_session_id')
+            ->toArray();
+        return view('dashboard.entrepreneur-calendar', compact('sessions', 'registrations'));
+    })->name('entrepreneur.calendar');
     Route::view('/dashboard/entrepreneur-mentorship', 'dashboard.entrepreneur-mentorship')->name('entrepreneur.mentorship');
     Route::view('/dashboard/entrepreneur-pitch', 'dashboard.entrepreneur-pitch')->name('entrepreneur.pitch');
-    Route::view('/dashboard/entrepreneur-feedback', 'dashboard.entrepreneur-feedback')->name('entrepreneur.feedback');
+    Route::get('/dashboard/entrepreneur-feedback', [\App\Http\Controllers\FeedbackController::class, 'index'])->name('entrepreneur.feedback');
 });
 
 // Investor Dashboard Sections
@@ -201,6 +244,24 @@ Route::get('/dashboard/mentee', function () {
     return view('dashboard.mentee');
 })->middleware(['auth'])->name('dashboard.mentee');
 
+// Mentorship Session Booking & Management
+Route::middleware(['auth'])->group(function () {
+    Route::resource('mentorship-sessions', \App\Http\Controllers\MentorshipSessionController::class)->except(['edit', 'update', 'destroy']);
+    Route::post('mentorship-sessions/{mentorship_session}/confirm', [\App\Http\Controllers\MentorshipSessionController::class, 'confirm'])->name('mentorship-sessions.confirm');
+    Route::post('mentorship-sessions/{mentorship_session}/cancel', [\App\Http\Controllers\MentorshipSessionController::class, 'cancel'])->name('mentorship-sessions.cancel');
+    Route::post('mentorship-sessions/{mentorship_session}/complete', [\App\Http\Controllers\MentorshipSessionController::class, 'complete'])->name('mentorship-sessions.complete');
+});
+
 Route::get('/registration-success', function () {
     return view('auth.registration-success');
 })->name('registration.success');
+
+Route::middleware(['auth'])->group(function () {
+    Route::post('/training-sessions/{id}/register', [\App\Http\Controllers\TrainingSessionController::class, 'register'])->name('training-sessions.register');
+    Route::post('/feedback', [\App\Http\Controllers\FeedbackController::class, 'store'])->name('feedback.store');
+});
+
+Route::middleware('auth')->group(function () {
+    Route::get('/dashboard/bdsp/resources', [ResourceController::class, 'index'])->name('bdsp.resources');
+    Route::post('/dashboard/bdsp/resources', [ResourceController::class, 'store']);
+});

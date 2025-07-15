@@ -42,7 +42,7 @@
     </div>
 
     <!-- Program Listings -->
-    <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+    <div x-data="{ showModal: false, participants: [], meetingLink: '' }" class="grid grid-cols-1 lg:grid-cols-2 gap-6">
         <!-- Business Model Canvas Workshop -->
         <div class="bg-white p-6 rounded-lg shadow">
             <div class="flex justify-between items-start mb-4">
@@ -79,10 +79,20 @@
                     <i class="bi bi-pencil text-lg cursor-pointer hover:text-magenta-600"></i>
                     <i class="bi bi-trash text-lg cursor-pointer hover:text-magenta-600"></i>
                 </div>
-                <a href="#" class="text-magenta-600 hover:text-magenta-800 text-sm font-medium">View Participants</a>
+                <div class="flex gap-3 items-center">
+                    <!-- Join Session button (show if meeting link exists) -->
+                    <a href="https://zoom.us/j/123456789" target="_blank" class="flex items-center gap-2 bg-pink-600 text-white px-5 py-2 rounded-xl shadow-lg hover:bg-pink-700 transition text-sm font-bold border-2 border-pink-700 focus:outline-none focus:ring-4 focus:ring-pink-300">
+                        <i class="bi bi-camera-video-fill text-lg"></i>
+                        Join Session
+                    </a>
+                    <!-- View Participants button -->
+                    <button @click="showModal = true; participants = ['Aisha Muhammad', 'Musa Abdul', 'Grace Mwangi']; meetingLink = 'https://zoom.us/j/123456789'" class="flex items-center gap-2 bg-blue-50 text-blue-700 px-4 py-2 rounded-lg shadow hover:bg-blue-100 transition text-sm font-semibold border border-blue-200">
+                        <i class="bi bi-people-fill text-lg"></i>
+                        View Participants
+                    </button>
+                </div>
             </div>
         </div>
-
         <!-- Financial Planning for Startups -->
         <div class="bg-white p-6 rounded-lg shadow">
             <div class="flex justify-between items-start mb-4">
@@ -119,7 +129,37 @@
                     <i class="bi bi-pencil text-lg cursor-pointer hover:text-magenta-600"></i>
                     <i class="bi bi-trash text-lg cursor-pointer hover:text-magenta-600"></i>
                 </div>
-                <a href="#" class="text-magenta-600 hover:text-magenta-800 text-sm font-medium">View Participants</a>
+                <div class="flex gap-3 items-center">
+                    <!-- Join Session button (show if meeting link exists) -->
+                    <a href="https://zoom.us/j/987654321" target="_blank" class="flex items-center gap-2 bg-pink-600 text-white px-5 py-2 rounded-xl shadow-lg hover:bg-pink-700 transition text-sm font-bold border-2 border-pink-700 focus:outline-none focus:ring-4 focus:ring-pink-300">
+                        <i class="bi bi-camera-video-fill text-lg"></i>
+                        Join Session
+                    </a>
+                    <!-- View Participants button -->
+                    <button @click="showModal = true; participants = ['John Doe', 'Fatima Al-Rashid', 'Kwame Asante']; meetingLink = 'https://zoom.us/j/987654321'" class="flex items-center gap-2 bg-blue-50 text-blue-700 px-4 py-2 rounded-lg shadow hover:bg-blue-100 transition text-sm font-semibold border border-blue-200">
+                        <i class="bi bi-people-fill text-lg"></i>
+                        View Participants
+                    </button>
+                </div>
+            </div>
+        </div>
+        <!-- Modal for Participants -->
+        <div x-show="showModal" class="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-40" style="display: none;" @keydown.escape.window="showModal = false">
+            <div class="bg-white rounded-xl shadow-lg p-8 w-full max-w-md relative">
+                <button @click="showModal = false" class="absolute top-3 right-3 text-gray-400 hover:text-gray-700 text-xl">&times;</button>
+                <h4 class="text-lg font-bold mb-4 flex items-center gap-2"><i class="bi bi-people-fill"></i> Participants</h4>
+                <ul class="mb-6">
+                    <template x-for="participant in participants" :key="participant">
+                        <li class="py-2 border-b last:border-b-0 text-gray-700 flex items-center gap-2">
+                            <i class="bi bi-person-circle text-pink-600"></i>
+                            <span x-text="participant"></span>
+                        </li>
+                    </template>
+                </ul>
+                <a :href="meetingLink" target="_blank" class="flex items-center gap-2 bg-pink-600 text-white px-6 py-3 rounded-xl shadow-lg hover:bg-pink-700 transition text-base font-bold border-2 border-pink-700 focus:outline-none focus:ring-4 focus:ring-pink-300 w-full justify-center">
+                    <i class="bi bi-camera-video-fill text-lg"></i>
+                    Join Session
+                </a>
             </div>
         </div>
     </div>

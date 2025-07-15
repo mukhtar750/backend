@@ -3,86 +3,196 @@
 @section('content')
 <div class="flex justify-between items-center mb-6">
     <h1 class="text-3xl font-bold text-gray-800">User Management</h1>
-    <a href="#" class="bg-magenta text-white px-4 py-2 rounded-lg shadow hover:bg-magenta-700 transition flex items-center">
-        <i class="bi bi-download mr-2"></i> Export Data
+    <a href="#" class="flex items-center gap-2 bg-pink-600 text-white px-6 py-3 rounded-xl shadow-lg hover:bg-pink-700 transition text-base font-bold border-2 border-pink-700 focus:outline-none focus:ring-4 focus:ring-pink-300">
+        <i class="bi bi-download text-xl"></i>
+        Export Data
     </a>
 </div>
 
-<div class="bg-white p-6 rounded-lg shadow mb-6">
-    {{-- Filters --}}
-    <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-4">
-        <input type="text" placeholder="Search users..." class="form-input rounded-lg border-gray-300 shadow-sm focus:border-magenta focus:ring focus:ring-magenta-200 focus:ring-opacity-50">
-        <select class="form-select rounded-lg border-gray-300 shadow-sm focus:border-magenta focus:ring focus:ring-magenta-200 focus:ring-opacity-50">
-            <option>All Roles</option>
-            <option>Entrepreneur</option>
-            <option>BDSP</option>
-            <option>Investor</option>
-        </select>
-        <select class="form-select rounded-lg border-gray-300 shadow-sm focus:border-custom-purple focus:ring focus:ring-custom-purple-200 focus:ring-opacity-50">
-            <option>All Status</option>
-            <option>Pending</option>
-            <option>Approved</option>
-            <option>Rejected</option>
-        </select>
+@if(session('success'))
+    <div class="mb-4 bg-green-100 border border-green-400 text-green-700 px-4 py-3 rounded relative">
+        <span class="block sm:inline">{{ session('success') }}</span>
+    </div>
+@endif
+
+@if(session('error'))
+    <div class="mb-4 bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded relative">
+        <span class="block sm:inline">{{ session('error') }}</span>
+    </div>
+@endif
+
+<!-- Debug Info -->
+<div class="mb-4 p-4 bg-blue-50 border border-blue-200 rounded">
+    <p class="text-sm text-blue-800">
+        <strong>Debug Info:</strong><br>
+        Total Users: {{ $allUsers->count() }} | 
+        Pending Users: {{ $users->count() }} | 
+        Total Pairings: {{ $pairings->count() }}
+    </p>
+    @if($pairings->count() > 0)
+        <p class="text-sm text-blue-800 mt-1">
+            <strong>Pairings Found:</strong><br>
+            @foreach($pairings as $pairing)
+                • {{ $pairing->userOne->name }} ↔ {{ $pairing->userTwo->name }} ({{ $pairing->pairing_type }})<br>
+            @endforeach
+        </p>
+    @else
+        <p class="text-sm text-blue-800 mt-1">
+            <strong>No pairings found in database.</strong>
+        </p>
+    @endif
+</div>
+
+<!-- Tabs -->
+<div x-data="{ tab: '{{ request('tab', 'users') }}' }" class="mb-6">
+    <nav class="flex space-x-4 border-b border-gray-200">
+        <button @click="tab = 'users'" :class="tab === 'users' ? 'border-b-2 border-[#b81d8f] text-[#b81d8f]' : 'text-gray-500'" class="px-4 py-2 font-semibold focus:outline-none">Users</button>
+        <button @click="tab = 'pairings'" :class="tab === 'pairings' ? 'border-b-2 border-[#b81d8f] text-[#b81d8f]' : 'text-gray-500'" class="px-4 py-2 font-semibold focus:outline-none">Pairings</button>
+    </nav>
+
+    <!-- Users Tab -->
+    <div x-show="tab === 'users'" class="mt-6">
+        {{-- Filters --}}
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-4">
+            <input type="text" placeholder="Search users..." class="form-input rounded-lg border-gray-300 shadow-sm focus:border-magenta focus:ring focus:ring-magenta-200 focus:ring-opacity-50">
+            <select class="form-select rounded-lg border-gray-300 shadow-sm focus:border-magenta focus:ring focus:ring-magenta-200 focus:ring-opacity-50">
+                <option>All Roles</option>
+                <option>Entrepreneur</option>
+                <option>BDSP</option>
+                <option>Investor</option>
+            </select>
+            <select class="form-select rounded-lg border-gray-300 shadow-sm focus:border-custom-purple focus:ring focus:ring-custom-purple-200 focus:ring-opacity-50">
+                <option>All Status</option>
+                <option>Pending</option>
+                <option>Approved</option>
+                <option>Rejected</option>
+            </select>
+        </div>
+        {{-- Users Table --}}
+        <div class="overflow-x-auto">
+            <table class="min-w-full divide-y divide-gray-200">
+                <thead class="bg-gray-50">
+                    <tr>
+                        @foreach (['User', 'Role', 'Status', 'Join Date', 'Last Active', 'Actions'] as $heading)
+                            <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">{{ $heading }}</th>
+                        @endforeach
+                    </tr>
+                </thead>
+                <tbody class="bg-white divide-y divide-gray-200">
+                    @foreach($allUsers as $user)
+                    <tr>
+                        <td class="px-6 py-4 whitespace-nowrap">
+                            <div class="flex items-center">
+                                <img class="h-10 w-10 rounded-full" src="https://via.placeholder.com/40" alt="">
+                                <div class="ml-4">
+                                    <div class="text-sm font-medium text-gray-900">{{ $user->name }}</div>
+                                    <div class="text-sm text-gray-500">{{ $user->email }}</div>
+                                    <div class="text-xs text-gray-400">{{ $user->location ?? 'N/A' }}</div>
+                                </div>
+                            </div>
+                        </td>
+                        <td class="px-6 py-4 whitespace-nowrap">
+                            <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-purple-100 text-purple-800">{{ ucfirst($user->role) }}</span>
+                            <div class="text-xs text-gray-500">{{ $user->company ?? 'N/A' }}</div>
+                        </td>
+                        <td class="px-6 py-4 whitespace-nowrap">
+                            @if($user->is_approved)
+                                <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-green-100 text-green-800">Approved</span>
+                            @else
+                                <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-yellow-100 text-yellow-800">Pending</span>
+                            @endif
+                        </td>
+                        <td class="px-6 py-4 text-sm text-gray-500">{{ $user->created_at->format('Y-m-d') }}</td>
+                        <td class="px-6 py-4 text-sm text-gray-500">{{ $user->last_active ?? 'N/A' }}</td>
+                        <td class="px-6 py-4 text-right text-sm font-medium space-x-2">
+                            <a href="{{ route('admin.editUser', $user->id) }}" class="text-indigo-600 hover:text-indigo-900"><i class="bi bi-pencil"></i> Edit</a>
+                            @if(!$user->is_approved)
+                                <form action="{{ route('admin.approve', $user->id) }}" method="POST" class="inline-block">
+                                    @csrf @method('PATCH')
+                                    <button type="submit" class="text-green-600 hover:text-green-900"><i class="bi bi-person-check"></i> Approve</button>
+                                </form>
+                                <form action="{{ route('admin.reject', $user->id) }}" method="POST" class="inline-block">
+                                    @csrf @method('PATCH')
+                                    <button type="submit" class="text-red-600 hover:text-red-900"><i class="bi bi-person-x"></i> Decline</button>
+                                </form>
+                            @endif
+                            <form action="{{ route('admin.destroy', $user->id) }}" method="POST" class="inline-block">
+                                @csrf @method('DELETE')
+                                <button type="submit" class="text-red-600 hover:text-red-900"><i class="bi bi-trash"></i> Delete</button>
+                            </form>
+                        </td>
+                    </tr>
+                    @endforeach
+                </tbody>
+            </table>
+        </div>
     </div>
 
-    {{-- Users Table --}}
-    <div class="overflow-x-auto">
-        <table class="min-w-full divide-y divide-gray-200">
-            <thead class="bg-gray-50">
-                <tr>
-                    @foreach (['User', 'Role', 'Status', 'Join Date', 'Last Active', 'Actions'] as $heading)
-                        <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">{{ $heading }}</th>
-                    @endforeach
-                </tr>
-            </thead>
-            <tbody class="bg-white divide-y divide-gray-200">
-                @foreach($allUsers as $user)
-                <tr>
-                    <td class="px-6 py-4 whitespace-nowrap">
-                        <div class="flex items-center">
-                            <img class="h-10 w-10 rounded-full" src="https://via.placeholder.com/40" alt="">
-                            <div class="ml-4">
-                                <div class="text-sm font-medium text-gray-900">{{ $user->name }}</div>
-                                <div class="text-sm text-gray-500">{{ $user->email }}</div>
-                                <div class="text-xs text-gray-400">{{ $user->location ?? 'N/A' }}</div>
-                            </div>
-                        </div>
-                    </td>
-                    <td class="px-6 py-4 whitespace-nowrap">
-                        <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-purple-100 text-purple-800">{{ ucfirst($user->role) }}</span>
-                        <div class="text-xs text-gray-500">{{ $user->company ?? 'N/A' }}</div>
-                    </td>
-                    <td class="px-6 py-4 whitespace-nowrap">
-                        @if($user->is_approved)
-                            <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-green-100 text-green-800">Approved</span>
-                        @else
-                            <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-yellow-100 text-yellow-800">Pending</span>
-                        @endif
-                    </td>
-                    <td class="px-6 py-4 text-sm text-gray-500">{{ $user->created_at->format('Y-m-d') }}</td>
-                    <td class="px-6 py-4 text-sm text-gray-500">{{ $user->last_active ?? 'N/A' }}</td>
-                    <td class="px-6 py-4 text-right text-sm font-medium space-x-2">
-                        <a href="{{ route('admin.editUser', $user->id) }}" class="text-indigo-600 hover:text-indigo-900"><i class="bi bi-pencil"></i> Edit</a>
-                        @if(!$user->is_approved)
-                            <form action="{{ route('admin.approve', $user->id) }}" method="POST" class="inline-block">
-                                @csrf @method('PATCH')
-                                <button type="submit" class="text-green-600 hover:text-green-900"><i class="bi bi-person-check"></i> Approve</button>
-                            </form>
-                            <form action="{{ route('admin.reject', $user->id) }}" method="POST" class="inline-block">
-                                @csrf @method('PATCH')
-                                <button type="submit" class="text-red-600 hover:text-red-900"><i class="bi bi-person-x"></i> Decline</button>
-                            </form>
-                        @endif
-                        <form action="{{ route('admin.destroy', $user->id) }}" method="POST" class="inline-block">
-                            @csrf @method('DELETE')
-                            <button type="submit" class="text-red-600 hover:text-red-900"><i class="bi bi-trash"></i> Delete</button>
-                        </form>
-                    </td>
-                </tr>
-                @endforeach
-            </tbody>
-        </table>
+    <!-- Pairings Tab -->
+    <div x-show="tab === 'pairings'" class="mt-6">
+        <div class="flex justify-between items-center mb-4">
+            <h2 class="text-xl font-bold text-gray-800">User Pairings</h2>
+            <a href="{{ route('admin.pairings.create') }}" class="bg-[#b81d8f] text-white px-4 py-2 rounded-lg shadow hover:bg-[#a01a7d] transition flex items-center">
+                <i class="bi bi-plus-circle mr-2"></i> Create New Pairing
+            </a>
+        </div>
+        <div class="overflow-x-auto">
+            <table class="min-w-full divide-y divide-gray-200">
+                <thead class="bg-gray-50">
+                    <tr>
+                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Pairing Type</th>
+                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">User One</th>
+                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">User Two</th>
+                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Created</th>
+                        <th class="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">Actions</th>
+                    </tr>
+                </thead>
+                <tbody class="bg-white divide-y divide-gray-200">
+                    @if($pairings->count() > 0)
+                        @foreach($pairings as $pairing)
+                        <tr>
+                            <td class="px-6 py-4 whitespace-nowrap">
+                                <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-purple-100 text-purple-800">{{ ucwords(str_replace('_', ' ', $pairing->pairing_type)) }}</span>
+                            </td>
+                            <td class="px-6 py-4 whitespace-nowrap">
+                                <div class="flex items-center">
+                                    <img class="h-8 w-8 rounded-full" src="https://via.placeholder.com/32" alt="">
+                                    <div class="ml-3">
+                                        <div class="text-sm font-medium text-gray-900">{{ $pairing->userOne->name }}</div>
+                                        <div class="text-xs text-gray-500">{{ $pairing->userOne->email }}</div>
+                                        <div class="text-xs text-gray-400">{{ ucfirst($pairing->userOne->role) }}</div>
+                                    </div>
+                                </div>
+                            </td>
+                            <td class="px-6 py-4 whitespace-nowrap">
+                                <div class="flex items-center">
+                                    <img class="h-8 w-8 rounded-full" src="https://via.placeholder.com/32" alt="">
+                                    <div class="ml-3">
+                                        <div class="text-sm font-medium text-gray-900">{{ $pairing->userTwo->name }}</div>
+                                        <div class="text-xs text-gray-500">{{ $pairing->userTwo->email }}</div>
+                                        <div class="text-xs text-gray-400">{{ ucfirst($pairing->userTwo->role) }}</div>
+                                    </div>
+                                </div>
+                            </td>
+                            <td class="px-6 py-4 text-sm text-gray-500">{{ $pairing->created_at->format('Y-m-d') }}</td>
+                            <td class="px-6 py-4 text-right text-sm font-medium">
+                                <form action="{{ route('admin.pairings.destroy', $pairing->id) }}" method="POST" onsubmit="return confirm('Are you sure you want to unpair these users?');">
+                                    @csrf @method('DELETE')
+                                    <button type="submit" class="text-red-600 hover:text-red-900"><i class="bi bi-x-circle"></i> Unpair</button>
+                                </form>
+                            </td>
+                        </tr>
+                        @endforeach
+                    @else
+                        <tr>
+                            <td colspan="5" class="px-6 py-4 text-center text-gray-500">
+                                No pairings found. <a href="{{ route('admin.pairings.create') }}" class="text-blue-600 hover:underline">Create your first pairing</a>
+                            </td>
+                        </tr>
+                    @endif
+                </tbody>
+            </table>
+        </div>
     </div>
 </div>
 

@@ -94,11 +94,31 @@ class User extends Authenticatable
         ->count();
     }
 
-    // Role-based messaging permissions
+    // Pairings relationships
+    public function pairingsAsOne()
+    {
+        return $this->hasMany(Pairing::class, 'user_one_id');
+    }
+    public function pairingsAsTwo()
+    {
+        return $this->hasMany(Pairing::class, 'user_two_id');
+    }
+    public function allPairings()
+    {
+        return Pairing::where('user_one_id', $this->id)->orWhere('user_two_id', $this->id);
+    }
+
+    // Helper: Check if paired with another user for a type
+    public function isPairedWith($otherUser, $type)
+    {
+        return Pairing::isPaired($this->id, $otherUser->id, $type);
+    }
+
+    // Role-based messaging permissions (with pairing logic)
     public function canMessage($targetUser)
     {
         // Admin can message anyone
-        if ($this->role === 'admin') {
+        if ($this->role === 'admin' || $targetUser->role === 'admin') {
             return true;
         }
 
@@ -107,28 +127,29 @@ class User extends Authenticatable
             return false;
         }
 
-        // Role-based permissions
+        // Role-based permissions with pairing
         switch ($this->role) {
             case 'investor':
-                // Investors can only message admin
-                return $targetUser->role === 'admin';
-            
+                // Investors can only message paired entrepreneurs
+                return $targetUser->role === 'entrepreneur' && $this->isPairedWith($targetUser, 'investor_entrepreneur');
             case 'bdsp':
-                // BDSP can message entrepreneurs and admin
-                return in_array($targetUser->role, ['entrepreneur', 'admin']);
-            
+                // BDSP can message paired entrepreneurs
+                return $targetUser->role === 'entrepreneur' && $this->isPairedWith($targetUser, 'bdsp_entrepreneur');
             case 'mentor':
-                // Mentors can message mentees and admin
-                return in_array($targetUser->role, ['mentee', 'admin']);
-            
+                // Mentors can message paired mentees
+                return $targetUser->role === 'mentee' && $this->isPairedWith($targetUser, 'mentor_mentee');
             case 'mentee':
-                // Mentees can message mentors and admin
-                return in_array($targetUser->role, ['mentor', 'admin']);
-            
+                // Mentees can message paired mentors
+                return $targetUser->role === 'mentor' && $this->isPairedWith($targetUser, 'mentor_mentee');
             case 'entrepreneur':
-                // Entrepreneurs can message BDSP and admin
-                return in_array($targetUser->role, ['bdsp', 'admin']);
-            
+                // Entrepreneurs can message paired BDSPs and paired investors
+                if ($targetUser->role === 'bdsp') {
+                    return $this->isPairedWith($targetUser, 'bdsp_entrepreneur');
+                }
+                if ($targetUser->role === 'investor') {
+                    return $this->isPairedWith($targetUser, 'investor_entrepreneur');
+                }
+                return false;
             default:
                 return false;
         }

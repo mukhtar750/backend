@@ -3,9 +3,15 @@
 @section('content')
     <div class="flex justify-between items-center mb-6">
         <h1 class="text-3xl font-bold text-gray-800">Pitch Events Management</h1>
-        <button class="bg-magenta text-white px-4 py-2 rounded-lg shadow hover:bg-magenta-700 transition flex items-center">
-            <i class="bi bi-plus-circle mr-2"></i> Create New Event
+        <button 
+            class="bg-[#b81d8f] hover:bg-[#a01a7d] text-white font-bold py-3 px-6 rounded-xl shadow-lg flex items-center gap-2 text-base focus:outline-none focus:ring-4 focus:ring-[#b81d8f]/30 transition"
+            id="openCreateEventModal"
+            type="button"
+        >
+            <i class="bi bi-plus-circle text-xl"></i>
+            Create New Event
         </button>
+        <!-- TODO: Wire up modal opening for event creation -->
     </div>
 
     <!-- Summary Cards -->
@@ -59,7 +65,13 @@
                 <div class="flex items-center space-x-2">
                     <span class="bg-blue-100 text-blue-800 text-xs font-medium px-2.5 py-0.5 rounded-full">Upcoming</span>
                     <a href="#" class="text-gray-500 hover:text-gray-700 text-sm font-medium">View Details</a>
-                    <button class="bg-magenta text-white px-3 py-1 rounded-lg shadow hover:bg-magenta-700 transition text-sm">Register</button>
+                    <button 
+                        class="bg-[#b81d8f] hover:bg-[#a01a7d] text-white font-bold py-2 px-5 rounded-lg shadow-lg flex items-center gap-2 text-sm focus:outline-none focus:ring-4 focus:ring-[#b81d8f]/30 transition"
+                        type="button"
+                    >
+                        <i class="bi bi-person-plus-fill text-base"></i>
+                        Register
+                    </button>
                 </div>
             </div>
         </div>
@@ -80,7 +92,13 @@
                 <div class="flex items-center space-x-2">
                     <span class="bg-blue-100 text-blue-800 text-xs font-medium px-2.5 py-0.5 rounded-full">Upcoming</span>
                     <a href="#" class="text-gray-500 hover:text-gray-700 text-sm font-medium">View Details</a>
-                    <button class="bg-magenta text-white px-3 py-1 rounded-lg shadow hover:bg-magenta-700 transition text-sm">Register</button>
+                    <button 
+                        class="bg-[#b81d8f] hover:bg-[#a01a7d] text-white font-bold py-2 px-5 rounded-lg shadow-lg flex items-center gap-2 text-sm focus:outline-none focus:ring-4 focus:ring-[#b81d8f]/30 transition"
+                        type="button"
+                    >
+                        <i class="bi bi-person-plus-fill text-base"></i>
+                        Register
+                    </button>
                 </div>
             </div>
         </div>

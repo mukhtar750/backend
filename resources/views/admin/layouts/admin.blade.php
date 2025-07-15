@@ -46,6 +46,9 @@
             <a href="{{ route('admin.analytics') }}" class="flex items-center gap-3 px-4 py-2 rounded-lg hover:bg-purple-700 {{ $route == 'admin.analytics' ? 'active' : '' }}">
                 <i class="bi bi-graph-up"></i> Analytics
             </a>
+            <a href="{{ route('admin.feedback') }}" class="flex items-center gap-3 px-4 py-2 rounded-lg hover:bg-purple-700 {{ $route == 'admin.feedback' ? 'active' : '' }}">
+                <i class="bi bi-chat-dots-fill"></i> Feedback Review
+            </a>
             <a href="{{ route('admin.content_management') }}" class="flex items-center gap-3 px-4 py-2 rounded-lg hover:bg-purple-700 {{ $route == 'admin.content_management' ? 'active' : '' }}">
                 <i class="bi bi-file-earmark-text-fill"></i> Content Management
             </a>

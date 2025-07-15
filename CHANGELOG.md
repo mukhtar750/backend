@@ -130,3 +130,50 @@ This log details the modifications made to the Laravel backend to integrate with
 ### Changed
 - Cleaned up and modularized all dashboard sections for maintainability and scalability.
 - Improved sidebar navigation and UX for entrepreneurs.
+
+## 2024-07-12
+
+### Added
+- **Universal Messaging System**:
+  - Implemented a robust, role-aware messaging system accessible at `/messages` for all user types (Admin, Investor, BDSP, Entrepreneur, Mentor, Mentee).
+  - Created `conversations` and `messages` tables with migrations, supporting direct messaging, file uploads, and read/unread status.
+  - Developed `Conversation` and `Message` models with helper methods for role-based access and message management.
+  - Built a professional messaging UI (`resources/views/messages/index.blade.php` and `show.blade.php`) with conversation lists, unread badges, and a modern compose modal (file upload supported).
+  - Added AJAX-powered message sending and real-time badge updates.
+
+- **Role-Based Messaging Permissions**:
+  - Each user can only message users allowed by business rules (e.g., investors can only message admin, BDSP can message entrepreneurs and admin, etc.), enforced in the `User` model and controller logic.
+
+- **Navigation/Sidebar Integration**:
+  - Added or updated "Messages" links/buttons in all dashboards and sidebars (Admin, Investor, BDSP, Entrepreneur, Mentor, Mentee) to point to the universal messaging system.
+  - Removed all static/demo chat pages in favor of the real system.
+
+- **UI/UX Improvements**:
+  - Consistent, mobile-friendly messaging experience for all roles.
+  - Compose modal with file upload, loading states, and error handling.
+  - Digital signatures and progress tracking planned for future mentorship forms integration.
+
+### Changed
+- Refactored all role dashboards and layouts to ensure a single, professional messaging experience for every user type.
+- Updated routes and permissions to centralize all messaging logic and UI.
+
+### Fixed
+- Resolved issues with Alpine.js modals by switching to reliable vanilla JS for compose modal.
+- Fixed navigation inconsistencies and ensured all users have access to the messaging system from their main dashboard/sidebar.
+
+## [Unreleased]
+- Fixed a Laravel error ('Illegal offset type') by removing a duplicate Route::view('/dashboard/entrepreneur', ...) in routes/web.php. Only the Route::get version that passes $pairings to the view is now used.
+- **Entrepreneur Training Calendar Enhancements** (`resources/views/dashboard/entrepreneur-calendar.blade.php`):
+  - Updated the training calendar to display upcoming training sessions with clear stats and tabbed navigation (Upcoming, Registered, Completed).
+  - Added logic to show a prominent "Register" button for unregistered sessions and a "Join Session" button (with meeting link) for registered users.
+  - Integrated registration form submission and conditional button display based on user registration status and meeting link availability.
+  - Improved UI/UX: modern card design, grouped action buttons, and consistent color scheme for primary actions.
+  - Ensured only registered users see the "Join Session" button when a meeting link is available; otherwise, a disabled "No Link Yet" button is shown.
+  - Enhanced stats row and tabbed interface for a professional, user-friendly experience.
+
+- **Admin User Management Enhancements** (`AdminController`, `resources/views/admin/edit-user.blade.php`, `UserUpdatedNotification.php`):
+  - Implemented full-featured Edit User functionality for admins: update name, email, phone, role, status, and all role-specific fields.
+  - Added a professional edit form with validation and support for all user types (entrepreneur, BDSP, investor, etc.).
+  - Admins can now change user roles and approval status directly from the UI.
+  - When a user's profile is updated, they are automatically notified (email + in-app) with a summary of the changes for transparency and security.
+  - This completes the 'Full control: user management' milestone for the admin panel.

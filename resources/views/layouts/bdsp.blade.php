@@ -28,7 +28,7 @@
                 <a href="{{ route('bdsp.mentees') }}" class="flex items-center gap-3 px-4 py-2 rounded-lg hover:bg-purple-700 {{ $route == 'bdsp.mentees' ? 'bg-white text-purple-800 font-semibold shadow-sm' : '' }}">
                     <i class="bi bi-person-lines-fill"></i> My Mentees
                 </a>
-                <a href="{{ route('bdsp.upload-resources') }}" class="flex items-center gap-3 px-4 py-2 rounded-lg hover:bg-purple-700 {{ $route == 'bdsp.upload-resources' ? 'bg-white text-purple-800 font-semibold shadow-sm' : '' }}">
+                <a href="{{ route('bdsp.resources.index') }}" class="flex items-center gap-3 px-4 py-2 rounded-lg hover:bg-purple-700 {{ $route == 'bdsp.resources.index' ? 'bg-white text-purple-800 font-semibold shadow-sm' : '' }}">
                     <i class="bi bi-upload"></i> Upload Resources
                 </a>
                 <a href="{{ route('bdsp.sessions') }}" class="flex items-center gap-3 px-4 py-2 rounded-lg hover:bg-purple-700 {{ $route == 'bdsp.sessions' ? 'bg-white text-purple-800 font-semibold shadow-sm' : '' }}">

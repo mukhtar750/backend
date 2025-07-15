@@ -12,7 +12,7 @@
         </div>
         <div>
             @include('dashboard.partials.entrepreneur.upcoming-tasks')
-            @include('dashboard.partials.entrepreneur.mentorship')
+            @include('dashboard.partials.entrepreneur.mentorship', ['pairings' => $pairings])
         </div>
     </div>
     @include('dashboard.partials.entrepreneur.recent-achievements')
