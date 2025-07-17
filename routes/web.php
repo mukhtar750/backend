@@ -84,9 +84,8 @@ Route::middleware(['auth', 'verified'])->prefix('admin')->name('admin.')->group(
 
     Route::get('/mentorship-sessions', [AdminController::class, 'mentorshipSessions'])->name('mentorship_sessions');
 
-    Route::get('/pitch-events', function () {
-        return view('admin.pitch_events'); // Placeholder for pitch events page
-    })->name('pitch_events');
+    // Pitch Events Management
+    Route::resource('pitch-events', \App\Http\Controllers\PitchEventController::class);
 
     Route::get('/analytics', function () {
         return view('admin.analytics'); // Placeholder for analytics page
@@ -218,7 +217,14 @@ Route::middleware(['auth'])->group(function () {
         return view('dashboard.entrepreneur-calendar', compact('sessions', 'registrations'));
     })->name('entrepreneur.calendar');
     Route::view('/dashboard/entrepreneur-mentorship', 'dashboard.entrepreneur-mentorship')->name('entrepreneur.mentorship');
-    Route::view('/dashboard/entrepreneur-pitch', 'dashboard.entrepreneur-pitch')->name('entrepreneur.pitch');
+    Route::get('/dashboard/entrepreneur-pitch', function () {
+        $recommendedEvents = \App\Models\PitchEvent::where('status', 'published')
+            ->where('event_date', '>=', now())
+            ->orderBy('event_date', 'asc')
+            ->take(5)
+            ->get();
+        return view('dashboard.entrepreneur-pitch', compact('recommendedEvents'));
+    })->middleware('auth')->name('entrepreneur.pitch');
     Route::get('/dashboard/entrepreneur-feedback', [\App\Http\Controllers\FeedbackController::class, 'index'])->name('entrepreneur.feedback');
 });
 
@@ -265,3 +271,20 @@ Route::middleware('auth')->group(function () {
     Route::get('/dashboard/bdsp/resources', [ResourceController::class, 'index'])->name('bdsp.resources');
     Route::post('/dashboard/bdsp/resources', [ResourceController::class, 'store']);
 });
+
+Route::post('/events/{event}/register', [\App\Http\Controllers\PitchEventController::class, 'register'])->name('events.register');
+Route::get('/dashboard/investor-pitch-events', [\App\Http\Controllers\InvestorDashboardController::class, 'pitchEvents'])
+    ->middleware('auth')
+    ->name('investor.pitch_events');
+
+Route::get('/admin/dashboard', function () {
+    $upcomingTrainings = \App\Models\TrainingSession::where('date_time', '>=', now())
+        ->orderBy('date_time', 'asc')
+        ->take(5)
+        ->get();
+
+    // Note the capital "P" in 'Pending'
+    $pendingApprovals = \App\Models\User::where('status', 'Pending')->take(5)->get();
+
+    return view('admin.dashboard', compact('upcomingTrainings', 'pendingApprovals'));
+})->name('admin.dashboard');

@@ -78,10 +78,7 @@
                         <input type="text" placeholder="Search..." class="border border-gray-300 rounded-md py-2 px-4 pl-10 focus:outline-none focus:ring-2 focus:ring-[#b81d8f]">
                         <i class="bi bi-search absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400"></i>
                     </div>
-                    <a href="#" class="relative text-gray-600 hover:text-gray-800">
-                        <i class="bi bi-bell-fill text-xl"></i>
-                        <span class="absolute top-0 right-0 inline-flex items-center justify-center px-2 py-1 text-xs font-bold leading-none text-red-100 bg-red-600 rounded-full">2</span>
-                    </a>
+                    @include('components.notification-badge')
                     <div class="flex items-center">
                         <img class="h-8 w-8 rounded-full mr-2" src="https://i.pravatar.cc/32" alt="Grace Investor">
                         <div>
@@ -98,5 +95,7 @@
             </main>
         </div>
     </div>
+    <!-- Alpine.js for interactivity -->
+    <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"></script>
 </body>
 </html>

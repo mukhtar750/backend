@@ -40,7 +40,7 @@
             <a href="{{ route('admin.mentorship') }}" class="flex items-center gap-3 px-4 py-2 rounded-lg hover:bg-purple-700 {{ $route == 'admin.mentorship' ? 'active' : '' }}">
                 <i class="bi bi-person-check-fill"></i> Mentorship
             </a>
-            <a href="{{ route('admin.pitch_events') }}" class="flex items-center gap-3 px-4 py-2 rounded-lg hover:bg-purple-700 {{ $route == 'admin.pitch_events' ? 'active' : '' }}">
+            <a href="{{ route('admin.pitch-events.index') }}" class="flex items-center gap-3 px-4 py-2 rounded-lg hover:bg-purple-700 {{ $route == 'admin.pitch-events.index' ? 'active' : '' }}">
                 <i class="bi bi-megaphone-fill"></i> Pitch Events
             </a>
             <a href="{{ route('admin.analytics') }}" class="flex items-center gap-3 px-4 py-2 rounded-lg hover:bg-purple-700 {{ $route == 'admin.analytics' ? 'active' : '' }}">

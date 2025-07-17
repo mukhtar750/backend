@@ -119,16 +119,21 @@
     <div>
         <h3 class="text-xl font-semibold mb-4">Recommended for You</h3>
         <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-            <div class="bg-white rounded-xl shadow p-5 flex flex-col">
-                <div class="font-semibold mb-2">Upcoming Pitch Event: Women in Tech</div>
-                <div class="text-sm text-gray-500 mb-4">Join the next pitch event focused on women-led startups in technology. Register now to secure your spot!</div>
-                <a href="#" class="mt-auto bg-[#b81d8f] text-white px-4 py-2 rounded-lg font-medium text-center hover:bg-[#a01a7d] transition">Register</a>
-            </div>
+            @forelse($recommendedEvents as $event)
+                @include('partials.pitch_event_card', ['event' => $event])
+            @empty
+                <div class="bg-white rounded-xl shadow p-5 flex flex-col">
+                    <div class="font-semibold mb-2">No upcoming pitch events at the moment.</div>
+                </div>
+            @endforelse
             <div class="bg-white rounded-xl shadow p-5 flex flex-col">
                 <div class="font-semibold mb-2">Mentor Recommendation: Grace Mwangi</div>
                 <div class="text-sm text-gray-500 mb-4">Based on your interests in finance, we recommend connecting with Grace for pitch feedback.</div>
                 <a href="#" class="mt-auto bg-[#b81d8f] text-white px-4 py-2 rounded-lg font-medium text-center hover:bg-[#a01a7d] transition">Connect</a>
             </div>
+        </div>
+        <div class="mt-4 text-right">
+            <a href="{{ route('entrepreneur.pitch') }}" class="btn btn-primary">View All Pitch Events</a>
         </div>
     </div>
 </div>

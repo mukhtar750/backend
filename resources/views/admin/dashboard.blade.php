@@ -113,30 +113,36 @@
             </div>
         </div>
 
-        <!-- Pending Approvals -->
+        <!-- Pending Approvals (Quick Access) -->
         <div class="bg-white p-6 rounded-lg shadow-md">
             <div class="flex items-center justify-between mb-4">
                 <h3 class="text-lg font-semibold text-gray-800">Pending Approvals</h3>
-                <span class="text-xs bg-yellow-200 text-yellow-800 px-2 py-1 rounded-full">3</span>
+                <span class="text-xs bg-yellow-200 text-yellow-800 px-2 py-1 rounded-full">{{ $pendingApprovals->count() }}</span>
             </div>
-            @foreach ([
-                ['name' => 'Amina Hassan', 'email' => 'amina@techstartup.com', 'org' => 'TechStartup Solutions', 'time' => '2 days ago'],
-                ['name' => 'Kwame Asante', 'email' => 'kwame@agritech.com', 'org' => 'AgriTech Innovations', 'time' => '1 day ago'],
-                ['name' => 'Fatima Al-Rashid', 'email' => 'fatima@healthtech.com', 'org' => 'HealthTech Hub', 'time' => '3 hours ago'],
-            ] as $user)
+            @forelse($pendingApprovals as $user)
                 <div class="bg-gray-50 rounded-md p-4 mb-4">
-                    <div class="font-semibold text-gray-800">{{ $user['name'] }}</div>
-                    <div class="text-sm text-gray-500">{{ $user['email'] }}</div>
-                    <div class="text-xs text-gray-400 mb-2">{{ $user['org'] }}</div>
-                    <div class="flex justify-between items-center">
-                        <div class="text-xs text-gray-400">{{ $user['time'] }}</div>
-                        <div class="flex gap-2">
-                            <button class="px-3 py-1 bg-green-500 text-white text-xs rounded hover:bg-green-600">Approve</button>
-                            <button class="px-3 py-1 bg-gray-300 text-gray-800 text-xs rounded hover:bg-gray-400">Review</button>
+                    <div class="flex justify-between items-center mb-1">
+                        <div>
+                            <div class="font-semibold text-gray-800">{{ $user->name }}</div>
                         </div>
+                        <div class="text-xs text-gray-400">{{ $user->created_at->diffForHumans() }}</div>
+                    </div>
+                    <div class="text-sm text-gray-500">{{ $user->email }}</div>
+                    <div class="text-xs text-gray-400 mb-3">{{ $user->organization ?? 'N/A' }}</div>
+                    <div class="flex gap-2">
+                        <form action="{{ route('admin.approve', $user) }}" method="POST">
+                            @csrf @method('PATCH')
+                            <button class="px-4 py-2 bg-green-500 text-white text-sm rounded hover:bg-green-600">Approve</button>
+                        </form>
+                        <a href="{{ route('admin.editUser', $user->id) }}" class="px-4 py-2 bg-gray-200 text-gray-700 text-sm rounded hover:bg-gray-300">Review</a>
                     </div>
                 </div>
-            @endforeach
+            @empty
+                <div>No pending approvals.</div>
+            @endforelse
+            <div class="mt-4 text-right">
+                <a href="{{ route('admin.user-management') }}" class="btn btn-primary">View All Pending Approvals</a>
+            </div>
         </div>
     </div>
 
@@ -144,9 +150,9 @@
     <div class="mt-8">
         <div class="flex items-center justify-between mb-4">
             <h3 class="text-lg font-semibold text-gray-800">Pitch Events Management</h3>
-            <button class="bg-[#b81d8f] text-white px-4 py-2 rounded-md flex items-center gap-2">
+            <a href="{{ route('admin.pitch-events.create') }}" class="bg-[#b81d8f] text-white px-4 py-2 rounded-md flex items-center gap-2">
                 <i class="bi bi-plus-lg"></i> Create Event
-            </button>
+            </a>
         </div>
         <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
             <!-- Example Event Card -->
@@ -235,46 +241,30 @@
         </div>
     </div>
 
-    <!-- Upcoming Training Events -->
+    <!-- Upcoming Training Events (Quick Access) -->
     <div class="mt-8">
         <h3 class="text-lg font-semibold text-gray-800 mb-4">Upcoming Training Events</h3>
         <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
-            <div class="bg-white p-4 rounded-lg shadow flex justify-between items-center">
-                <div>
-                    <div class="font-semibold text-gray-800">Digital Marketing Workshop</div>
-                    <div class="text-sm text-gray-500">Tomorrow 10:00 AM</div>
-                    <div class="text-xs text-gray-400">by Sarah Johnson</div>
+            @forelse($upcomingTrainings as $training)
+                <div class="bg-white p-4 rounded-lg shadow flex justify-between items-center">
+                    <div>
+                        <a href="{{ route('admin.training_programs.edit', $training->id) }}" class="font-semibold text-gray-800 hover:text-[#b81d8f]">
+                            {{ $training->title }}
+                        </a>
+                        <div class="text-sm text-gray-500">{{ \Carbon\Carbon::parse($training->date_time)->format('M d, Y H:i') }}</div>
+                        <div class="text-xs text-gray-400">by {{ $training->facilitator ?? 'N/A' }}</div>
+                    </div>
+                    <div class="text-right">
+                        <div class="font-semibold text-purple-600">{{ $training->participants_count ?? 0 }}</div>
+                        <div class="text-sm text-gray-500">participants</div>
+                    </div>
                 </div>
-                <div class="text-right">
-                    <div class="font-semibold text-purple-600">25</div>
-                    <div class="text-sm text-gray-500">participants</div>
-                    <div class="text-xs text-green-600">confirmed</div>
-                </div>
-            </div>
-            <div class="bg-white p-4 rounded-lg shadow flex justify-between items-center">
-                <div>
-                    <div class="font-semibold text-gray-800">Investor Pitch Day</div>
-                    <div class="text-sm text-gray-500">Friday 2:00 PM</div>
-                    <div class="text-xs text-gray-400">by Michael Chen</div>
-                </div>
-                <div class="text-right">
-                    <div class="font-semibold text-purple-600">12</div>
-                    <div class="text-sm text-gray-500">participants</div>
-                    <div class="text-xs text-green-600">confirmed</div>
-                </div>
-            </div>
-            <div class="bg-white p-4 rounded-lg shadow flex justify-between items-center">
-                <div>
-                    <div class="font-semibold text-gray-800">Mentorship Matching Session</div>
-                    <div class="text-sm text-gray-500">Next Monday 9:00 AM</div>
-                    <div class="text-xs text-gray-400">by Dr. Kemi Adebayo</div>
-                </div>
-                <div class="text-right">
-                    <div class="font-semibold text-purple-600">18</div>
-                    <div class="text-sm text-gray-500">participants</div>
-                    <div class="text-xs text-yellow-600">pending</div>
-                </div>
-            </div>
+            @empty
+                <div>No upcoming training events.</div>
+            @endforelse
+        </div>
+        <div class="mt-4 text-right">
+            <a href="{{ route('admin.training_programs') }}" class="btn btn-primary">View All Training Programs</a>
         </div>
     </div>
 @endsection
