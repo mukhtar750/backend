@@ -106,6 +106,11 @@ Route::middleware(['auth', 'verified'])->prefix('admin')->name('admin.')->group(
         return view('admin.ideas_bank'); // Placeholder for Ideas Bank section
     })->name('ideas_bank');
 
+    // Content management CRUD
+    Route::get('/contents/{id}/edit', [\App\Http\Controllers\ContentController::class, 'edit'])->name('contents.edit');
+    Route::post('/contents/{id}/update', [\App\Http\Controllers\ContentController::class, 'update'])->name('contents.update');
+    Route::delete('/contents/{id}', [\App\Http\Controllers\ContentController::class, 'destroy'])->name('contents.destroy');
+
     // User approval routes
     Route::patch('/users/{user}/approve', [AdminController::class, 'approve'])->name('approve');
     Route::patch('/users/{user}/reject', [AdminController::class, 'reject'])->name('reject');

@@ -175,6 +175,7 @@ class AdminController extends Controller
 
     public function storePairing(Request $request)
     {
+        \Log::info('Pairing: Received request', $request->all());
         $validator = \Validator::make($request->all(), [
             'pairing_type' => 'required|in:mentor_mentee,bdsp_entrepreneur,investor_entrepreneur',
             'user_one_id' => 'required|exists:users,id|different:user_two_id',
@@ -183,6 +184,7 @@ class AdminController extends Controller
             'user_one_id.different' => 'You cannot pair a user with themselves.',
         ]);
         if ($validator->fails()) {
+            \Log::warning('Pairing: Validation failed', $validator->errors()->toArray());
             if ($request->expectsJson()) {
                 return response()->json(['errors' => $validator->errors()], 422);
             }
@@ -190,21 +192,36 @@ class AdminController extends Controller
         }
         if (Pairing::isPaired($request->user_one_id, $request->user_two_id, $request->pairing_type)) {
             $msg = 'These users are already paired for this type.';
+            \Log::info('Pairing: Already paired', [
+                'user_one_id' => $request->user_one_id,
+                'user_two_id' => $request->user_two_id,
+                'pairing_type' => $request->pairing_type
+            ]);
             if ($request->expectsJson()) {
                 return response()->json(['errors' => ['pairing' => [$msg]]], 422);
             }
             return redirect()->back()->with('error', $msg);
         }
-        Pairing::create([
-            'user_one_id' => $request->user_one_id,
-            'user_two_id' => $request->user_two_id,
-            'pairing_type' => $request->pairing_type,
-        ]);
-        // Notify both users
-        $userOne = \App\Models\User::find($request->user_one_id);
-        $userTwo = \App\Models\User::find($request->user_two_id);
-        $userOne->notify(new \App\Notifications\UserPairedNotification($userTwo, $request->pairing_type));
-        $userTwo->notify(new \App\Notifications\UserPairedNotification($userOne, $request->pairing_type));
+        try {
+            $pairing = Pairing::create([
+                'user_one_id' => $request->user_one_id,
+                'user_two_id' => $request->user_two_id,
+                'pairing_type' => $request->pairing_type,
+            ]);
+            \Log::info('Pairing: Created successfully', ['pairing_id' => $pairing->id]);
+            // Notify both users
+            $userOne = \App\Models\User::find($request->user_one_id);
+            $userTwo = \App\Models\User::find($request->user_two_id);
+            $userOne->notify(new \App\Notifications\UserPairedNotification($userTwo, $request->pairing_type));
+            $userTwo->notify(new \App\Notifications\UserPairedNotification($userOne, $request->pairing_type));
+            \Log::info('Pairing: Notifications sent');
+        } catch (\Exception $e) {
+            \Log::error('Pairing: Exception occurred', ['error' => $e->getMessage(), 'trace' => $e->getTraceAsString()]);
+            if ($request->expectsJson()) {
+                return response()->json(['errors' => ['exception' => [$e->getMessage()]]], 500);
+            }
+            return redirect()->back()->with('error', 'An error occurred while creating the pairing: ' . $e->getMessage());
+        }
         if ($request->expectsJson()) {
             return response()->json(['success' => 'Pairing created successfully.']);
         }

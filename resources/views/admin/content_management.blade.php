@@ -61,6 +61,84 @@
             } finally {
                 this.uploadLoading = false;
             }
+        },
+        showEdit: false,
+        editForm: {
+            id: null,
+            title: '',
+            type: 'document',
+            category_id: '',
+            visibility: 'public',
+            description: '',
+            tags: '',
+            status: 'published',
+            file: null
+        },
+        editLoading: false,
+        editError: '',
+        editSuccess: '',
+        openEditContent(id) {
+            fetch(`/admin/contents/${id}/edit`)
+                .then(res => res.json())
+                .then(data => {
+                    Object.assign(this.editForm, data.content);
+                    this.editForm.id = id;
+                    this.editForm.file = null;
+                    this.showEdit = true;
+                });
+        },
+        async submitEdit() {
+            this.editLoading = true;
+            this.editError = '';
+            this.editSuccess = '';
+            try {
+                let formData = new FormData();
+                formData.append('title', this.editForm.title);
+                formData.append('type', this.editForm.type);
+                formData.append('category_id', this.editForm.category_id);
+                formData.append('visibility', this.editForm.visibility);
+                formData.append('description', this.editForm.description);
+                formData.append('tags', this.editForm.tags);
+                formData.append('status', this.editForm.status);
+                if (this.editForm.file) formData.append('file', this.editForm.file);
+                const response = await fetch(`/admin/contents/${this.editForm.id}/update`, {
+                    method: 'POST',
+                    headers: {
+                        'X-CSRF-TOKEN': '{{ csrf_token() }}',
+                    },
+                    body: formData
+                });
+                const data = await response.json();
+                if (data.success) {
+                    this.editSuccess = 'Content updated successfully!';
+                    setTimeout(() => { this.showEdit = false; window.location.reload(); }, 1200);
+                } else {
+                    this.editError = 'Update failed.';
+                }
+            } catch (e) {
+                this.editError = 'Update failed.';
+            } finally {
+                this.editLoading = false;
+            }
+        },
+        deleteContent(id) {
+            if (!confirm('Are you sure you want to delete this content?')) return;
+            fetch(`/admin/contents/${id}`, {
+                method: 'DELETE',
+                headers: {
+                    'X-CSRF-TOKEN': '{{ csrf_token() }}',
+                    'Accept': 'application/json'
+                }
+            })
+            .then(res => res.json())
+            .then(data => {
+                if (data.success) {
+                    window.location.reload();
+                } else {
+                    alert('Delete failed.');
+                }
+            })
+            .catch(() => alert('Delete failed.'));
         }
     }" class="mb-6 border-b border-gray-200">
         <nav class="flex space-x-8" aria-label="Tabs">
@@ -117,7 +195,7 @@
                 </div>
             </div>
             <!-- Upload Modal -->
-            <div x-show="showUpload" class="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-40">
+            <div x-show="showUpload" x-cloak class="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-40">
                 <div @click.away="showUpload = false" class="bg-white rounded-xl shadow-lg w-full max-w-lg p-8 relative">
                     <h2 class="text-2xl font-bold mb-6">Upload New Content</h2>
                     <form @submit.prevent="submitUpload">
@@ -141,9 +219,9 @@
                                 <label class="block text-sm font-semibold mb-1">Category</label>
                                 <select class="form-select w-full rounded-md" x-model="uploadForm.category_id">
                                     <option value="">Select Category</option>
-                                    <option value="1">Business Strategy</option>
-                                    <option value="2">Finance</option>
-                                    <option value="3">Pitch Deck</option>
+                                    @foreach($categories as $category)
+                                        <option value="{{ $category->id }}">{{ $category->name }}</option>
+                                    @endforeach
                                 </select>
                             </div>
                             <div>
@@ -237,7 +315,7 @@
                         <p class="text-gray-600 text-sm mb-2">{{ Str::limit($content->description, 80) }}</p>
                         <div class="flex items-center gap-2 mb-2">
                             @if($content->user && $content->user->name)
-                                <img src="https://ui-avatars.com/api/?name={{ urlencode($content->user->name) }}&background=random" class="h-6 w-6 rounded-full" alt="{{ $content->user->name }}">
+                                <img src="{{ asset('images/default-avatar.png') }}" onerror="this.onerror=null;this.src='{{ asset('images/default-avatar.png') }}';" class="h-6 w-6 rounded-full" alt="{{ $content->user->name }}">
                                 <span class="text-xs text-gray-700">{{ $content->user->name }}</span>
                             @endif
                         </div>
@@ -256,9 +334,11 @@
                         </div>
                         <div class="flex items-center gap-2 text-xs text-gray-400">
                             <span>{{ $content->created_at->format('Y-m-d') }}</span>
-                            <i class="bi bi-pencil-square cursor-pointer"></i>
+                            <i class="bi bi-pencil-square cursor-pointer text-blue-600 hover:text-blue-800"
+                               @click="openEditContent({{ $content->id }})"></i>
                             <i class="bi bi-eye cursor-pointer"></i>
-                            <i class="bi bi-trash cursor-pointer"></i>
+                            <i class="bi bi-trash cursor-pointer text-red-600 hover:text-red-800"
+                               @click="deleteContent({{ $content->id }})"></i>
                         </div>
                     </div>
                 @empty
@@ -359,6 +439,75 @@
                     <div class="mt-4">{{ $resources->links() }}</div>
                 </div>
             </div>
+        </div>
+    </div>
+    <!-- Edit Content Modal -->
+    <div x-show="showEdit" x-cloak class="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-40">
+        <div @click.away="showEdit = false" class="bg-white rounded-xl shadow-lg w-full max-w-lg p-8 relative">
+            <h2 class="text-2xl font-bold mb-6">Edit Content</h2>
+            <form @submit.prevent="submitEdit">
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
+                    <div>
+                        <label class="block text-sm font-semibold mb-1">Content Title</label>
+                        <input type="text" class="form-input w-full rounded-md" x-model="editForm.title" required>
+                    </div>
+                    <div>
+                        <label class="block text-sm font-semibold mb-1">Content Type</label>
+                        <select class="form-select w-full rounded-md" x-model="editForm.type">
+                            <option value="document">Document</option>
+                            <option value="video">Video</option>
+                            <option value="image">Image</option>
+                            <option value="template">Template</option>
+                            <option value="article">Article</option>
+                            <option value="announcement">Announcement</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label class="block text-sm font-semibold mb-1">Category</label>
+                        <select class="form-select w-full rounded-md" x-model="editForm.category_id">
+                            <option value="">Select Category</option>
+                            @foreach($categories as $category)
+                                <option value="{{ $category->id }}">{{ $category->name }}</option>
+                            @endforeach
+                        </select>
+                    </div>
+                    <div>
+                        <label class="block text-sm font-semibold mb-1">Visibility</label>
+                        <select class="form-select w-full rounded-md" x-model="editForm.visibility">
+                            <option value="public">Public</option>
+                            <option value="entrepreneurs">Entrepreneurs Only</option>
+                            <option value="mentors">Mentors Only</option>
+                            <option value="investors">Investors Only</option>
+                            <option value="admin">Admin Only</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="mb-4">
+                    <label class="block text-sm font-semibold mb-1">Description</label>
+                    <textarea class="form-input w-full rounded-md" rows="3" x-model="editForm.description"></textarea>
+                </div>
+                <div class="mb-4">
+                    <label class="block text-sm font-semibold mb-1">Tags (comma separated)</label>
+                    <input type="text" class="form-input w-full rounded-md" x-model="editForm.tags">
+                </div>
+                <div class="mb-6">
+                    <label class="block text-sm font-semibold mb-1">Replace File (optional)</label>
+                    <input type="file" class="form-input w-full rounded-md" @change="editForm.file = $event.target.files[0]">
+                </div>
+                <div class="flex justify-end gap-2 mb-2">
+                    <button type="button" @click="showEdit = false" class="px-4 py-2 rounded-lg font-semibold border border-gray-300 text-gray-700 hover:bg-gray-100">Cancel</button>
+                    <button type="submit" :disabled="editLoading" class="px-4 py-2 rounded-lg font-semibold bg-blue-600 text-white hover:bg-blue-700">Update</button>
+                </div>
+                <template x-if="editLoading">
+                    <div class="text-center text-sm text-gray-500">Updating...</div>
+                </template>
+                <template x-if="editError">
+                    <div class="text-center text-sm text-red-600" x-text="editError"></div>
+                </template>
+                <template x-if="editSuccess">
+                    <div class="text-center text-sm text-green-600" x-text="editSuccess"></div>
+                </template>
+            </form>
         </div>
     </div>
 @endsection

@@ -33,6 +33,15 @@ class PitchEventController extends Controller
      */
     public function store(Request $request)
     {
+        // Decode JSON string fields to arrays if needed
+        foreach (['agenda', 'requirements', 'prizes'] as $field) {
+            if ($request->has($field) && is_string($request->$field)) {
+                $decoded = json_decode($request->$field, true);
+                if (is_array($decoded)) {
+                    $request->merge([$field => $decoded]);
+                }
+            }
+        }
         $validated = $request->validate([
             'title' => 'required|string|max:255',
             'description' => 'required|string',
@@ -45,7 +54,9 @@ class PitchEventController extends Controller
             'featured_startups' => 'nullable|array',
             'contact_email' => 'nullable|email',
             'contact_phone' => 'nullable|string',
-            'agenda' => 'nullable|string',
+            'agenda' => 'nullable|array',
+            'requirements' => 'nullable|array',
+            'prizes' => 'nullable|array',
             'tags' => 'nullable|array',
             'image' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
         ]);
@@ -101,7 +112,15 @@ class PitchEventController extends Controller
     public function update(Request $request, string $id)
     {
         $event = PitchEvent::findOrFail($id);
-        
+        // Decode JSON string fields to arrays if needed
+        foreach (['agenda', 'requirements', 'prizes'] as $field) {
+            if ($request->has($field) && is_string($request->$field)) {
+                $decoded = json_decode($request->$field, true);
+                if (is_array($decoded)) {
+                    $request->merge([$field => $decoded]);
+                }
+            }
+        }
         $validated = $request->validate([
             'title' => 'required|string|max:255',
             'description' => 'required|string',
@@ -114,7 +133,9 @@ class PitchEventController extends Controller
             'featured_startups' => 'nullable|array',
             'contact_email' => 'nullable|email',
             'contact_phone' => 'nullable|string',
-            'agenda' => 'nullable|string',
+            'agenda' => 'nullable|array',
+            'requirements' => 'nullable|array',
+            'prizes' => 'nullable|array',
             'tags' => 'nullable|array',
             'image' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
         ]);

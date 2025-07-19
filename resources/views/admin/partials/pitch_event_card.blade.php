@@ -68,7 +68,7 @@
                 <span x-text="expanded ? 'Show Less' : 'View Details'"></span>
             </a>
             <button class="text-gray-400 hover:text-[#b81d8f]" title="Edit"
-                @click="window.editPitchEvent(@json($event))">
+                @click="window.editPitchEvent(@js($event))">
                 <i class="bi bi-pencil-square"></i>
             </button>
             <button class="text-gray-400 hover:text-red-500" title="Delete"

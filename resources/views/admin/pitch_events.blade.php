@@ -66,6 +66,14 @@
             this.createLoading = true;
             this.createError = '';
             this.createSuccess = '';
+            // Ensure agenda, requirements, and prizes are arrays and filter out empty strings
+            ['agenda', 'requirements', 'prizes'].forEach(key => {
+                if (!Array.isArray(this.createForm[key])) {
+                    this.createForm[key] = [];
+                } else {
+                    this.createForm[key] = this.createForm[key].filter(item => item && item.trim() !== '');
+                }
+            });
             const formData = new FormData();
             Object.keys(this.createForm).forEach(key => {
                 if (this.createForm[key] !== null && this.createForm[key] !== '') {

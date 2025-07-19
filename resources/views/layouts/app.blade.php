@@ -26,7 +26,7 @@
                 </div>
                 
                 <div class="flex items-center space-x-4">
-                    <a href="{{ route('messages.index') }}" class="text-gray-600 hover:text-gray-800 relative">
+                    <a href="{{ auth()->user()->role === 'admin' ? route('admin.messages') : route('messages.index') }}" class="text-gray-600 hover:text-gray-800 relative">
                         <i class="bi bi-chat-dots text-xl"></i>
                         @if(auth()->user()->getUnreadMessageCount() > 0)
                             <span class="absolute -top-1 -right-1 bg-red-500 text-white text-xs px-1.5 py-0.5 rounded-full">{{ auth()->user()->getUnreadMessageCount() }}</span>
