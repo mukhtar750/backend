@@ -43,16 +43,16 @@
                     <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
                         <!-- Full Name -->
                         <div class="col-span-2 md:col-span-1">
-                            <label for="fullName" class="block text-sm font-medium text-gray-700 mb-1">Full Name *</label>
+                            <label for="name" class="block text-sm font-medium text-gray-700 mb-1">Full Name *</label>
                             <div class="relative">
-                                <input type="text" id="fullName" name="fullName" required value="{{ old('fullName') }}"
+                                <input type="text" id="name" name="name" required value="{{ old('name') }}"
                                     class="form-input w-full px-4 py-2 rounded-lg focus:outline-none"
                                     placeholder="Enter your full name">
                                 <div class="absolute inset-y-0 right-0 flex items-center pr-3 pointer-events-none">
                                     <i class="fas fa-user text-gray-400"></i>
                                 </div>
                             </div>
-                            @error('fullName') <div class="text-red-500 text-xs mt-1">{{ $message }}</div> @enderror
+                            @error('name') <div class="text-red-500 text-xs mt-1">{{ $message }}</div> @enderror
                         </div>
                         <!-- Email -->
                         <div class="col-span-2 md:col-span-1">
@@ -69,16 +69,16 @@
                         </div>
                         <!-- Business Name -->
                         <div class="col-span-2">
-                            <label for="businessName" class="block text-sm font-medium text-gray-700 mb-1">Business Name *</label>
+                            <label for="business_name" class="block text-sm font-medium text-gray-700 mb-1">Business Name *</label>
                             <div class="relative">
-                                <input type="text" id="businessName" name="businessName" required value="{{ old('businessName') }}"
+                                <input type="text" id="business_name" name="business_name" required value="{{ old('business_name') }}"
                                     class="form-input w-full px-4 py-2 rounded-lg focus:outline-none"
                                     placeholder="Your business name">
                                 <div class="absolute inset-y-0 right-0 flex items-center pr-3 pointer-events-none">
                                     <i class="fas fa-building text-gray-400"></i>
                                 </div>
                             </div>
-                            @error('businessName') <div class="text-red-500 text-xs mt-1">{{ $message }}</div> @enderror
+                            @error('business_name') <div class="text-red-500 text-xs mt-1">{{ $message }}</div> @enderror
                         </div>
                         <!-- Sector -->
                         <div class="col-span-2 md:col-span-1">
@@ -104,22 +104,22 @@
                         </div>
                         <!-- CAC Number -->
                         <div class="col-span-2 md:col-span-1">
-                            <label for="cacNumber" class="block text-sm font-medium text-gray-700 mb-1">CAC Number *</label>
+                            <label for="cac_number" class="block text-sm font-medium text-gray-700 mb-1">CAC Number *</label>
                             <div class="relative">
-                                <input type="text" id="cacNumber" name="cacNumber" required value="{{ old('cacNumber') }}"
+                                <input type="text" id="cac_number" name="cac_number" required value="{{ old('cac_number') }}"
                                     class="form-input w-full px-4 py-2 rounded-lg focus:outline-none"
                                     placeholder="Your CAC registration number">
                                 <div class="absolute inset-y-0 right-0 flex items-center pr-3 pointer-events-none">
                                     <i class="fas fa-id-card text-gray-400"></i>
                                 </div>
                             </div>
-                            @error('cacNumber') <div class="text-red-500 text-xs mt-1">{{ $message }}</div> @enderror
+                            @error('cac_number') <div class="text-red-500 text-xs mt-1">{{ $message }}</div> @enderror
                         </div>
                         <!-- Funding Stage -->
                         <div class="col-span-2 md:col-span-1">
-                            <label for="fundingStage" class="block text-sm font-medium text-gray-700 mb-1">Funding Stage *</label>
+                            <label for="funding_stage" class="block text-sm font-medium text-gray-700 mb-1">Funding Stage *</label>
                             <div class="relative">
-                                <select id="fundingStage" name="fundingStage" required
+                                <select id="funding_stage" name="funding_stage" required
                                     class="form-input w-full px-4 py-2 rounded-lg focus:outline-none appearance-none">
                                     <option value="" disabled selected>Select funding stage</option>
                                     <option value="Idea">Idea Stage</option>
@@ -133,20 +133,20 @@
                                     <i class="fas fa-chart-line text-gray-400"></i>
                                 </div>
                             </div>
-                            @error('fundingStage') <div class="text-red-500 text-xs mt-1">{{ $message }}</div> @enderror
+                            @error('funding_stage') <div class="text-red-500 text-xs mt-1">{{ $message }}</div> @enderror
                         </div>
                         <!-- Phone Number -->
                         <div class="col-span-2 md:col-span-1">
-                            <label for="phone" class="block text-sm font-medium text-gray-700 mb-1">Phone Number *</label>
+                            <label for="entrepreneur_phone" class="block text-sm font-medium text-gray-700 mb-1">Phone Number *</label>
                             <div class="relative">
-                                <input type="tel" id="phone" name="phone" required value="{{ old('phone') }}"
+                                <input type="tel" id="entrepreneur_phone" name="entrepreneur_phone" required value="{{ old('entrepreneur_phone') }}"
                                     class="form-input w-full px-4 py-2 rounded-lg focus:outline-none"
                                     placeholder="+234 800 000 0000">
                                 <div class="absolute inset-y-0 right-0 flex items-center pr-3 pointer-events-none">
                                     <i class="fas fa-phone text-gray-400"></i>
                                 </div>
                             </div>
-                            @error('phone') <div class="text-red-500 text-xs mt-1">{{ $message }}</div> @enderror
+                            @error('entrepreneur_phone') <div class="text-red-500 text-xs mt-1">{{ $message }}</div> @enderror
                         </div>
                         <!-- Business Website -->
                         <div class="col-span-2 md:col-span-1">
@@ -162,15 +162,16 @@
                         </div>
                         <!-- LinkedIn Profile -->
                         <div class="col-span-2 md:col-span-1">
-                            <label for="linkedin" class="block text-sm font-medium text-gray-700 mb-1">LinkedIn Profile</label>
+                            <label for="entrepreneur_linkedin" class="block text-sm font-medium text-gray-700 mb-1">LinkedIn Profile</label>
                             <div class="relative">
-                                <input type="url" id="linkedin" name="linkedin" value="{{ old('linkedin') }}"
+                                <input type="url" id="entrepreneur_linkedin" name="entrepreneur_linkedin" value="{{ old('entrepreneur_linkedin') }}"
                                     class="form-input w-full px-4 py-2 rounded-lg focus:outline-none"
                                     placeholder="https://linkedin.com/in/yourprofile">
                                 <div class="absolute inset-y-0 right-0 flex items-center pr-3 pointer-events-none">
                                     <i class="fab fa-linkedin text-gray-400"></i>
                                 </div>
                             </div>
+                            @error('entrepreneur_linkedin') <div class="text-red-500 text-xs mt-1">{{ $message }}</div> @enderror
                         </div>
                         <!-- Password -->
                         <div class="col-span-2 md:col-span-1">
@@ -255,22 +256,8 @@
                 icon.classList.replace('fa-eye-slash', 'fa-eye');
             }
         });
-        // Form validation
-        document.getElementById('registrationForm').addEventListener('submit', function(e) {
-            e.preventDefault();
-            // Simple validation - check if passwords match
-            const password = document.getElementById('password').value;
-            const confirmPassword = document.getElementById('confirmPassword').value;
-            if (password !== confirmPassword) {
-                alert('Passwords do not match!');
-                return;
-            }
-            // Here you would typically send the form data to your server
-            alert('Registration submitted successfully!');
-            this.reset();
-        });
         // Phone number formatting
-        document.getElementById('phone').addEventListener('input', function(e) {
+        document.getElementById('entrepreneur_phone').addEventListener('input', function(e) {
             const x = e.target.value.replace(/\D/g, '').match(/(\d{0,3})(\d{0,3})(\d{0,4})/);
             e.target.value = !x[2] ? x[1] : x[1] + ' ' + x[2] + (x[3] ? ' ' + x[3] : '');
         });

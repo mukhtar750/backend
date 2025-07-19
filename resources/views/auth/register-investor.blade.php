@@ -37,10 +37,10 @@
                 <form method="POST" action="{{ route('register.investor') }}" id="registrationForm" class="space-y-6">
                     @csrf
                     <div>
-                        <label for="fullName" class="block text-sm font-medium text-gray-700">Full Name *</label>
-                        <input type="text" id="fullName" name="fullName" required value="{{ old('fullName') }}"
+                        <label for="name" class="block text-sm font-medium text-gray-700">Full Name *</label>
+                        <input type="text" id="name" name="name" required value="{{ old('name') }}"
                             class="mt-1 form-input block w-full rounded-md border-gray-300 shadow-sm focus:border-[#b81d8f] focus:ring-[#b81d8f] py-2 px-3 border">
-                        @error('fullName') <div class="text-red-500 text-xs mt-1">{{ $message }}</div> @enderror
+                        @error('name') <div class="text-red-500 text-xs mt-1">{{ $message }}</div> @enderror
                     </div>
                     <div>
                         <label for="email" class="block text-sm font-medium text-gray-700">Email *</label>
@@ -55,19 +55,19 @@
                         @error('phone') <div class="text-red-500 text-xs mt-1">{{ $message }}</div> @enderror
                     </div>
                     <div>
-                        <label for="investorType" class="block text-sm font-medium text-gray-700">Type of Investor *</label>
-                        <select id="investorType" name="investorType" required
+                        <label for="type_of_investor" class="block text-sm font-medium text-gray-700">Type of Investor *</label>
+                        <select id="type_of_investor" name="type_of_investor" required
                             class="mt-1 form-input block w-full rounded-md border-gray-300 shadow-sm focus:border-[#b81d8f] focus:ring-[#b81d8f] py-2 px-3 border">
                             <option value="" disabled selected>Select investor type</option>
                             <option value="Angel">Angel</option>
                             <option value="VC">VC</option>
                             <option value="Corporate">Corporate</option>
                         </select>
-                        @error('investorType') <div class="text-red-500 text-xs mt-1">{{ $message }}</div> @enderror
+                        @error('type_of_investor') <div class="text-red-500 text-xs mt-1">{{ $message }}</div> @enderror
                     </div>
                     <div>
-                        <label for="interestAreas" class="block text-sm font-medium text-gray-700">Interest Areas</label>
-                        <input type="text" id="interestAreas" name="interestAreas" placeholder="Fintech, Healthcare, Edtech" value="{{ old('interestAreas') }}"
+                        <label for="interest_areas" class="block text-sm font-medium text-gray-700">Interest Areas</label>
+                        <input type="text" id="interest_areas" name="interest_areas" placeholder="Fintech, Healthcare, Edtech" value="{{ old('interest_areas') }}"
                             class="mt-1 form-input block w-full rounded-md border-gray-300 shadow-sm focus:border-[#b81d8f] focus:ring-[#b81d8f] py-2 px-3 border">
                     </div>
                     <div>
@@ -76,8 +76,8 @@
                             class="mt-1 form-input block w-full rounded-md border-gray-300 shadow-sm focus:border-[#b81d8f] focus:ring-[#b81d8f] py-2 px-3 border">
                     </div>
                     <div>
-                        <label for="linkedin" class="block text-sm font-medium text-gray-700">LinkedIn Profile (optional)</label>
-                        <input type="url" id="linkedin" name="linkedin" value="{{ old('linkedin') }}"
+                        <label for="investor_linkedin" class="block text-sm font-medium text-gray-700">LinkedIn Profile (optional)</label>
+                        <input type="url" id="investor_linkedin" name="investor_linkedin" value="{{ old('investor_linkedin') }}"
                             class="mt-1 form-input block w-full rounded-md border-gray-300 shadow-sm focus:border-[#b81d8f] focus:ring-[#b81d8f] py-2 px-3 border">
                     </div>
                     <div>
@@ -112,40 +112,7 @@
         </div>
     </footer>
     <script>
-        document.getElementById('registrationForm').addEventListener('submit', function(e) {
-            e.preventDefault();
-            // Get form values
-            const password = document.getElementById('password').value;
-            const confirmPassword = document.getElementById('confirmPassword').value;
-            const passwordError = document.getElementById('passwordError');
-            // Validate password match
-            if (password !== confirmPassword) {
-                passwordError.classList.remove('hidden');
-                return;
-            } else {
-                passwordError.classList.add('hidden');
-            }
-            // Validate required fields
-            const requiredFields = ['fullName', 'email', 'phone', 'investorType', 'password', 'confirmPassword'];
-            let isValid = true;
-            requiredFields.forEach(fieldId => {
-                const field = document.getElementById(fieldId);
-                if (!field.value.trim()) {
-                    field.classList.add('border-red-500');
-                    isValid = false;
-                } else {
-                    field.classList.remove('border-red-500');
-                }
-            });
-            if (!isValid) {
-                return;
-            }
-            // If all validations pass, you would typically submit the form here
-            alert('Registration successful!');
-            // In a real application, you would submit to a server:
-            // this.submit();
-        });
-        // Add real-time password matching validation
+        // Add real-time password matching validation (optional, does not block submission)
         document.getElementById('confirmPassword').addEventListener('input', function() {
             const password = document.getElementById('password').value;
             const confirmPassword = this.value;

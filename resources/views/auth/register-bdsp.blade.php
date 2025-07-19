@@ -44,10 +44,10 @@
                     @csrf
                     <!-- Full Name -->
                     <div>
-                        <label for="fullName" class="block text-sm font-medium text-gray-700 mb-1">Full Name *</label>
-                        <input type="text" id="fullName" name="fullName" required value="{{ old('fullName') }}"
+                        <label for="name" class="block text-sm font-medium text-gray-700 mb-1">Full Name *</label>
+                        <input type="text" id="name" name="name" required value="{{ old('name') }}"
                                class="input-field w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500">
-                        @error('fullName') <div class="text-red-500 text-xs mt-1">{{ $message }}</div> @enderror
+                        @error('name') <div class="text-red-500 text-xs mt-1">{{ $message }}</div> @enderror
                     </div>
                     <!-- Email -->
                     <div>
@@ -58,50 +58,56 @@
                     </div>
                     <!-- Services Provided -->
                     <div>
-                        <label for="services" class="block text-sm font-medium text-gray-700 mb-1">Services Provided *</label>
+                        <label for="services_provided" class="block text-sm font-medium text-gray-700 mb-1">Services Provided *</label>
                         <div class="relative">
-                            <input type="text" id="services" name="services" 
+                            <input type="text" id="services_provided" name="services_provided" 
                                    class="input-field w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500"
-                                   placeholder="Enter services separated by commas">
+                                   placeholder="Enter services separated by commas" value="{{ old('services_provided') }}">
                             <div id="tagsContainer" class="mt-2 flex flex-wrap"></div>
                         </div>
+                        @error('services_provided') <div class="text-red-500 text-xs mt-1">{{ $message }}</div> @enderror
                     </div>
                     <!-- Years of Experience -->
                     <div>
-                        <label for="experience" class="block text-sm font-medium text-gray-700 mb-1">Years of Experience *</label>
-                        <select id="experience" name="experience" required 
+                        <label for="years_of_experience" class="block text-sm font-medium text-gray-700 mb-1">Years of Experience *</label>
+                        <select id="years_of_experience" name="years_of_experience" required 
                                 class="input-field w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500">
                             <option value="" disabled selected>Select your experience</option>
-                            <option value="1-3">1-3 years</option>
-                            <option value="3-5">3-5 years</option>
-                            <option value="5-10">5-10 years</option>
-                            <option value="10+">10+ years</option>
+                            <option value="1">1-3 years</option>
+                            <option value="3">3-5 years</option>
+                            <option value="5">5-10 years</option>
+                            <option value="10">10+ years</option>
                         </select>
+                        @error('years_of_experience') <div class="text-red-500 text-xs mt-1">{{ $message }}</div> @enderror
                     </div>
                     <!-- Organization -->
                     <div>
                         <label for="organization" class="block text-sm font-medium text-gray-700 mb-1">Organization</label>
                         <input type="text" id="organization" name="organization" value="{{ old('organization') }}"
                                class="input-field w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500">
+                        @error('organization') <div class="text-red-500 text-xs mt-1">{{ $message }}</div> @enderror
                     </div>
                     <!-- Certifications -->
                     <div>
                         <label for="certifications" class="block text-sm font-medium text-gray-700 mb-1">Certifications</label>
                         <input type="text" id="certifications" name="certifications" value="{{ old('certifications') }}"
                                class="input-field w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500">
+                        @error('certifications') <div class="text-red-500 text-xs mt-1">{{ $message }}</div> @enderror
                     </div>
                     <!-- LinkedIn Profile -->
                     <div>
-                        <label for="linkedin" class="block text-sm font-medium text-gray-700 mb-1">LinkedIn Profile</label>
-                        <input type="url" id="linkedin" name="linkedin" value="{{ old('linkedin') }}"
+                        <label for="bdsp_linkedin" class="block text-sm font-medium text-gray-700 mb-1">LinkedIn Profile</label>
+                        <input type="url" id="bdsp_linkedin" name="bdsp_linkedin" value="{{ old('bdsp_linkedin') }}"
                                class="input-field w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500"
                                placeholder="https://linkedin.com/in/yourprofile">
+                        @error('bdsp_linkedin') <div class="text-red-500 text-xs mt-1">{{ $message }}</div> @enderror
                     </div>
                     <!-- Password -->
                     <div>
                         <label for="password" class="block text-sm font-medium text-gray-700 mb-1">Password *</label>
                         <input type="password" id="password" name="password" required
                                class="input-field w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500">
+                        @error('password') <div class="text-red-500 text-xs mt-1">{{ $message }}</div> @enderror
                     </div>
                     <!-- Confirm Password -->
                     <div>
@@ -127,7 +133,7 @@
     </main>
     <script>
         document.addEventListener('DOMContentLoaded', function() {
-            const servicesInput = document.getElementById('services');
+            const servicesInput = document.getElementById('services_provided');
             const tagsContainer = document.getElementById('tagsContainer');
             // Handle services input to create tags
             servicesInput.addEventListener('keydown', function(e) {
