@@ -40,5 +40,26 @@ class DatabaseSeeder extends Seeder
             'business_name' => 'Test Business',
             'sector' => 'Technology',
         ]);
+        
+        // Create Mentor test user
+        User::create([
+            'name' => 'Test Mentor',
+            'email' => 'mentor@test.com',
+            'password' => Hash::make('password'),
+            'role' => 'mentor',
+            'is_approved' => true,
+        ]);
+        
+        // Create Mentee test user
+        User::create([
+            'name' => 'Test Mentee',
+            'email' => 'mentee@test.com',
+            'password' => Hash::make('password'),
+            'role' => 'mentee',
+            'is_approved' => true,
+        ]);
+        
+        // Seed mentorship forms
+        $this->call(MentorshipFormsSeeder::class);
     }
 }

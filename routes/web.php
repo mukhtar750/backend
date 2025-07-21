@@ -84,6 +84,16 @@ Route::middleware(['auth', 'verified'])->prefix('admin')->name('admin.')->group(
 
     Route::get('/mentorship-sessions', [AdminController::class, 'mentorshipSessions'])->name('mentorship_sessions');
 
+    // Mentorship Forms Management
+    Route::prefix('mentorship/forms')->name('mentorship.forms.')->group(function () {
+        Route::get('/admin-dashboard', [App\Http\Controllers\MentorshipFormController::class, 'adminDashboard'])->name('admin_dashboard');
+        Route::get('/submissions', [App\Http\Controllers\MentorshipFormController::class, 'listSubmissions'])->name('list_submissions');
+        Route::get('/submissions/{submission}', [App\Http\Controllers\MentorshipFormController::class, 'showSubmission'])->name('show_submission');
+        Route::get('/submissions/{submission}/review', [App\Http\Controllers\MentorshipFormController::class, 'reviewSubmission'])->name('review_submission');
+        Route::post('/submissions/{submission}/review', [App\Http\Controllers\MentorshipFormController::class, 'storeReview'])->name('store_review');
+        Route::get('/submissions/{submission}/download', [App\Http\Controllers\MentorshipFormController::class, 'downloadSubmission'])->name('download_submission');
+    });
+
     // Pitch Events Management
     Route::resource('pitch-events', \App\Http\Controllers\PitchEventController::class);
 
@@ -217,14 +227,71 @@ Route::middleware(['auth'])->group(function () {
             ->toArray();
         return view('dashboard.entrepreneur-calendar', compact('sessions', 'registrations'));
     })->name('entrepreneur.calendar');
-    Route::view('/dashboard/entrepreneur-mentorship', 'dashboard.entrepreneur-mentorship')->name('entrepreneur.mentorship');
+    Route::get('/dashboard/entrepreneur-mentorship', function () {
+        $user = auth()->user();
+        $mentors = \App\Models\User::where('role', 'mentor')->where('is_approved', true)->get();
+        $mentorsArray = $mentors->map(function($m) {
+            return [
+                'id' => $m->id,
+                'name' => $m->name,
+                'specialty' => $m->specialty ?? 'Mentor',
+                'avg_rating' => $m->avg_rating ?? '4.8',
+            ];
+        })->values();
+        $sessions = \App\Models\MentorshipSession::with(['pairing.userOne', 'pairing.userTwo', 'scheduledBy', 'scheduledFor'])
+            ->where(function($q) use ($user) {
+                $q->where('scheduled_by', $user->id)
+                  ->orWhere('scheduled_for', $user->id);
+            })
+            ->where('date_time', '>=', now())
+            ->where('status', '!=', 'cancelled')
+            ->orderBy('date_time', 'asc')
+            ->get();
+        return view('dashboard.entrepreneur-mentorship', compact('mentors', 'mentorsArray', 'sessions'));
+    })->name('entrepreneur.mentorship');
     Route::get('/dashboard/entrepreneur-pitch', function () {
+        $user = auth()->user();
+        // Get paired BDSPs
+        $bdspPairings = \App\Models\Pairing::where('pairing_type', 'bdsp_entrepreneur')
+            ->where(function($q) use ($user) {
+                $q->where('user_one_id', $user->id)->orWhere('user_two_id', $user->id);
+            })->get();
+        $bdspIds = $bdspPairings->map(function($pairing) use ($user) {
+            return $pairing->user_one_id == $user->id ? $pairing->user_two_id : $pairing->user_one_id;
+        });
+        // Get paired mentors
+        $mentorPairings = \App\Models\Pairing::where('pairing_type', 'mentor_entrepreneur')
+            ->where(function($q) use ($user) {
+                $q->where('user_one_id', $user->id)->orWhere('user_two_id', $user->id);
+            })->get();
+        $mentorIds = $mentorPairings->map(function($pairing) use ($user) {
+            return $pairing->user_one_id == $user->id ? $pairing->user_two_id : $pairing->user_one_id;
+        });
+        // Get all resources uploaded by the entrepreneur, their BDSPs, or mentors
+        $allUploaderIds = array_merge($bdspIds->all(), $mentorIds->all(), [$user->id]);
+        $learningResources = \App\Models\Resource::whereIn('bdsp_id', $allUploaderIds)
+            ->orderByDesc('created_at')->get();
+
+        // Get pitching resources from the content management system
+        $pitchDeckCategory = \DB::table('categories')->where('name', 'Pitch Deck')->first();
+        $pitchResources = collect();
+        if ($pitchDeckCategory) {
+            $pitchResources = \App\Models\Content::where('status', 'published')
+                ->where('category_id', $pitchDeckCategory->id)
+                ->where(function ($query) {
+                    $query->where('visibility', 'public')
+                          ->orWhere('visibility', 'entrepreneurs');
+                })
+                ->orderByDesc('created_at')
+                ->get();
+        }
+
         $recommendedEvents = \App\Models\PitchEvent::where('status', 'published')
             ->where('event_date', '>=', now())
             ->orderBy('event_date', 'asc')
             ->take(5)
             ->get();
-        return view('dashboard.entrepreneur-pitch', compact('recommendedEvents'));
+        return view('dashboard.entrepreneur-pitch', compact('recommendedEvents', 'learningResources', 'pitchResources'));
     })->middleware('auth')->name('entrepreneur.pitch');
     Route::get('/dashboard/entrepreneur-feedback', [\App\Http\Controllers\FeedbackController::class, 'index'])->name('entrepreneur.feedback');
 });
@@ -261,6 +328,30 @@ Route::middleware(['auth'])->group(function () {
     Route::post('mentorship-sessions/{mentorship_session}/confirm', [\App\Http\Controllers\MentorshipSessionController::class, 'confirm'])->name('mentorship-sessions.confirm');
     Route::post('mentorship-sessions/{mentorship_session}/cancel', [\App\Http\Controllers\MentorshipSessionController::class, 'cancel'])->name('mentorship-sessions.cancel');
     Route::post('mentorship-sessions/{mentorship_session}/complete', [\App\Http\Controllers\MentorshipSessionController::class, 'complete'])->name('mentorship-sessions.complete');
+});
+
+// Mentorship Forms & Journey
+Route::middleware(['auth'])->prefix('mentorship')->name('mentorship.')->group(function () {
+    // Forms Dashboard
+    Route::get('/forms/dashboard', [\App\Http\Controllers\MentorshipFormController::class, 'dashboard'])->name('forms.dashboard');
+    
+    // Forms Listing
+    Route::get('/forms', [\App\Http\Controllers\MentorshipFormController::class, 'index'])->name('forms.index');
+    
+    // Form Creation & Submission
+    Route::get('/forms/{form}/pairing/{pairing}/create', [\App\Http\Controllers\MentorshipFormController::class, 'create'])->name('forms.create');
+    Route::post('/forms/{form}/pairing/{pairing}', [\App\Http\Controllers\MentorshipFormController::class, 'store'])->name('forms.store');
+    
+    // Form Viewing & Editing
+    Route::get('/form-submissions/{submission}', [\App\Http\Controllers\MentorshipFormController::class, 'show'])->name('forms.show');
+    Route::get('/form-submissions/{submission}/edit', [\App\Http\Controllers\MentorshipFormController::class, 'edit'])->name('forms.edit');
+    Route::put('/form-submissions/{submission}', [\App\Http\Controllers\MentorshipFormController::class, 'update'])->name('forms.update');
+    
+    // Form Review
+    Route::post('/form-submissions/{submission}/review', [\App\Http\Controllers\MentorshipFormController::class, 'review'])->name('forms.review');
+    
+    // Form Download
+    Route::get('/form-submissions/{submission}/download', [\App\Http\Controllers\MentorshipFormController::class, 'download'])->name('forms.download');
 });
 
 Route::get('/registration-success', function () {
@@ -302,3 +393,18 @@ Route::get('/entrepreneur/achievements', function () {
 Route::get('/entrepreneur/resource/download/{resource}', function ($resource) {
     return view('dashboard.entrepreneur-resource-download', ['resource' => $resource]);
 })->name('entrepreneur.resource.download');
+
+// Practice Pitch Routes
+Route::middleware(['auth'])->group(function () {
+    // Entrepreneur
+    Route::get('/practice-pitches', [\App\Http\Controllers\PracticePitchController::class, 'index'])->name('practice-pitches.index');
+    Route::post('/practice-pitches', [\App\Http\Controllers\PracticePitchController::class, 'store'])->name('practice-pitches.store');
+    // Mentor/BDSP feedback (for approved pitches)
+    Route::post('/practice-pitches/{id}/feedback', [\App\Http\Controllers\PracticePitchController::class, 'feedback'])->name('practice-pitches.feedback');
+});
+Route::middleware(['auth', 'admin'])->group(function () {
+    // Admin review
+    Route::get('/admin/practice-pitches', [\App\Http\Controllers\PracticePitchController::class, 'adminIndex'])->name('admin.practice-pitches.index');
+    Route::post('/admin/practice-pitches/{id}/approve', [\App\Http\Controllers\PracticePitchController::class, 'approve'])->name('admin.practice-pitches.approve');
+    Route::post('/admin/practice-pitches/{id}/reject', [\App\Http\Controllers\PracticePitchController::class, 'reject'])->name('admin.practice-pitches.reject');
+});

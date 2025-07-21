@@ -11,42 +11,46 @@
     <div>
         <h3 class="text-xl font-semibold mb-4">Learning Resources</h3>
         <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
-            <div class="bg-white rounded-xl shadow p-5 flex flex-col">
-                <div class="flex items-center gap-2 mb-2"><i class="bi bi-book text-[#b81d8f] text-xl"></i> <span class="font-semibold">Article: Crafting a Winning Pitch</span></div>
-                <div class="text-sm text-gray-500 mb-4">Step-by-step guide to creating a compelling business pitch for investors.</div>
-                <a href="#" class="mt-auto bg-[#b81d8f] text-white px-4 py-2 rounded-lg font-medium text-center hover:bg-[#a01a7d] transition">Read Article</a>
-            </div>
-            <div class="bg-white rounded-xl shadow p-5 flex flex-col">
-                <div class="flex items-center gap-2 mb-2"><i class="bi bi-youtube text-[#b81d8f] text-xl"></i> <span class="font-semibold">Video: Pitching Do’s & Don’ts</span></div>
-                <div class="text-sm text-gray-500 mb-4">Watch this video to learn the best practices and common mistakes in pitching.</div>
-                <a href="#" class="mt-auto bg-[#b81d8f] text-white px-4 py-2 rounded-lg font-medium text-center hover:bg-[#a01a7d] transition">Watch Video</a>
-            </div>
-            <div class="bg-white rounded-xl shadow p-5 flex flex-col">
-                <div class="flex items-center gap-2 mb-2"><i class="bi bi-file-earmark-pdf text-[#b81d8f] text-xl"></i> <span class="font-semibold">Guide: Investor Pitch Checklist</span></div>
-                <div class="text-sm text-gray-500 mb-4">Download a checklist to ensure your pitch covers all the essentials.</div>
-                <a href="#" class="mt-auto bg-[#b81d8f] text-white px-4 py-2 rounded-lg font-medium text-center hover:bg-[#a01a7d] transition">Download Guide</a>
-            </div>
+            @forelse($learningResources as $resource)
+                <div class="bg-white rounded-xl shadow p-5 flex flex-col">
+                    <div class="flex items-center gap-2 mb-2">
+                        <i class="bi bi-file-earmark-text text-[#b81d8f] text-xl"></i>
+                        <span class="font-semibold">{{ $resource->name }}</span>
+                    </div>
+                    <div class="text-sm text-gray-500 mb-2">{{ $resource->description }}</div>
+                    <div class="text-xs text-gray-400 mb-1">Uploaded by: {{ optional($resource->bdsp)->name ?? 'You' }}</div>
+                    <div class="text-xs text-gray-400 mb-2">{{ strtoupper($resource->file_type) }} • {{ number_format($resource->file_size / 1024, 1) }} KB</div>
+                    <a href="{{ asset('storage/' . $resource->file_path) }}" target="_blank" class="mt-auto bg-[#b81d8f] text-white px-4 py-2 rounded-lg font-medium text-center hover:bg-[#a01a7d] transition">Download</a>
+                </div>
+            @empty
+                <div class="bg-white rounded-xl shadow p-5 flex flex-col col-span-3">
+                    <div class="font-semibold mb-2">No learning resources available yet.</div>
+                </div>
+            @endforelse
         </div>
     </div>
     <!-- Pitching Resources -->
     <div>
         <h3 class="text-xl font-semibold mb-4">Pitching Resources</h3>
         <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
-            <div class="bg-white rounded-xl shadow p-5 flex flex-col">
-                <div class="flex items-center gap-2 mb-2"><i class="bi bi-file-earmark-text text-[#b81d8f] text-xl"></i> <span class="font-semibold">Pitch Deck Template</span></div>
-                <div class="text-sm text-gray-500 mb-4">Download a proven template to structure your pitch deck for investors.</div>
-                <a href="#" class="mt-auto bg-[#b81d8f] text-white px-4 py-2 rounded-lg font-medium text-center hover:bg-[#a01a7d] transition">Download</a>
-            </div>
-            <div class="bg-white rounded-xl shadow p-5 flex flex-col">
-                <div class="flex items-center gap-2 mb-2"><i class="bi bi-play-circle text-[#b81d8f] text-xl"></i> <span class="font-semibold">Pitching Masterclass</span></div>
-                <div class="text-sm text-gray-500 mb-4">Watch a video masterclass on storytelling and effective pitching.</div>
-                <a href="#" class="mt-auto bg-[#b81d8f] text-white px-4 py-2 rounded-lg font-medium text-center hover:bg-[#a01a7d] transition">Watch Video</a>
-            </div>
-            <div class="bg-white rounded-xl shadow p-5 flex flex-col">
-                <div class="flex items-center gap-2 mb-2"><i class="bi bi-question-circle text-[#b81d8f] text-xl"></i> <span class="font-semibold">Investor Q&A Guide</span></div>
-                <div class="text-sm text-gray-500 mb-4">Prepare for tough questions with this guide to common investor Q&A.</div>
-                <a href="#" class="mt-auto bg-[#b81d8f] text-white px-4 py-2 rounded-lg font-medium text-center hover:bg-[#a01a7d] transition">View Guide</a>
-            </div>
+            @forelse($pitchResources as $resource)
+                <div class="bg-white rounded-xl shadow p-5 flex flex-col">
+                    <div class="flex items-center gap-2 mb-2">
+                        <i class="bi {{ $resource->type === 'video' ? 'bi-play-circle' : 'bi-file-earmark-text' }} text-[#b81d8f] text-xl"></i>
+                        <span class="font-semibold">{{ $resource->title }}</span>
+                    </div>
+                    <div class="text-sm text-gray-500 mb-4">{{ $resource->description }}</div>
+                    @if($resource->file_path)
+                        <a href="{{ asset('storage/' . $resource->file_path) }}" target="_blank" class="mt-auto bg-[#b81d8f] text-white px-4 py-2 rounded-lg font-medium text-center hover:bg-[#a01a7d] transition">
+                            {{ $resource->type === 'video' ? 'Watch Video' : 'Download' }}
+                        </a>
+                    @endif
+                </div>
+            @empty
+                <div class="bg-white rounded-xl shadow p-5 flex flex-col col-span-3">
+                    <div class="font-semibold mb-2">No pitching resources available yet.</div>
+                </div>
+            @endforelse
         </div>
     </div>
     <!-- Practice Your Pitch -->
@@ -56,8 +60,8 @@
             <div class="flex-1">
                 <div class="text-gray-700 mb-2">Record a practice pitch or submit your pitch deck for feedback from mentors or peers.</div>
                 <div class="flex gap-3 mb-2">
-                    <button class="bg-[#b81d8f] text-white px-5 py-2 rounded-lg font-semibold hover:bg-[#a01a7d] transition">Record Pitch</button>
-                    <button class="bg-blue-600 text-white px-5 py-2 rounded-lg font-semibold hover:bg-blue-700 transition">Request Feedback</button>
+                    <a href="{{ route('practice-pitches.index') }}" class="bg-[#b81d8f] text-white px-5 py-2 rounded-lg font-semibold hover:bg-[#a01a7d] transition">Record Pitch</a>
+                    <a href="{{ route('practice-pitches.index') }}" class="bg-blue-600 text-white px-5 py-2 rounded-lg font-semibold hover:bg-blue-700 transition">Request Feedback</a>
                 </div>
                 <div class="text-xs text-gray-400">You can view your previous practice pitches and feedback below.</div>
             </div>

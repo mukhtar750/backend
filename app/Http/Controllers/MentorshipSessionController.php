@@ -34,39 +34,42 @@ class MentorshipSessionController extends Controller
     {
         $user = Auth::user();
         $request->validate([
-            'pairing_id' => 'required|exists:pairings,id',
+            'mentor_id' => 'required|exists:users,id',
+            'topic' => 'required|string|max:255',
             'date_time' => 'required|date|after:now',
-            'duration' => 'required|integer|min:15|max:240',
-            'topic' => 'nullable|string|max:255',
+            'session_type' => 'required|string|max:32',
             'notes' => 'nullable|string',
-            'meeting_link' => 'required|url|max:255', // Now required
         ]);
-        $pairing = Pairing::findOrFail($request->pairing_id);
-        // Only enforce for non-admins
-        if ($user->role !== 'admin' && $pairing->user_one_id !== $user->id && $pairing->user_two_id !== $user->id) {
-            abort(403, 'You are not part of this pairing.');
+        $mentorId = $request->mentor_id;
+        $entrepreneurId = $user->id;
+        // Check for existing pairing
+        $pairing = \App\Models\Pairing::where('pairing_type', 'mentor_entrepreneur')
+            ->where(function($q) use ($mentorId, $entrepreneurId) {
+                $q->where('user_one_id', $mentorId)->where('user_two_id', $entrepreneurId)
+                  ->orWhere(function($q2) use ($mentorId, $entrepreneurId) {
+                      $q2->where('user_one_id', $entrepreneurId)->where('user_two_id', $mentorId);
+                  });
+            })->first();
+        if (!$pairing) {
+            $pairing = \App\Models\Pairing::create([
+                'user_one_id' => $mentorId,
+                'user_two_id' => $entrepreneurId,
+                'pairing_type' => 'mentor_entrepreneur',
+            ]);
         }
-        // Determine scheduled_for
-        if ($user->role === 'admin') {
-            $scheduledBy = $user->id;
-            $scheduledFor = $pairing->user_one_id; // Default to user_one, could be improved later
-        } else {
-            $scheduledBy = $user->id;
-            $scheduledFor = $pairing->user_one_id === $user->id ? $pairing->user_two_id : $pairing->user_one_id;
-        }
-        $session = MentorshipSession::create([
+        $session = \App\Models\MentorshipSession::create([
             'pairing_id' => $pairing->id,
-            'scheduled_by' => $scheduledBy,
-            'scheduled_for' => $scheduledFor,
+            'scheduled_by' => $entrepreneurId,
+            'scheduled_for' => $mentorId,
             'date_time' => $request->date_time,
-            'duration' => $request->duration,
+            'duration' => 60,
             'topic' => $request->topic,
             'notes' => $request->notes,
-            'meeting_link' => $request->meeting_link, // Save meeting_link
+            'meeting_link' => null,
             'status' => 'pending',
         ]);
-        // TODO: Notify the other user
-        return redirect()->back()->with('success', 'Session booked and awaiting confirmation.');
+        // TODO: Notify admin for approval
+        return response()->json(['success' => true, 'message' => 'Session requested and pending admin approval.']);
     }
 
     // Confirm a session (by the invited user)

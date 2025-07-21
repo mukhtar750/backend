@@ -50,10 +50,10 @@ class ContentController extends Controller
 
     public function index()
     {
+        $categories = \DB::table('categories')->get();
         $contents = Content::orderByDesc('created_at')->get();
         $status = null;
         $resources = \App\Models\Resource::with('bdsp')->orderByDesc('created_at')->paginate(20);
-        $categories = \DB::table('categories')->get();
         return view('admin.content_management', [
             'contents' => $contents,
             'resources' => $resources,
