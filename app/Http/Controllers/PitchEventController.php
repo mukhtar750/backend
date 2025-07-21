@@ -25,7 +25,8 @@ class PitchEventController extends Controller
      */
     public function create()
     {
-        return view('admin.pitch_events.create');
+        $events = PitchEvent::with('creator')->orderBy('event_date', 'desc')->get();
+        return view('admin.pitch_events', compact('events'));
     }
 
     /**

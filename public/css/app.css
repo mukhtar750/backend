@@ -1,0 +1,21 @@
+/* Basic CSS file to prevent 404 errors */
+body {
+    font-family: 'Figtree', sans-serif;
+}
+
+/* Custom styles for the application */
+.bg-gradient-primary {
+    background: linear-gradient(135deg, #b81d8f 0%, #6c3483 100%);
+}
+
+.text-primary {
+    color: #b81d8f;
+}
+
+.border-primary {
+    border-color: #b81d8f;
+}
+
+.focus\:ring-primary:focus {
+    --tw-ring-color: #b81d8f;
+} 

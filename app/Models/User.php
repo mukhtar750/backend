@@ -127,27 +127,38 @@ class User extends Authenticatable
             return false;
         }
 
+        // Any user can message admin
+        if ($targetUser->role === 'admin') {
+            return true;
+        }
+
         // Role-based permissions with pairing
         switch ($this->role) {
             case 'investor':
-                // Investors can only message paired entrepreneurs
                 return $targetUser->role === 'entrepreneur' && $this->isPairedWith($targetUser, 'investor_entrepreneur');
             case 'bdsp':
-                // BDSP can message paired entrepreneurs
                 return $targetUser->role === 'entrepreneur' && $this->isPairedWith($targetUser, 'bdsp_entrepreneur');
             case 'mentor':
-                // Mentors can message paired mentees
-                return $targetUser->role === 'mentee' && $this->isPairedWith($targetUser, 'mentor_mentee');
+                // A mentor can message a paired mentee or a paired entrepreneur
+                if ($targetUser->role === 'mentee') {
+                    return $this->isPairedWith($targetUser, 'mentor_mentee');
+                }
+                if ($targetUser->role === 'entrepreneur') {
+                    return $this->isPairedWith($targetUser, 'mentor_entrepreneur');
+                }
+                return false;
             case 'mentee':
-                // Mentees can message paired mentors
                 return $targetUser->role === 'mentor' && $this->isPairedWith($targetUser, 'mentor_mentee');
             case 'entrepreneur':
-                // Entrepreneurs can message paired BDSPs and paired investors
+                // Entrepreneurs can message paired BDSPs, investors, and mentors
                 if ($targetUser->role === 'bdsp') {
                     return $this->isPairedWith($targetUser, 'bdsp_entrepreneur');
                 }
                 if ($targetUser->role === 'investor') {
                     return $this->isPairedWith($targetUser, 'investor_entrepreneur');
+                }
+                if ($targetUser->role === 'mentor') {
+                    return $this->isPairedWith($targetUser, 'mentor_entrepreneur');
                 }
                 return false;
             default:

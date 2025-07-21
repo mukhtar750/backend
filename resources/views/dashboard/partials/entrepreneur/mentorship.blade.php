@@ -54,7 +54,7 @@
         };
     </script>
     <ul class="space-y-4">
-        <li class="flex items-center justify-between p-3 rounded-xl border border-gray-100">
+        <li class="flex items-center justify-between p-3 rounded-xl border border-gray-100 cursor-pointer hover:bg-purple-50 transition" onclick="window.location='{{ route('entrepreneur.mentorship.session', ['id' => 1]) }}'">
             <div class="flex items-center gap-3">
                 <img src="https://randomuser.me/api/portraits/women/65.jpg" class="h-10 w-10 rounded-full object-cover" alt="Dr. Kemi Adebayo">
                 <div>
@@ -65,7 +65,7 @@
             </div>
             <span class="bg-purple-100 text-purple-700 text-xs px-3 py-1 rounded-full font-semibold">scheduled</span>
         </li>
-        <li class="flex items-center justify-between p-3 rounded-xl border border-gray-100">
+        <li class="flex items-center justify-between p-3 rounded-xl border border-gray-100 cursor-pointer hover:bg-purple-50 transition" onclick="window.location='{{ route('entrepreneur.mentorship.session', ['id' => 2]) }}'">
             <div class="flex items-center gap-3">
                 <img src="https://randomuser.me/api/portraits/women/66.jpg" class="h-10 w-10 rounded-full object-cover" alt="Grace Mwangi">
                 <div>

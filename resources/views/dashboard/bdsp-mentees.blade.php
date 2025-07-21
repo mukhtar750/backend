@@ -9,7 +9,7 @@
             <h1 class="text-3xl font-bold text-gray-800">Mentorship Management</h1>
             <p class="text-gray-500">Manage mentorship sessions and track progress</p>
         </div>
-        <a href="#" class="bg-[#b81d8f] text-white px-5 py-2 rounded-lg font-semibold shadow hover:bg-[#a01a7d] transition">+ Schedule Session</a>
+        <a href="{{ route('bdsp.schedule-session-page') }}" class="bg-[#b81d8f] text-white px-5 py-2 rounded-lg font-semibold shadow hover:bg-[#a01a7d] transition">+ Schedule Session</a>
     </div>
     <div class="grid grid-cols-1 md:grid-cols-4 gap-6 mb-6">
         <div class="bg-white p-6 rounded-lg shadow flex flex-col items-center">

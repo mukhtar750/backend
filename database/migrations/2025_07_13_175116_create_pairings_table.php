@@ -12,7 +12,7 @@ return new class extends Migration
             $table->id();
             $table->foreignId('user_one_id')->constrained('users')->onDelete('cascade');
             $table->foreignId('user_two_id')->constrained('users')->onDelete('cascade');
-            $table->string('pairing_type'); // mentor_mentee, bdsp_entrepreneur, investor_entrepreneur
+            $table->string('pairing_type'); // bdsp_entrepreneur, investor_entrepreneur, mentor_entrepreneur, mentor_mentee
             $table->timestamps();
             $table->unique(['user_one_id', 'user_two_id', 'pairing_type']);
         });

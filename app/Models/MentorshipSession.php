@@ -18,6 +18,10 @@ class MentorshipSession extends Model
         'meeting_link',
     ];
 
+    protected $casts = [
+        'date_time' => 'datetime',
+    ];
+
     public function pairing()
     {
         return $this->belongsTo(Pairing::class);

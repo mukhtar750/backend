@@ -92,6 +92,16 @@ class AuthController extends Controller
 
     public function dashboard()
     {
-        return view('dashboard');
+        $user = auth()->user();
+        $name = $user->name;
+        // Example logic for milestone, days left, and points
+        $milestone = 'Pitch Deck Completion'; // Replace with real milestone logic
+        $daysLeft = '14 days'; // Replace with real calculation
+        $points = '1,250 pts'; // Replace with real calculation
+        $pairings = \App\Models\Pairing::with(['userOne', 'userTwo'])
+            ->where('user_one_id', $user->id)
+            ->orWhere('user_two_id', $user->id)
+            ->get();
+        return view('dashboard.entrepreneur', compact('name', 'milestone', 'daysLeft', 'points', 'pairings'));
     }
 }

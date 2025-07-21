@@ -35,9 +35,10 @@
                 <label for="pairing_type" class="block text-gray-700 font-semibold mb-2">Pairing Type</label>
                 <select name="pairing_type" id="pairing_type" class="w-full border-gray-300 rounded-md shadow-sm" required>
                     <option value="">Select pairing type</option>
-                    <option value="mentor_mentee">Mentor ↔ Mentee</option>
                     <option value="bdsp_entrepreneur">BDSP ↔ Entrepreneur</option>
                     <option value="investor_entrepreneur">Investor ↔ Entrepreneur</option>
+                    <option value="mentor_entrepreneur">Mentor ↔ Entrepreneur</option>
+                    <option value="mentor_mentee">Mentor ↔ Mentee</option>
                 </select>
             </div>
             <div id="user-selectors">
@@ -89,6 +90,22 @@
                         @endforeach
                     </select>
                 </div>
+                <div class="mb-4" id="mentor_entrepreneur_selectors" style="display:none;">
+                    <label class="block text-gray-700 font-semibold mb-2">Mentor</label>
+                    <select name="user_one_id" class="w-full border-gray-300 rounded-md shadow-sm mb-2">
+                        <option value="">Select Mentor</option>
+                        @foreach($mentors as $mentor)
+                            <option value="{{ $mentor->id }}">{{ $mentor->name }} ({{ $mentor->email }})</option>
+                        @endforeach
+                    </select>
+                    <label class="block text-gray-700 font-semibold mb-2">Entrepreneur</label>
+                    <select name="user_two_id" class="w-full border-gray-300 rounded-md shadow-sm">
+                        <option value="">Select Entrepreneur</option>
+                        @foreach($entrepreneurs as $e)
+                            <option value="{{ $e->id }}">{{ $e->name }} ({{ $e->email }})</option>
+                        @endforeach
+                    </select>
+                </div>
             </div>
             <div class="mt-6">
                 <button type="submit" class="bg-blue-600 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded">Create Pairing</button>
@@ -110,6 +127,11 @@ document.addEventListener('DOMContentLoaded', function() {
         mentorMentee.style.display = 'none';
         bdspEntrepreneur.style.display = 'none';
         investorEntrepreneur.style.display = 'none';
+        const mentorEntrepreneur = document.getElementById('mentor_entrepreneur_selectors');
+        if (mentorEntrepreneur) {
+            mentorEntrepreneur.style.display = 'none';
+            mentorEntrepreneur.querySelectorAll('select').forEach(sel => sel.removeAttribute('name'));
+        }
         mentorMentee.querySelectorAll('select').forEach(sel => sel.removeAttribute('name'));
         bdspEntrepreneur.querySelectorAll('select').forEach(sel => sel.removeAttribute('name'));
         investorEntrepreneur.querySelectorAll('select').forEach(sel => sel.removeAttribute('name'));
@@ -125,6 +147,10 @@ document.addEventListener('DOMContentLoaded', function() {
             investorEntrepreneur.style.display = 'block';
             investorEntrepreneur.querySelectorAll('select')[0].setAttribute('name', 'user_one_id');
             investorEntrepreneur.querySelectorAll('select')[1].setAttribute('name', 'user_two_id');
+        } else if (pairingType.value === 'mentor_entrepreneur') {
+            mentorEntrepreneur.style.display = 'block';
+            mentorEntrepreneur.querySelectorAll('select')[0].setAttribute('name', 'user_one_id');
+            mentorEntrepreneur.querySelectorAll('select')[1].setAttribute('name', 'user_two_id');
         }
     }
     pairingType.addEventListener('change', updateSelectors);

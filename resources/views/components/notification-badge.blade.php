@@ -1,5 +1,5 @@
 @php
-    $unreadCount = auth()->user()->unreadNotifications()->count();
+    $unreadCount = auth()->check() ? auth()->user()->unreadNotifications()->count() : 0;
 @endphp
 
 <div x-data="notificationModal()" class="relative inline-block">

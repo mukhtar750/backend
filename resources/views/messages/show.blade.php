@@ -1,4 +1,4 @@
-@extends('layouts.app')
+@extends('layouts.entrepreneur')
 
 @section('content')
 <div class="max-w-6xl mx-auto py-6 px-4 sm:px-6 lg:px-8">
@@ -10,8 +10,11 @@
                     <a href="{{ route('messages.index') }}" class="text-gray-500 hover:text-gray-700">
                         <i class="bi bi-arrow-left text-xl"></i>
                     </a>
-                    <div class="w-10 h-10 bg-purple-100 rounded-full flex items-center justify-center">
-                        <i class="bi bi-person text-purple-600"></i>
+                    <div class="relative w-10 h-10">
+                        <img src="{{ $otherUser->avatar ?? 'https://i.pravatar.cc/40?u=' . $otherUser->id }}" class="w-10 h-10 rounded-full object-cover" alt="{{ $otherUser->name }}">
+                        @if($otherUser->is_online ?? false)
+                            <span class="absolute bottom-0 right-0 h-3 w-3 bg-green-400 border-2 border-white rounded-full"></span>
+                        @endif
                     </div>
                     <div>
                         <h1 class="text-xl font-bold text-gray-900">{{ $otherUser->name }}</h1>
@@ -27,19 +30,29 @@
             <div class="flex-1 overflow-y-auto p-4 space-y-4" id="messagesContainer">
                 @foreach($messages as $message)
                     <div class="flex {{ $message->sender_id === auth()->id() ? 'justify-end' : 'justify-start' }}">
-                        <div class="max-w-xs lg:max-w-md">
-                            <div class="px-4 py-2 rounded-lg {{ $message->sender_id === auth()->id() ? 'bg-purple-600 text-white' : 'bg-gray-100 text-gray-900' }}">
-                                @if($message->isFile())
-                                    <div class="flex items-center space-x-2">
-                                        <i class="bi bi-file-earmark"></i>
-                                        <span>{{ $message->file_name }}</span>
-                                        <a href="{{ route('messages.download', $message->id) }}" class="text-blue-500">
-                                            <i class="bi bi-download"></i>
+                        <div class="flex items-end gap-2 {{ $message->sender_id === auth()->id() ? 'flex-row-reverse' : '' }}">
+                            {{-- Avatar --}}
+                            <img src="{{ $message->sender->avatar ?? 'https://i.pravatar.cc/32?u=' . $message->sender_id }}" class="h-8 w-8 rounded-full object-cover" alt="{{ $message->sender->name }}">
+                            <div class="max-w-xs lg:max-w-md">
+                                <div class="px-4 py-2 rounded-lg {{ $message->sender_id === auth()->id() ? 'bg-purple-600 text-white' : 'bg-gray-100 text-gray-900' }}">
+                                    @if($message->isImage())
+                                        <a href="{{ asset('storage/' . $message->file_path) }}" target="_blank">
+                                            <img src="{{ asset('storage/' . $message->file_path) }}" class="max-h-40 rounded mb-2" alt="Image">
                                         </a>
+                                    @elseif($message->isFile())
+                                        <div class="flex items-center space-x-2">
+                                            <i class="bi bi-file-earmark"></i>
+                                            <span>{{ $message->file_name }}</span>
+                                            <a href="{{ route('messages.download', $message->id) }}" class="text-blue-500">
+                                                <i class="bi bi-download"></i>
+                                            </a>
+                                        </div>
+                                    @endif
+                                    <div>{{ $message->content }}</div>
+                                    <div class="text-xs opacity-75 mt-1">
+                                        {{ $message->sender->name }} • {{ $message->created_at->format('g:i A') }}
                                     </div>
-                                @endif
-                                <div>{{ $message->content }}</div>
-                                <div class="text-xs opacity-75 mt-1">{{ $message->created_at->format('g:i A') }}</div>
+                                </div>
                             </div>
                         </div>
                     </div>

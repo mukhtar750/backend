@@ -1,5 +1,8 @@
 <div class="bg-white rounded-2xl shadow p-6 mb-6">
-    <h3 class="text-lg font-bold mb-4">Recent Achievements</h3>
+    <div class="flex items-center justify-between mb-4">
+        <h3 class="text-lg font-bold">Recent Achievements</h3>
+        <a href="{{ route('entrepreneur.achievements') }}" class="bg-[#b81d8f] hover:bg-[#a259e6] text-white text-xs font-semibold px-4 py-1 rounded-lg transition">View All</a>
+    </div>
     <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
         <div class="bg-yellow-50 border-l-4 border-yellow-400 p-4 rounded-xl flex items-center">
             <i class="bi bi-award-fill text-yellow-400 text-2xl mr-3"></i>

@@ -11,6 +11,7 @@
     <link rel="stylesheet" href="{{ asset('css/app.css') }}">
 </head>
 <body class="font-sans antialiased bg-gray-100">
+    @php $route = Route::currentRouteName(); @endphp
     <div class="flex h-screen bg-gray-100">
         <!-- Sidebar -->
         <div class="w-64 bg-[#b81d8f] text-white flex flex-col">
@@ -26,7 +27,9 @@
                 <a href="{{ route('entrepreneur.calendar') }}" class="flex items-center px-4 py-2 text-white hover:bg-[#a01a7d] rounded-lg font-medium"><i class="bi bi-calendar-event-fill mr-3"></i> Training Calendar</a>
                 <a href="{{ route('entrepreneur.mentorship') }}" class="flex items-center px-4 py-2 text-white hover:bg-[#a01a7d] rounded-lg font-medium"><i class="bi bi-people-fill mr-3"></i> Mentorship</a>
                 <a href="{{ route('entrepreneur.pitch') }}" class="flex items-center px-4 py-2 text-white hover:bg-[#a01a7d] rounded-lg font-medium"><i class="bi bi-easel-fill mr-3"></i> Pitch Preparation</a>
-                <a href="{{ route('messages.index') }}" class="flex items-center px-4 py-2 text-white hover:bg-[#a01a7d] rounded-lg font-medium"><i class="bi bi-chat-dots mr-3"></i> Messages</a>
+                <a href="{{ route('entrepreneur.messages') }}" class="flex items-center gap-3 px-4 py-2 rounded-lg hover:bg-purple-700 {{ $route == 'entrepreneur.messages' ? 'bg-white text-purple-800 font-semibold shadow-sm' : '' }}">
+                    <i class="bi bi-chat-dots"></i> Messages
+                </a>
                 <a href="{{ route('entrepreneur.feedback') }}" class="flex items-center px-4 py-2 text-white hover:bg-[#a01a7d] rounded-lg font-medium"><i class="bi bi-chat-dots-fill mr-3"></i> Feedback</a>
             </nav>
             <div class="p-4 border-t border-[#a01a7d]">
@@ -58,9 +61,17 @@
                         <input type="text" placeholder="Search..." class="border border-gray-300 rounded-md py-2 px-4 pl-10 focus:outline-none focus:ring-2 focus:ring-[#b81d8f]">
                         <i class="bi bi-search absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400"></i>
                     </div>
-                    <a href="#" class="relative text-gray-600 hover:text-gray-800">
-                        <i class="bi bi-bell-fill text-xl"></i>
-                        <span class="absolute top-0 right-0 inline-flex items-center justify-center px-2 py-1 text-xs font-bold leading-none text-red-100 bg-red-600 rounded-full">2</span>
+                    @include('components.notification-badge')
+                    <a href="{{ route('messages.index') }}" class="relative text-gray-600 hover:text-gray-800 mr-2">
+                        <i class="bi bi-chat-dots-fill text-xl"></i>
+                        @php
+                            $unreadMessages = auth()->check() ? auth()->user()->getUnreadMessageCount() : 0;
+                        @endphp
+                        @if($unreadMessages > 0)
+                            <span class="absolute -top-1 -right-1 inline-flex items-center justify-center px-2 py-1 text-xs font-bold leading-none text-white bg-blue-600 rounded-full">
+                                {{ $unreadMessages > 99 ? '99+' : $unreadMessages }}
+                            </span>
+                        @endif
                     </a>
                     <div class="flex items-center">
                         <img class="h-8 w-8 rounded-full mr-2" src="https://i.pravatar.cc/32" alt="{{ Auth::user()->name }}">

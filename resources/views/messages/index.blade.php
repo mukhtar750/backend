@@ -1,4 +1,4 @@
-@extends('layouts.investor')
+@extends(auth()->user()->role === 'bdsp' ? 'layouts.bdsp' : (auth()->user()->role === 'admin' ? 'admin.layouts.admin' : 'layouts.app'))
 
 @section('content')
 <div class="max-w-6xl mx-auto py-6 px-4 sm:px-6 lg:px-8">
@@ -10,7 +10,7 @@
                     <i class="bi bi-chat-dots-fill text-2xl text-purple-600"></i>
                     <h1 class="text-2xl font-bold text-gray-900">Messages</h1>
                 </div>
-                <button @click="openComposeModal()" class="bg-purple-600 text-white px-4 py-2 rounded-lg shadow hover:bg-purple-700 transition flex items-center">
+                <button @click="openModal()" class="bg-purple-600 text-white px-4 py-2 rounded-lg shadow hover:bg-purple-700 transition flex items-center">
                     <i class="bi bi-plus-circle mr-2"></i> New Message
                 </button>
             </div>
@@ -27,17 +27,25 @@
                                 $otherUser = $conversation->getOtherUser(auth()->id());
                                 $unreadCount = $conversation->getUnreadCount(auth()->id());
                                 $latestMessage = $conversation->latestMessage;
+                                // Example: $otherUser->is_online (implement this in your User model/controller if not present)
+                                $avatar = $otherUser->avatar ?? 'https://i.pravatar.cc/40?u=' . $otherUser->id;
                             @endphp
-                            <div class="flex items-center space-x-3 p-3 rounded-lg hover:bg-gray-50 cursor-pointer transition"
+                            <div class="flex items-center space-x-3 p-3 rounded-lg hover:bg-gray-50 cursor-pointer transition relative"
                                  onclick="window.location.href='{{ route('messages.show', $conversation->id) }}'">
-                                <div class="w-10 h-10 bg-purple-100 rounded-full flex items-center justify-center">
-                                    <i class="bi bi-person text-purple-600"></i>
+                                <div class="relative">
+                                    <img src="{{ $avatar }}" class="h-10 w-10 rounded-full object-cover" alt="{{ $otherUser->name }}">
+                                    @if($otherUser->is_online ?? false)
+                                        <span class="absolute bottom-0 right-0 h-3 w-3 bg-green-400 border-2 border-white rounded-full"></span>
+                                    @endif
                                 </div>
                                 <div class="flex-1 min-w-0">
                                     <div class="flex items-center justify-between">
-                                        <h3 class="text-sm font-semibold text-gray-900">{{ $otherUser->name }}</h3>
+                                        <div>
+                                            <h3 class="text-sm font-semibold text-gray-900">{{ $otherUser->name }}</h3>
+                                            <div class="text-xs text-gray-500">{{ ucfirst($otherUser->role) }}</div>
+                                        </div>
                                         @if($unreadCount > 0)
-                                            <span class="bg-red-500 text-white text-xs px-2 py-1 rounded-full">{{ $unreadCount }}</span>
+                                            <span class="bg-red-500 text-white text-xs px-2 py-1 rounded-full animate-pulse">{{ $unreadCount }}</span>
                                         @endif
                                     </div>
                                     @if($latestMessage)
@@ -67,7 +75,7 @@
                     </div>
                     <h2 class="text-2xl font-bold text-gray-900 mb-2">Welcome to Messages</h2>
                     <p class="text-gray-600 mb-6">Select a conversation from the list or start a new one.</p>
-                    <button @click="openComposeModal()" class="bg-purple-600 text-white px-6 py-3 rounded-lg shadow hover:bg-purple-700 transition">
+                    <button @click="openModal()" class="bg-purple-600 text-white px-6 py-3 rounded-lg shadow hover:bg-purple-700 transition">
                         Start New Conversation
                     </button>
                 </div>
@@ -126,7 +134,9 @@
                 <!-- Selected File -->
                 <div x-show="selectedFile" class="flex items-center space-x-2 p-2 bg-gray-50 rounded">
                     <i class="bi bi-file-earmark text-gray-500"></i>
-                    <span x-text="selectedFile.name" class="text-sm text-gray-700"></span>
+                    <template x-if="selectedFile">
+                        <span x-text="selectedFile.name" class="text-sm text-gray-700"></span>
+                    </template>
                     <button @click="removeFile()" type="button" class="text-red-500 hover:text-red-700">
                         <i class="bi bi-x"></i>
                     </button>

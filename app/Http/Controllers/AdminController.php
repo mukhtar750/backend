@@ -9,16 +9,127 @@ use Illuminate\Http\Request;
 use App\Models\Pairing;
 use App\Models\TrainingSession;
 use App\Models\Resource;
+use App\Models\PitchEvent;
+use App\Models\MentorshipSession;
+use App\Models\Content;
+use App\Models\Feedback;
+use Illuminate\Support\Str;
 
 class AdminController extends Controller
 {
     public function dashboard()
     {
-        // Dummy data for demonstration
-        $totalUsers = 1200;
-        $activePrograms = 45;
-        $pitchEvents = 12;
-        $successRate = 85;
+        // Real data for admin dashboard
+        $totalUsers = \App\Models\User::count();
+        $activePrograms = \App\Models\TrainingSession::where('date_time', '>=', now())->count();
+        $pitchEvents = \App\Models\PitchEvent::where('status', 'published')->count();
+        $successRate = 85; // Could be calculated from actual data
+
+        // Get recent mentorship sessions
+        $recentSessions = \App\Models\MentorshipSession::with(['pairing.userOne', 'pairing.userTwo', 'scheduledBy', 'scheduledFor'])
+            ->orderBy('created_at', 'desc')
+            ->limit(5)
+            ->get();
+
+        // Get all types of pending approvals
+        $pendingUsers = \App\Models\User::where('status', 'Pending')->take(3)->get();
+        $pendingResources = \App\Models\Resource::where('is_approved', false)->take(3)->get();
+        $pendingContent = \App\Models\Content::where('status', 'pending')->take(3)->get();
+        $pendingFeedback = \App\Models\Feedback::where('status', 'pending')->take(3)->get();
+
+        // Calculate detailed counts for dashboard
+        $approvalCounts = [
+            'users' => \App\Models\User::where('status', 'Pending')->count(),
+            'resources' => \App\Models\Resource::where('is_approved', false)->count(),
+            'content' => \App\Models\Content::where('status', 'pending')->count(),
+            'feedback' => \App\Models\Feedback::where('status', 'pending')->count(),
+        ];
+        $totalPending = array_sum($approvalCounts);
+
+        // Combine all pending items for the dashboard
+        $pendingApprovals = collect();
+        
+        // Add users
+        foreach ($pendingUsers as $user) {
+            $pendingApprovals->push([
+                'type' => 'user',
+                'item' => $user,
+                'title' => $user->name,
+                'subtitle' => $user->email,
+                'description' => $user->organization ?? 'N/A',
+                'time' => $user->created_at->diffForHumans(),
+                'approve_route' => route('admin.approve', $user->id),
+                'review_route' => route('admin.editUser', $user->id),
+                'approve_method' => 'PATCH',
+                'approve_text' => 'Approve User'
+            ]);
+        }
+
+        // Add resources
+        foreach ($pendingResources as $resource) {
+            $pendingApprovals->push([
+                'type' => 'resource',
+                'item' => $resource,
+                'title' => $resource->name,
+                'subtitle' => $resource->bdsp ? $resource->bdsp->name : 'N/A',
+                'description' => Str::limit($resource->description, 60),
+                'time' => $resource->created_at->diffForHumans(),
+                'approve_route' => route('admin.resources.approve', $resource->id),
+                'review_route' => route('admin.resources'),
+                'approve_method' => 'PATCH',
+                'approve_text' => 'Approve Resource'
+            ]);
+        }
+
+        // Add content
+        foreach ($pendingContent as $content) {
+            $pendingApprovals->push([
+                'type' => 'content',
+                'item' => $content,
+                'title' => $content->title,
+                'subtitle' => $content->type,
+                'description' => Str::limit($content->description, 60),
+                'time' => $content->created_at->diffForHumans(),
+                'approve_route' => route('admin.contents.approve', $content->id),
+                'review_route' => route('admin.content_management'),
+                'approve_method' => 'PATCH',
+                'approve_text' => 'Approve Content'
+            ]);
+        }
+
+        // Add feedback
+        foreach ($pendingFeedback as $feedback) {
+            $pendingApprovals->push([
+                'type' => 'feedback',
+                'item' => $feedback,
+                'title' => 'Feedback from ' . ($feedback->user ? $feedback->user->name : 'Unknown'),
+                'subtitle' => $feedback->category ?? 'General',
+                'description' => Str::limit($feedback->comments, 60),
+                'time' => $feedback->created_at->diffForHumans(),
+                'approve_route' => route('admin.feedback.update', $feedback->id),
+                'review_route' => route('admin.feedback'),
+                'approve_method' => 'PATCH',
+                'approve_text' => 'Review Feedback'
+            ]);
+        }
+
+        // Sort by priority and creation time (newest first)
+        $pendingApprovals = $pendingApprovals->sortBy(function ($item) {
+            // Priority: 1=users (highest), 2=resources, 3=content, 4=feedback (lowest)
+            $priority = [
+                'user' => 1,
+                'resource' => 2,
+                'content' => 3,
+                'feedback' => 4
+            ];
+            return $priority[$item['type']] . '-' . $item['time'];
+        })->take(5);
+
+        // Get upcoming trainings
+        $upcomingTrainings = \App\Models\TrainingSession::where('date_time', '>=', now())
+            ->orderBy('date_time', 'asc')
+            ->take(5)
+            ->get();
 
         $recentActivity = [
             ['color' => 'green', 'text' => 'John Doe registered as Entrepreneur', 'time' => '2 hours ago'],
@@ -31,7 +142,7 @@ class AdminController extends Controller
             ['title' => 'Webinar: Funding Your Startup', 'time' => '2025-07-15 02:00 PM', 'participants' => '150 Attendees'],
         ];
 
-        return view('admin.dashboard', compact('totalUsers', 'activePrograms', 'pitchEvents', 'successRate', 'recentActivity', 'upcomingEvents'));
+        return view('admin.dashboard', compact('totalUsers', 'activePrograms', 'pitchEvents', 'successRate', 'recentActivity', 'upcomingEvents', 'recentSessions', 'pendingApprovals', 'upcomingTrainings', 'approvalCounts', 'totalPending'));
     }
 
     public function userManagement()
@@ -209,11 +320,17 @@ class AdminController extends Controller
                 'pairing_type' => $request->pairing_type,
             ]);
             \Log::info('Pairing: Created successfully', ['pairing_id' => $pairing->id]);
-            // Notify both users
+            // Notify both users (except admin users)
             $userOne = \App\Models\User::find($request->user_one_id);
             $userTwo = \App\Models\User::find($request->user_two_id);
-            $userOne->notify(new \App\Notifications\UserPairedNotification($userTwo, $request->pairing_type));
-            $userTwo->notify(new \App\Notifications\UserPairedNotification($userOne, $request->pairing_type));
+            
+            // Only send notifications to non-admin users
+            if ($userOne->role !== 'admin') {
+                $userOne->notify(new \App\Notifications\UserPairedNotification($userTwo, $request->pairing_type));
+            }
+            if ($userTwo->role !== 'admin') {
+                $userTwo->notify(new \App\Notifications\UserPairedNotification($userOne, $request->pairing_type));
+            }
             \Log::info('Pairing: Notifications sent');
         } catch (\Exception $e) {
             \Log::error('Pairing: Exception occurred', ['error' => $e->getMessage(), 'trace' => $e->getTraceAsString()]);
@@ -257,6 +374,7 @@ class AdminController extends Controller
             'trainer' => 'required|string|max:255',
             'target_roles' => 'required|array|min:1',
             'target_roles.*' => 'in:entrepreneur,bdsp,mentor,mentee,investor',
+            'meeting_link' => 'nullable|url',
         ]);
         $session = TrainingSession::create([
             'title' => $request->title,
@@ -265,6 +383,7 @@ class AdminController extends Controller
             'duration' => $request->duration,
             'trainer' => $request->trainer,
             'target_roles' => json_encode($request->target_roles),
+            'meeting_link' => $request->meeting_link,
         ]);
         // Notify users with matching roles
         $roles = $request->target_roles;
@@ -293,6 +412,7 @@ class AdminController extends Controller
             'trainer' => 'required|string|max:255',
             'target_roles' => 'required|array|min:1',
             'target_roles.*' => 'in:entrepreneur,bdsp,mentor,mentee,investor',
+            'meeting_link' => 'nullable|url',
         ]);
         $session->update([
             'title' => $request->title,
@@ -301,6 +421,7 @@ class AdminController extends Controller
             'duration' => $request->duration,
             'trainer' => $request->trainer,
             'target_roles' => json_encode($request->target_roles),
+            'meeting_link' => $request->meeting_link,
         ]);
         // TODO: Notify users of changes if needed
         return redirect()->route('admin.training_programs')->with('success', 'Training session updated successfully.');
@@ -332,8 +453,8 @@ class AdminController extends Controller
 
     public function feedback()
     {
-        $feedback = \App\Models\Feedback::orderBy('status')->orderByDesc('created_at')->paginate(20);
-        return view('admin.feedback', compact('feedback'));
+        $allFeedback = \App\Models\Feedback::latest()->get();
+        return view('admin.feedback', compact('allFeedback'));
     }
 
     public function updateFeedbackStatus(Request $request, $id)
@@ -389,5 +510,22 @@ class AdminController extends Controller
         $resource = Resource::findOrFail($id);
         $resource->delete();
         return back()->with('success', 'Resource deleted successfully.');
+    }
+
+    // Admin: Content Moderation
+    public function approveContent($id)
+    {
+        $content = Content::findOrFail($id);
+        $content->status = 'published';
+        $content->save();
+        return back()->with('success', 'Content approved successfully.');
+    }
+
+    public function rejectContent($id)
+    {
+        $content = Content::findOrFail($id);
+        $content->status = 'rejected';
+        $content->save();
+        return back()->with('success', 'Content rejected successfully.');
     }
 }

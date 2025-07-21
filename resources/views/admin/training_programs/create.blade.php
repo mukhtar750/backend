@@ -34,6 +34,10 @@
             <label class="block text-gray-700 font-semibold mb-2">Trainer</label>
             <input type="text" name="trainer" value="{{ old('trainer') }}" class="w-full border-gray-300 rounded-md shadow-sm" required>
         </div>
+        <div class="mb-4">
+            <label class="block text-gray-700 font-semibold mb-2">Meeting Link</label>
+            <input type="url" name="meeting_link" value="{{ old('meeting_link') }}" class="w-full border-gray-300 rounded-md shadow-sm" placeholder="https://...">
+        </div>
         <div class="mb-6">
             <label class="block text-gray-700 font-semibold mb-2">Target Roles</label>
             <select name="target_roles[]" multiple class="w-full border-gray-300 rounded-md shadow-sm" required>

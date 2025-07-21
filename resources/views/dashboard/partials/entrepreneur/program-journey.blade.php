@@ -10,18 +10,20 @@
                 <div class="text-xs text-gray-400">Completed</div>
             </div>
             <div class="flex-1 h-1 bg-gradient-to-r from-[#b81d8f] to-[#a259e6] mx-2 md:mx-4"></div>
-            <!-- Step 2 -->
+            <!-- Step 2: Training -->
             <div class="flex flex-col items-center flex-1">
                 <div class="h-10 w-10 flex items-center justify-center rounded-full bg-[#a259e6] text-white font-bold">2</div>
                 <div class="mt-2 text-xs font-semibold text-gray-700">Training</div>
                 <div class="text-xs text-gray-400">In Progress</div>
+                <a href="{{ route('entrepreneur.calendar') }}" class="mt-2 bg-[#b81d8f] hover:bg-[#a259e6] text-white text-xs font-semibold px-4 py-1 rounded-lg transition">Continue</a>
             </div>
             <div class="flex-1 h-1 bg-gradient-to-r from-[#a259e6] to-gray-200 mx-2 md:mx-4"></div>
-            <!-- Step 3 -->
+            <!-- Step 3: Mentorship -->
             <div class="flex flex-col items-center flex-1">
                 <div class="h-10 w-10 flex items-center justify-center rounded-full bg-gray-200 text-gray-500 font-bold">3</div>
                 <div class="mt-2 text-xs font-semibold text-gray-700">Mentorship</div>
                 <div class="text-xs text-gray-400">Upcoming</div>
+                <a href="{{ route('entrepreneur.mentorship') }}" class="mt-2 bg-[#b81d8f] hover:bg-[#a259e6] text-white text-xs font-semibold px-4 py-1 rounded-lg transition">Book Mentorship</a>
             </div>
             <div class="flex-1 h-1 bg-gradient-to-r from-gray-200 to-gray-200 mx-2 md:mx-4"></div>
             <!-- Step 4 -->

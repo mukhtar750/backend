@@ -27,8 +27,11 @@
         <div class="bg-white rounded-2xl p-8 w-full max-w-md shadow-xl relative">
             <button @click="showFeedback = false" class="absolute top-3 right-3 text-gray-400 hover:text-gray-700"><i class="bi bi-x-lg"></i></button>
             <h3 class="text-xl font-bold mb-4">Submit Feedback</h3>
-            <textarea class="w-full border rounded-lg p-3 mb-4" rows="4" placeholder="Your feedback..."></textarea>
-            <button class="bg-[#b81d8f] hover:bg-[#a259e6] text-white px-6 py-2 rounded-lg font-semibold w-full">Send</button>
+            <form method="POST" action="{{ route('entrepreneur.feedback.store') }}">
+                @csrf
+                <textarea name="feedback" class="w-full border rounded-lg p-3 mb-4" rows="4" placeholder="Your feedback..." required></textarea>
+                <button type="submit" class="bg-[#b81d8f] hover:bg-[#a259e6] text-white px-6 py-2 rounded-lg font-semibold w-full">Send</button>
+            </form>
         </div>
     </div>
 </div>

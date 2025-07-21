@@ -131,6 +131,10 @@ Route::middleware(['auth', 'verified'])->prefix('admin')->name('admin.')->group(
     Route::patch('/resources/{id}/reject', [AdminController::class, 'rejectResource'])->name('resources.reject');
     Route::delete('/resources/{id}', [AdminController::class, 'destroyResource'])->name('resources.destroy');
 
+    // Admin Content Moderation
+    Route::patch('/contents/{id}/approve', [AdminController::class, 'approveContent'])->name('contents.approve');
+    Route::patch('/contents/{id}/reject', [AdminController::class, 'rejectContent'])->name('contents.reject');
+
     Route::post('/contents', [\App\Http\Controllers\ContentController::class, 'store'])->name('contents.store');
 });
 
@@ -157,7 +161,7 @@ Route::post('/register/entrepreneur', [EntrepreneurRegisterController::class, 'r
 
 // Dashboards
 Route::view('/dashboard/investor', 'dashboard.investor')->middleware('auth')->name('dashboard.investor');
-Route::view('/dashboard/bdsp', 'dashboard.bdsp')->middleware('auth')->name('dashboard.bdsp');
+Route::get('/dashboard/bdsp', [\App\Http\Controllers\BDSPController::class, 'dashboard'])->middleware('auth')->name('dashboard.bdsp');
 Route::get('/dashboard/entrepreneur', function () {
     $user = auth()->user();
     $pairings = \App\Models\Pairing::with(['userOne', 'userTwo'])
@@ -167,39 +171,31 @@ Route::get('/dashboard/entrepreneur', function () {
     return view('dashboard.entrepreneur', compact('pairings'));
 })->middleware('auth')->name('dashboard.entrepreneur');
 
-// BDSP Dashboard
-Route::get('/bdsp/dashboard', function () {
-    return view('bdsp.dashboard');
-})->name('bdsp.dashboard');
-
-// My Mentees
-Route::get('/bdsp/mentees', function () {
-    return view('bdsp.mentees'); // placeholder view
-})->name('bdsp.mentees');
-
-// Upload Resources
+// BDSP Dashboard and Management (protected)
 Route::middleware(['auth'])->group(function () {
+    Route::get('/bdsp/dashboard', [\App\Http\Controllers\BDSPController::class, 'dashboard'])->name('bdsp.dashboard');
+    Route::get('/bdsp/mentees', [\App\Http\Controllers\BDSPController::class, 'mentees'])->name('bdsp.mentees');
+    Route::get('/bdsp/schedule-session', [\App\Http\Controllers\BDSPController::class, 'scheduleSessionPage'])->name('bdsp.schedule-session-page');
+    Route::post('/bdsp/schedule-session', [\App\Http\Controllers\BDSPController::class, 'scheduleSession'])->name('bdsp.schedule-session');
+    Route::patch('/bdsp/sessions/{session}/cancel', [\App\Http\Controllers\BDSPController::class, 'cancelSession'])->name('bdsp.sessions.cancel');
+    Route::patch('/bdsp/sessions/{session}/complete', [\App\Http\Controllers\BDSPController::class, 'completeSession'])->name('bdsp.sessions.complete');
+    // BDSP Resources
     Route::get('/bdsp/upload-resources', [\App\Http\Controllers\ResourceController::class, 'index'])->name('bdsp.resources.index');
     Route::post('/bdsp/upload-resources', [\App\Http\Controllers\ResourceController::class, 'store'])->name('bdsp.resources.store');
     Route::get('/bdsp/resources/{resource}/edit', [\App\Http\Controllers\ResourceController::class, 'edit'])->name('bdsp.resources.edit');
     Route::put('/bdsp/resources/{resource}', [\App\Http\Controllers\ResourceController::class, 'update'])->name('bdsp.resources.update');
     Route::delete('/bdsp/resources/{resource}', [\App\Http\Controllers\ResourceController::class, 'destroy'])->name('bdsp.resources.destroy');
+    // BDSP Placeholder Views
+    Route::get('/bdsp/sessions', function () { return view('bdsp.sessions'); })->name('bdsp.sessions');
+    Route::get('/bdsp/reports', function () { return view('bdsp.reports'); })->name('bdsp.reports');
+    Route::get('/bdsp/messages', function () { return view('bdsp.messages'); })->name('bdsp.messages');
+    // BDSP Messaging
+    Route::get('/bdsp/messages', [\App\Http\Controllers\MessageController::class, 'index'])->name('bdsp.messages');
+    Route::get('/bdsp/messages/{conversation}', [\App\Http\Controllers\MessageController::class, 'show'])->name('bdsp.messages.show');
+    Route::post('/bdsp/messages', [\App\Http\Controllers\MessageController::class, 'store'])->name('bdsp.messages.store');
+    Route::get('/bdsp/feedback', [\App\Http\Controllers\FeedbackController::class, 'index'])->name('bdsp.feedback');
+    Route::delete('/bdsp/feedback/{id}', [\App\Http\Controllers\FeedbackController::class, 'destroy'])->name('bdsp.feedback.destroy');
 });
-
-// Sessions
-Route::get('/bdsp/sessions', function () {
-    return view('bdsp.sessions'); // placeholder view
-})->name('bdsp.sessions');
-
-// Reports
-Route::get('/bdsp/reports', function () {
-    return view('bdsp.reports'); // placeholder view
-})->name('bdsp.reports');
-
-// Messages
-Route::get('/bdsp/messages', function () {
-    return view('bdsp.messages'); // placeholder view
-})->name('bdsp.messages');
 
 Route::get('/dashboard/entrepreneur-messages', function () {
     return view('dashboard.entrepreneur-messages');
@@ -232,6 +228,10 @@ Route::middleware(['auth'])->group(function () {
     })->middleware('auth')->name('entrepreneur.pitch');
     Route::get('/dashboard/entrepreneur-feedback', [\App\Http\Controllers\FeedbackController::class, 'index'])->name('entrepreneur.feedback');
 });
+
+Route::post('/entrepreneur/feedback', function (\Illuminate\Http\Request $request) {
+    return back()->with('success', 'Feedback submitted (placeholder).');
+})->name('entrepreneur.feedback.store');
 
 // Investor Dashboard Sections
 Route::middleware(['auth'])->group(function () {
@@ -273,8 +273,8 @@ Route::middleware(['auth'])->group(function () {
 });
 
 Route::middleware('auth')->group(function () {
-    Route::get('/dashboard/bdsp/resources', [ResourceController::class, 'index'])->name('bdsp.resources');
-    Route::post('/dashboard/bdsp/resources', [ResourceController::class, 'store']);
+    Route::get('/dashboard/bdsp/resources', [\App\Http\Controllers\ResourceController::class, 'index'])->name('bdsp.resources');
+    Route::post('/dashboard/bdsp/resources', [\App\Http\Controllers\ResourceController::class, 'store']);
 });
 
 Route::post('/events/{event}/register', [\App\Http\Controllers\PitchEventController::class, 'register'])->name('events.register');
@@ -282,14 +282,23 @@ Route::get('/dashboard/investor-pitch-events', [\App\Http\Controllers\InvestorDa
     ->middleware('auth')
     ->name('investor.pitch_events');
 
-Route::get('/admin/dashboard', function () {
-    $upcomingTrainings = \App\Models\TrainingSession::where('date_time', '>=', now())
-        ->orderBy('date_time', 'asc')
-        ->take(5)
-        ->get();
+Route::get('/admin/dashboard', [AdminController::class, 'dashboard'])->name('admin.dashboard');
+Route::get('/entrepreneur/module/{module}', function ($module) {
+    return view('dashboard.entrepreneur-module', ['module' => $module]);
+})->name('entrepreneur.module');
 
-    // Note the capital "P" in 'Pending'
-    $pendingApprovals = \App\Models\User::where('status', 'Pending')->take(5)->get();
+Route::get('/entrepreneur/task/{task}', function ($task) {
+    return view('dashboard.entrepreneur-task', ['task' => $task]);
+})->name('entrepreneur.task');
 
-    return view('admin.dashboard', compact('upcomingTrainings', 'pendingApprovals'));
-})->name('admin.dashboard');
+Route::get('/entrepreneur/mentorship/session/{id}', function ($id) {
+    return view('dashboard.entrepreneur-mentorship-session', ['id' => $id]);
+})->name('entrepreneur.mentorship.session');
+
+Route::get('/entrepreneur/achievements', function () {
+    return view('dashboard.entrepreneur-achievements');
+})->name('entrepreneur.achievements');
+
+Route::get('/entrepreneur/resource/download/{resource}', function ($resource) {
+    return view('dashboard.entrepreneur-resource-download', ['resource' => $resource]);
+})->name('entrepreneur.resource.download');

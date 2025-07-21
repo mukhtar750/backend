@@ -34,7 +34,7 @@
         <div class="max-w-2xl mx-auto">
             <!-- Page Title -->
             <div class="text-center mb-8">
-                <h2 class="text-3xl md:text-4xl font-bold text-gray-800 mb-2">Register as a BDSP</h2>
+                <h2 class="text-3xl font-extrabold text-gray-900">Register as a BDSP</h2>
                 <p class="text-gray-600 text-lg">Join our network of experts supporting venture success.</p>
             </div>
 
@@ -96,7 +96,7 @@
                     </div>
                     <!-- LinkedIn Profile -->
                     <div>
-                        <label for="bdsp_linkedin" class="block text-sm font-medium text-gray-700 mb-1">LinkedIn Profile</label>
+                        <label for="bdsp_linkedin" class="block text-sm font-semibold text-gray-700 mb-2">LinkedIn Profile (Optional)</label>
                         <input type="url" id="bdsp_linkedin" name="bdsp_linkedin" value="{{ old('bdsp_linkedin') }}"
                                class="input-field w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500"
                                placeholder="https://linkedin.com/in/yourprofile">

@@ -37,6 +37,7 @@
                 </div>
                 <div class="flex items-center gap-2">
                     <span class="bg-blue-50 text-blue-700 text-xs px-2 py-1 rounded-full flex items-center gap-1">in progress</span>
+                    <a href="{{ route('entrepreneur.module', ['module' => 'financial-planning']) }}" class="ml-2 bg-[#b81d8f] hover:bg-[#a259e6] text-white text-xs font-semibold px-3 py-1 rounded-lg transition">Go to Module</a>
                 </div>
             </div>
             <div>
@@ -79,6 +80,7 @@
                 </div>
                 <div class="flex items-center gap-2">
                     <span class="bg-blue-50 text-blue-700 text-xs px-2 py-1 rounded-full flex items-center gap-1">in progress</span>
+                    <a href="{{ route('entrepreneur.module', ['module' => 'pitch-deck-creation']) }}" class="ml-2 bg-[#b81d8f] hover:bg-[#a259e6] text-white text-xs font-semibold px-3 py-1 rounded-lg transition">Go to Module</a>
                 </div>
             </div>
             <div>
@@ -100,6 +102,7 @@
                 </div>
                 <div class="flex items-center gap-2">
                     <span class="bg-gray-100 text-gray-500 text-xs px-2 py-1 rounded-full flex items-center gap-1">pending</span>
+                    <a href="{{ route('entrepreneur.module', ['module' => 'legal-framework']) }}" class="ml-2 bg-[#b81d8f] hover:bg-[#a259e6] text-white text-xs font-semibold px-3 py-1 rounded-lg transition">Go to Module</a>
                 </div>
             </div>
             <div>

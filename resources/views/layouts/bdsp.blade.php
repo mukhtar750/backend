@@ -3,6 +3,7 @@
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="csrf-token" content="{{ csrf_token() }}">
     <title>@yield('title', 'BDSP Dashboard')</title>
     <link rel="preconnect" href="https://fonts.bunny.net">
     <link href="https://fonts.bunny.net/css?family=figtree:400,600&display=swap" rel="stylesheet" />
@@ -14,10 +15,10 @@
     <div class="flex h-screen bg-gray-100">
         <!-- Sidebar -->
         <div class="w-64 bg-[#6c3483] text-white flex flex-col">
-            <div class="p-4 text-2xl font-bold border-b border-[#512e5f]">
-                Innovation Portal
+            <div class="p-4 text-xl md:text-2xl font-bold border-b border-[#512e5f] whitespace-nowrap overflow-hidden text-ellipsis" title="Venture Ready Portal">
+                VR Portal
             </div>
-            <div class="p-4 text-sm border-b border-[#512e5f] tracking-wide">
+            <div class="p-4 text-sm border-b border-[#a01a7d] tracking-wide">
                 BDSP Panel
             </div>
             <nav class="flex-1 px-4 space-y-2 mt-4">
@@ -31,14 +32,17 @@
                 <a href="{{ route('bdsp.resources.index') }}" class="flex items-center gap-3 px-4 py-2 rounded-lg hover:bg-purple-700 {{ $route == 'bdsp.resources.index' ? 'bg-white text-purple-800 font-semibold shadow-sm' : '' }}">
                     <i class="bi bi-upload"></i> Upload Resources
                 </a>
-                <a href="{{ route('bdsp.sessions') }}" class="flex items-center gap-3 px-4 py-2 rounded-lg hover:bg-purple-700 {{ $route == 'bdsp.sessions' ? 'bg-white text-purple-800 font-semibold shadow-sm' : '' }}">
+                <a href="{{ route('bdsp.schedule-session-page') }}" class="flex items-center gap-3 px-4 py-2 rounded-lg hover:bg-purple-700 {{ $route == 'bdsp.schedule-session-page' ? 'bg-white text-purple-800 font-semibold shadow-sm' : '' }}">
                     <i class="bi bi-calendar-event"></i> Sessions
                 </a>
                 <a href="{{ route('bdsp.reports') }}" class="flex items-center gap-3 px-4 py-2 rounded-lg hover:bg-purple-700 {{ $route == 'bdsp.reports' ? 'bg-white text-purple-800 font-semibold shadow-sm' : '' }}">
                     <i class="bi bi-file-earmark-text"></i> Reports
                 </a>
-                <a href="{{ route('messages.index') }}" class="flex items-center gap-3 px-4 py-2 rounded-lg hover:bg-purple-700 {{ $route == 'messages.index' ? 'bg-white text-purple-800 font-semibold shadow-sm' : '' }}">
+                <a href="{{ route('bdsp.messages') }}" class="flex items-center gap-3 px-4 py-2 rounded-lg hover:bg-purple-700 {{ $route == 'bdsp.messages' ? 'bg-white text-purple-800 font-semibold shadow-sm' : '' }}">
                     <i class="bi bi-chat-dots"></i> Messages
+                </a>
+                <a href="{{ route('bdsp.feedback') }}" class="flex items-center gap-3 px-4 py-2 rounded-lg hover:bg-purple-700 {{ $route == 'bdsp.feedback' ? 'bg-white text-purple-800 font-semibold shadow-sm' : '' }}">
+                    <i class="bi bi-chat-left-text"></i> Feedback
                 </a>
             </nav>
             <div class="p-4 border-t border-[#512e5f]">
@@ -72,9 +76,17 @@
                         <input type="text" placeholder="Search..." class="border border-gray-300 rounded-md py-2 px-4 pl-10 focus:outline-none focus:ring-2 focus:ring-[#6c3483]">
                         <i class="bi bi-search absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400"></i>
                     </div>
-                    <a href="#" class="relative text-gray-600 hover:text-gray-800">
-                        <i class="bi bi-bell-fill text-xl"></i>
-                        <span class="absolute top-0 right-0 inline-flex items-center justify-center px-2 py-1 text-xs font-bold leading-none text-red-100 bg-red-600 rounded-full">2</span>
+                    @include('components.notification-badge')
+                    <a href="{{ route('messages.index') }}" class="relative text-gray-600 hover:text-gray-800 mr-2">
+                        <i class="bi bi-chat-dots-fill text-xl"></i>
+                        @php
+                            $unreadMessages = auth()->check() ? auth()->user()->getUnreadMessageCount() : 0;
+                        @endphp
+                        @if($unreadMessages > 0)
+                            <span class="absolute -top-2 -right-2 inline-flex items-center justify-center px-1.5 py-0.5 text-xs font-bold text-white bg-blue-500 rounded-full min-w-[18px]">
+                                {{ $unreadMessages > 99 ? '99+' : $unreadMessages }}
+                            </span>
+                        @endif
                     </a>
                     <div class="flex items-center">
                         <img class="h-8 w-8 rounded-full mr-2" src="https://i.pravatar.cc/32" alt="{{ Auth::user()->name }}">
@@ -91,36 +103,7 @@
             </main>
         </div>
     </div>
-    <script src="//unpkg.com/alpinejs" defer></script>
-    <script src="https://cdn.jsdelivr.net/npm/@joeattardi/emoji-button@latest/dist/index.min.js"></script>
-    <script>
-    document.addEventListener('DOMContentLoaded', function () {
-        // Find all emoji buttons
-        const emojiButtons = document.querySelectorAll('.bi-emoji-smile');
-        if (!emojiButtons.length) {
-            console.log('No emoji button found.');
-            return;
-        }
-        emojiButtons.forEach(function(button) {
-            // Find the closest input in the same form
-            const form = button.closest('form');
-            const input = form ? form.querySelector('input[placeholder="Type your message..."]') : null;
-            if (!input) {
-                console.log('No input found for emoji button.');
-                return;
-            }
-            const picker = new EmojiButton();
-            button.addEventListener('click', function(e) {
-                e.preventDefault();
-                picker.togglePicker(button);
-            });
-            picker.on('emoji', function(emoji) {
-                input.value += emoji;
-                input.focus();
-            });
-        });
-        console.log('Emoji picker initialized.');
-    });
-    </script>
+    <script src="{{ asset('js/alpine.min.js') }}" defer></script>
+    <!-- Removed problematic emoji script -->
 </body>
 </html> 

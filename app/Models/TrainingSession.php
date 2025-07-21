@@ -13,5 +13,10 @@ class TrainingSession extends Model
         'duration',
         'trainer',
         'target_roles',
+        'meeting_link',
+    ];
+
+    protected $casts = [
+        'date_time' => 'datetime',
     ];
 }
