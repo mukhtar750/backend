@@ -9,6 +9,7 @@ use App\Models\TrainingSession;
 class TrainingSessionNotification extends Notification
 {
     use Queueable;
+use RoleBasedUrlTrait;
 
     public $session;
 
@@ -32,6 +33,7 @@ class TrainingSessionNotification extends Notification
             'date_time' => $this->session->date_time,
             'trainer' => $this->session->trainer,
             'type' => 'training',
+            'action_url' => $this->generateActionUrl($notifiable, 'training-sessions.index'),
         ];
     }
-} 
+}

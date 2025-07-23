@@ -4,7 +4,7 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <meta name="csrf-token" content="{{ csrf_token() }}">
-    <title>@yield('title', 'BDSP Dashboard')</title>
+    <title>@yield('title', 'Mentor Dashboard')</title>
     <link rel="preconnect" href="https://fonts.bunny.net">
     <link href="https://fonts.bunny.net/css?family=figtree:400,600&display=swap" rel="stylesheet" />
     <script src="https://cdn.tailwindcss.com"></script>
@@ -19,34 +19,28 @@
                 VR Portal
             </div>
             <div class="p-4 text-sm border-b border-[#a01a7d] tracking-wide">
-                BDSP Panel
+                Mentor Panel
             </div>
             <nav class="flex-1 px-4 space-y-2 mt-4">
                 @php $route = Route::currentRouteName(); @endphp
-                <a href="{{ route('bdsp.dashboard') }}" class="flex items-center gap-3 px-4 py-2 rounded-lg hover:bg-purple-700 {{ $route == 'bdsp.dashboard' ? 'bg-white text-purple-800 font-semibold shadow-sm' : '' }}">
+                <a href="{{ route('mentor.dashboard') }}" class="flex items-center gap-3 px-4 py-2 rounded-lg hover:bg-purple-700 {{ $route == 'mentor.dashboard' ? 'bg-white text-purple-800 font-semibold shadow-sm' : '' }}">
                     <i class="bi bi-grid-fill"></i> Dashboard
                 </a>
-                <a href="{{ route('bdsp.mentees') }}" class="flex items-center gap-3 px-4 py-2 rounded-lg hover:bg-purple-700 {{ $route == 'bdsp.mentees' ? 'bg-white text-purple-800 font-semibold shadow-sm' : '' }}">
+                <a href="{{ route('mentor.practice-pitches.index') }}" class="flex items-center gap-3 px-4 py-2 rounded-lg hover:bg-purple-700 {{ $route == 'mentor.practice-pitches.index' ? 'bg-white text-purple-800 font-semibold shadow-sm' : '' }}">
+                    <i class="bi bi-mic-fill"></i> Practice Pitches
+                </a>
+                <a href="#" class="flex items-center gap-3 px-4 py-2 rounded-lg hover:bg-purple-700">
                     <i class="bi bi-person-lines-fill"></i> My Mentees
                 </a>
-                <a href="{{ route('bdsp.resources.index') }}" class="flex items-center gap-3 px-4 py-2 rounded-lg hover:bg-purple-700 {{ $route == 'bdsp.resources.index' ? 'bg-white text-purple-800 font-semibold shadow-sm' : '' }}">
-                    <i class="bi bi-upload"></i> Upload Resources
-                </a>
-                <a href="{{ route('bdsp.schedule-session-page') }}" class="flex items-center gap-3 px-4 py-2 rounded-lg hover:bg-purple-700 {{ $route == 'bdsp.schedule-session-page' ? 'bg-white text-purple-800 font-semibold shadow-sm' : '' }}">
+                <a href="#" class="flex items-center gap-3 px-4 py-2 rounded-lg hover:bg-purple-700">
                     <i class="bi bi-calendar-event"></i> Sessions
                 </a>
-                <a href="{{ route('bdsp.reports') }}" class="flex items-center gap-3 px-4 py-2 rounded-lg hover:bg-purple-700 {{ $route == 'bdsp.reports' ? 'bg-white text-purple-800 font-semibold shadow-sm' : '' }}">
-                    <i class="bi bi-file-earmark-text"></i> Reports
-                </a>
-                <a href="{{ route('bdsp.messages') }}" class="flex items-center gap-3 px-4 py-2 rounded-lg hover:bg-purple-700 {{ $route == 'bdsp.messages' ? 'bg-white text-purple-800 font-semibold shadow-sm' : '' }}">
+                <a href="#" class="flex items-center gap-3 px-4 py-2 rounded-lg hover:bg-purple-700">
                     <i class="bi bi-chat-dots"></i> Messages
                 </a>
-                <a href="{{ route('bdsp.feedback') }}" class="flex items-center gap-3 px-4 py-2 rounded-lg hover:bg-purple-700 {{ $route == 'bdsp.feedback' ? 'bg-white text-purple-800 font-semibold shadow-sm' : '' }}">
+                <a href="#" class="flex items-center gap-3 px-4 py-2 rounded-lg hover:bg-purple-700">
                     <i class="bi bi-chat-left-text"></i> Feedback
                 </a>
-                <a href="{{ route('bdsp.practice-pitches.index') }}" class="flex items-center gap-3 px-4 py-2 rounded-lg hover:bg-purple-700 {{ $route == 'bdsp.practice-pitches.index' ? 'bg-white text-purple-800 font-semibold shadow-sm' : '' }}">
-    <i class="bi bi-mic-fill"></i> Practice Pitches
-</a>
             </nav>
             <div class="p-4 border-t border-[#512e5f]">
                 <div class="flex items-center mb-3">
@@ -80,7 +74,7 @@
                         <i class="bi bi-search absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400"></i>
                     </div>
                     @include('components.notification-badge')
-                    <a href="{{ route('bdsp.messages') }}" class="relative text-gray-600 hover:text-gray-800 mr-2">
+                    <a href="{{ route('messages.index') }}" class="relative text-gray-600 hover:text-gray-800 mr-2">
                         <i class="bi bi-chat-dots-fill text-xl"></i>
                         @php
                             $unreadMessages = auth()->check() ? auth()->user()->getUnreadMessageCount() : 0;
@@ -95,18 +89,17 @@
                         <img class="h-8 w-8 rounded-full mr-2" src="https://i.pravatar.cc/32" alt="{{ Auth::user()->name }}">
                         <div>
                             <div class="font-semibold text-gray-800">{{ Auth::user()->name }}</div>
-                            <div class="text-sm text-gray-500">BDSP</div>
+                            <div class="text-sm text-gray-500">Mentor</div>
                         </div>
                     </div>
                 </div>
             </header>
-            <!-- age Content -->
+            <!-- Page Content -->
             <main class="flex-1 overflow-x-hidden overflow-y-auto bg-gray-100 p-6">
                 @yield('content')
             </main>
         </div>
     </div>
     <script src="{{ asset('js/alpine.min.js') }}" defer></script>
-    <!-- Removed problematic emoji script -->
 </body>
 </html>

@@ -14,6 +14,8 @@ return Application::configure(basePath: dirname(__DIR__))
         $middleware->append(\Illuminate\Http\Middleware\HandleCors::class);
         $middleware->alias([
             'isAdmin' => \App\Http\Middleware\IsAdmin::class,
+            'admin' => \App\Http\Middleware\IsAdmin::class,
+            'role' => \App\Http\Middleware\RoleMiddleware::class, // Added for role-based access
         ]);
     })
     ->withExceptions(function (Exceptions $exceptions): void {

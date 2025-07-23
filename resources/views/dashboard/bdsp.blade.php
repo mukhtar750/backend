@@ -148,10 +148,10 @@
                                     <i class="bi bi-calendar-plus mr-2"></i>
                                     Schedule Session
                                 </button>
-                                <button @click.stop="$dispatch('open-message-modal', { recipientId: {{ $mentee->id }}, recipientName: '{{ $mentee->name }}' })"
+                                <a href="{{ route('bdsp.messages', ['new_conversation_with' => $mentee->id]) }}"
                                         class="p-2 text-gray-600 hover:text-gray-800 rounded-lg hover:bg-gray-100 transition" title="Send Message">
                                     <i class="bi bi-chat-dots text-lg"></i>
-                                </button>
+                                </a>
                                 <button @click.stop class="p-2 text-gray-600 hover:text-gray-800 rounded-lg hover:bg-gray-100 transition" title="Send Email">
                                     <i class="bi bi-envelope text-lg"></i>
                                 </button>

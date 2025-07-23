@@ -145,6 +145,7 @@
             <button type="button" @click="tab = 'alpha'" :class="tab === 'alpha' ? 'border-b-2 border-pink-600 text-pink-700' : 'text-gray-500 hover:text-pink-700'" class="px-4 py-2 text-sm font-medium focus:outline-none">Alpha</button>
             <button type="button" @click="tab = 'resources'" :class="tab === 'resources' ? 'border-b-2 border-purple-600 text-purple-700' : 'text-gray-500 hover:text-purple-700'" class="px-4 py-2 text-sm font-medium focus:outline-none">Learning Resources</button>
             <button type="button" @click="tab = 'ideas-bank'" :class="tab === 'ideas-bank' ? 'border-b-2 border-purple-600 text-purple-700' : 'text-gray-500 hover:text-purple-700'" class="px-4 py-2 text-sm font-medium focus:outline-none">Ideas Bank</button>
+            <button type="button" @click="tab = 'practice-pitches'" :class="tab === 'practice-pitches' ? 'border-b-2 border-blue-600 text-blue-700' : 'text-gray-500 hover:text-blue-700'" class="px-4 py-2 text-sm font-medium focus:outline-none">Practice Pitches</button>
         </nav>
 
         <!-- Alpha Tab -->
@@ -437,6 +438,43 @@
                         </tbody>
                     </table>
                     <div class="mt-4">{{ $resources->links() }}</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Practice Pitches Tab -->
+        <div x-show="tab === 'practice-pitches'" class="pt-8" x-data="{ pitchTab: 'pending' }">
+            <div class="bg-white rounded-xl shadow p-6">
+                <h2 class="text-lg font-bold mb-6">Practice Pitch Submissions</h2>
+                <div class="mb-6 flex gap-4 border-b pb-2">
+                    <button @click="pitchTab = 'pending'" :class="pitchTab === 'pending' ? 'border-b-2 border-[#b81d8f] text-[#b81d8f]' : 'text-gray-500'" class="px-4 py-2 font-semibold focus:outline-none">Pending</button>
+                    <button @click="pitchTab = 'approved'" :class="pitchTab === 'approved' ? 'border-b-2 border-green-600 text-green-700' : 'text-gray-500'" class="px-4 py-2 font-semibold focus:outline-none">Approved</button>
+                    <button @click="pitchTab = 'rejected'" :class="pitchTab === 'rejected' ? 'border-b-2 border-red-600 text-red-700' : 'text-gray-500'" class="px-4 py-2 font-semibold focus:outline-none">Rejected</button>
+                    <button @click="pitchTab = 'reviewed'" :class="pitchTab === 'reviewed' ? 'border-b-2 border-blue-600 text-blue-700' : 'text-gray-500'" class="px-4 py-2 font-semibold focus:outline-none">Reviewed</button>
+                </div>
+                
+                <!-- Pending Pitches -->
+                <div x-show="pitchTab === 'pending'">
+                    @php $pendingPitches = \App\Models\PracticePitch::with('user')->where('status', 'pending')->orderByDesc('created_at')->get(); @endphp
+                    @include('admin.practice-pitches.partials.table', ['pitches' => $pendingPitches, 'status' => 'pending'])
+                </div>
+                
+                <!-- Approved Pitches -->
+                <div x-show="pitchTab === 'approved'">
+                    @php $approvedPitches = \App\Models\PracticePitch::with('user')->where('status', 'approved')->orderByDesc('created_at')->get(); @endphp
+                    @include('admin.practice-pitches.partials.table', ['pitches' => $approvedPitches, 'status' => 'approved'])
+                </div>
+                
+                <!-- Rejected Pitches -->
+                <div x-show="pitchTab === 'rejected'">
+                    @php $rejectedPitches = \App\Models\PracticePitch::with('user')->where('status', 'rejected')->orderByDesc('created_at')->get(); @endphp
+                    @include('admin.practice-pitches.partials.table', ['pitches' => $rejectedPitches, 'status' => 'rejected'])
+                </div>
+                
+                <!-- Reviewed Pitches -->
+                <div x-show="pitchTab === 'reviewed'">
+                    @php $reviewedPitches = \App\Models\PracticePitch::with('user')->where('status', 'reviewed')->orderByDesc('created_at')->get(); @endphp
+                    @include('admin.practice-pitches.partials.table', ['pitches' => $reviewedPitches, 'status' => 'reviewed'])
                 </div>
             </div>
         </div>

@@ -6,6 +6,8 @@ use Illuminate\Http\Request;
 use App\Models\PracticePitch;
 use Illuminate\Support\Facades\Auth;
 use App\Models\User;
+use App\Notifications\PracticePitchStatusNotification;
+use Illuminate\Support\Facades\Notification;
 
 class PracticePitchController extends Controller
 {
@@ -36,15 +38,22 @@ class PracticePitchController extends Controller
             'feedback_requested' => $request->boolean('feedback_requested'),
             'status' => 'pending',
         ]);
-        // TODO: Notify admins
+
+        // Notify all admins/staff
+        $admins = User::whereIn('role', ['admin', 'staff'])->get();
+        Notification::send($admins, new PracticePitchStatusNotification($pitch, 'admin_new'));
+
         return redirect()->back()->with('success', 'Pitch submitted and pending admin approval.');
     }
 
-    // Admin: List all pending pitches
+    // Admin: List all pitches grouped by status
     public function adminIndex()
     {
-        $pitches = PracticePitch::where('status', 'pending')->orderByDesc('created_at')->get();
-        return view('admin.practice-pitches.index', compact('pitches'));
+        $pendingPitches = PracticePitch::with('user')->where('status', 'pending')->orderByDesc('created_at')->get();
+        $approvedPitches = PracticePitch::with('user')->where('status', 'approved')->orderByDesc('created_at')->get();
+        $rejectedPitches = PracticePitch::with('user')->where('status', 'rejected')->orderByDesc('created_at')->get();
+        $reviewedPitches = PracticePitch::with('user')->where('status', 'reviewed')->orderByDesc('created_at')->get();
+        return view('admin.practice-pitches.index', compact('pendingPitches', 'approvedPitches', 'rejectedPitches', 'reviewedPitches'));
     }
 
     // Admin: Approve a pitch
@@ -55,7 +64,16 @@ class PracticePitchController extends Controller
         $pitch->approved_by = Auth::id();
         $pitch->admin_feedback = null;
         $pitch->save();
-        // TODO: Notify entrepreneur
+
+        // Notify entrepreneur
+        $pitch->user->notify(new PracticePitchStatusNotification($pitch, 'entrepreneur_approved'));
+
+        // If feedback is requested, notify mentors/BDSPs
+        if ($pitch->feedback_requested) {
+            $mentors = User::whereIn('role', ['mentor', 'bdsp'])->get();
+            Notification::send($mentors, new PracticePitchStatusNotification($pitch, 'mentor_new'));
+        }
+
         return redirect()->back()->with('success', 'Pitch approved.');
     }
 
@@ -67,22 +85,75 @@ class PracticePitchController extends Controller
         $pitch->approved_by = Auth::id();
         $pitch->admin_feedback = $request->input('admin_feedback');
         $pitch->save();
-        // TODO: Notify entrepreneur
+
+        // Notify entrepreneur
+        $pitch->user->notify(new PracticePitchStatusNotification($pitch, 'entrepreneur_rejected'));
+
         return redirect()->back()->with('success', 'Pitch rejected.');
+    }
+
+    // Mentor: List pitches awaiting and reviewed feedback
+    public function mentorIndex()
+    {
+        $userId = Auth::id();
+        $awaitingPitches = PracticePitch::with('user')
+            ->where('status', 'approved')
+            ->where('feedback_requested', true)
+            ->whereNull('feedback')
+            ->orderByDesc('updated_at')
+            ->get();
+        $reviewedPitches = PracticePitch::with('user')
+            ->where('status', 'reviewed')
+            ->where('reviewed_by', $userId)
+            ->orderByDesc('updated_at')
+            ->get();
+        return view('dashboard.mentor.practice-pitches', compact('awaitingPitches', 'reviewedPitches'));
+    }
+
+    // BDSP: List pitches awaiting and reviewed feedback
+    public function bdspIndex()
+    {
+        $userId = Auth::id();
+        $awaitingPitches = PracticePitch::with('user')
+            ->where('status', 'approved')
+            ->where('feedback_requested', true)
+            ->whereNull('feedback')
+            ->orderByDesc('updated_at')
+            ->get();
+        $reviewedPitches = PracticePitch::with('user')
+            ->where('status', 'reviewed')
+            ->where('reviewed_by', $userId)
+            ->orderByDesc('updated_at')
+            ->get();
+        return view('dashboard.bdsp.practice-pitches', compact('awaitingPitches', 'reviewedPitches'));
     }
 
     // Mentor/BDSP: Leave feedback on an approved pitch
     public function feedback(Request $request, $id)
     {
         $pitch = PracticePitch::findOrFail($id);
+
+        // Security check: Only approved pitches can receive feedback
+        if ($pitch->status !== 'approved') {
+            return redirect()->back()->with('error', 'This pitch is not awaiting feedback.');
+        }
+
         $request->validate([
             'feedback' => 'required|string',
         ]);
+
         $pitch->feedback = $request->feedback;
         $pitch->reviewed_by = Auth::id();
         $pitch->status = 'reviewed';
         $pitch->save();
-        // TODO: Notify entrepreneur
-        return redirect()->back()->with('success', 'Feedback submitted.');
+
+        // Notify entrepreneur
+        $pitch->user->notify(new PracticePitchStatusNotification($pitch, 'entrepreneur_reviewed'));
+
+        if (Auth::user()->role === 'bdsp') {
+            return redirect()->route('bdsp.practice-pitches.index')->with('success', 'Feedback submitted.');
+        } else {
+            return redirect()->route('mentor.practice-pitches.index')->with('success', 'Feedback submitted.');
+        }
     }
 }

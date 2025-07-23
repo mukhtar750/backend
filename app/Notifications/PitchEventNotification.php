@@ -9,6 +9,7 @@ use App\Models\PitchEvent;
 class PitchEventNotification extends Notification
 {
     use Queueable;
+use RoleBasedUrlTrait;
 
     public $event;
 
@@ -31,7 +32,7 @@ class PitchEventNotification extends Notification
             'event_title' => $this->event->title,
             'date_time' => $this->event->event_date,
             'type' => 'pitch_event',
-            'action_url' => route('investor.pitch_events'),
+            'action_url' => $this->generateActionUrl($notifiable, 'pitch-events.index'),
         ];
     }
-} 
+}

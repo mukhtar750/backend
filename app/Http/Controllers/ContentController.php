@@ -54,11 +54,22 @@ class ContentController extends Controller
         $contents = Content::orderByDesc('created_at')->get();
         $status = null;
         $resources = \App\Models\Resource::with('bdsp')->orderByDesc('created_at')->paginate(20);
+
+        // Fetch practice pitches
+        $pendingPitches = \App\Models\PracticePitch::with('user')->where('status', 'pending')->orderByDesc('created_at')->get();
+        $approvedPitches = \App\Models\PracticePitch::with('user')->where('status', 'approved')->orderByDesc('created_at')->get();
+        $rejectedPitches = \App\Models\PracticePitch::with('user')->where('status', 'rejected')->orderByDesc('created_at')->get();
+        $reviewedPitches = \App\Models\PracticePitch::with('user')->where('status', 'reviewed')->orderByDesc('created_at')->get();
+
         return view('admin.content_management', [
             'contents' => $contents,
             'resources' => $resources,
             'status' => $status,
             'categories' => $categories,
+            'pendingPitches' => $pendingPitches,
+            'approvedPitches' => $approvedPitches,
+            'rejectedPitches' => $rejectedPitches,
+            'reviewedPitches' => $reviewedPitches,
         ]);
     }
     public function edit($id)

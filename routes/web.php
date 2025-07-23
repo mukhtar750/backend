@@ -8,6 +8,8 @@ use App\Http\Controllers\BDSPRegisterController;
 use App\Http\Controllers\EntrepreneurRegisterController;
 use App\Http\Controllers\AdminDashboardController;
 use App\Http\Controllers\NotificationController;
+use App\Http\Controllers\MentorController;
+use App\Http\Controllers\PracticePitchController;
 
 /*
 |--------------------------------------------------------------------------
@@ -61,9 +63,22 @@ Route::middleware(['auth'])->group(function () {
     Route::get('/messages/unread-count', [\App\Http\Controllers\MessageController::class, 'getUnreadCount'])->name('messages.unreadCount');
     Route::get('/messages/{message}/download', [\App\Http\Controllers\MessageController::class, 'downloadFile'])->name('messages.download');
     Route::delete('/messages/{message}', [\App\Http\Controllers\MessageController::class, 'deleteMessage'])->name('messages.delete');
+
+    // Group Chat Routes
+    Route::get('/groups/{slug}', [\App\Http\Controllers\GroupController::class, 'show'])->name('groups.show');
+    Route::post('/groups/{slug}/messages', [\App\Http\Controllers\GroupController::class, 'storeMessage'])->name('groups.messages.store');
+    Route::get('/groups/{slug}/messages', [\App\Http\Controllers\GroupController::class, 'getMessages'])->name('groups.messages.get');
 });
 
-Route::middleware(['auth', 'verified'])->prefix('admin')->name('admin.')->group(function () {
+// BDSP and Mentor specific routes
+Route::middleware(['auth', 'role:bdsp,mentor'])->group(function () {
+    Route::get('/mentor/dashboard', [\App\Http\Controllers\MentorController::class, 'dashboard'])->name('mentor.dashboard');
+    Route::get('/mentor/practice-pitches', [PracticePitchController::class, 'mentorIndex'])->name('mentor.practice-pitches.index');
+    Route::post('/mentor/practice-pitches/{id}/feedback', [PracticePitchController::class, 'feedback'])->name('mentor.practice-pitches.feedback');
+});
+
+// Admin specific routes
+Route::middleware(['auth', 'role:admin,staff'])->prefix('admin')->name('admin.')->group(function () {
     Route::get('/dashboard', function () {
         return view('admin.dashboard');
     })->name('dashboard');
@@ -198,8 +213,6 @@ Route::middleware(['auth'])->group(function () {
     // BDSP Placeholder Views
     Route::get('/bdsp/sessions', function () { return view('bdsp.sessions'); })->name('bdsp.sessions');
     Route::get('/bdsp/reports', function () { return view('bdsp.reports'); })->name('bdsp.reports');
-    Route::get('/bdsp/messages', function () { return view('bdsp.messages'); })->name('bdsp.messages');
-    // BDSP Messaging
     Route::get('/bdsp/messages', [\App\Http\Controllers\MessageController::class, 'index'])->name('bdsp.messages');
     Route::get('/bdsp/messages/{conversation}', [\App\Http\Controllers\MessageController::class, 'show'])->name('bdsp.messages.show');
     Route::post('/bdsp/messages', [\App\Http\Controllers\MessageController::class, 'store'])->name('bdsp.messages.store');
@@ -402,9 +415,22 @@ Route::middleware(['auth'])->group(function () {
     // Mentor/BDSP feedback (for approved pitches)
     Route::post('/practice-pitches/{id}/feedback', [\App\Http\Controllers\PracticePitchController::class, 'feedback'])->name('practice-pitches.feedback');
 });
-Route::middleware(['auth', 'admin'])->group(function () {
+Route::middleware(['auth', 'isAdmin'])->group(function () {
     // Admin review
+    Route::middleware(['auth', 'isAdmin'])->group(function () {
     Route::get('/admin/practice-pitches', [\App\Http\Controllers\PracticePitchController::class, 'adminIndex'])->name('admin.practice-pitches.index');
     Route::post('/admin/practice-pitches/{id}/approve', [\App\Http\Controllers\PracticePitchController::class, 'approve'])->name('admin.practice-pitches.approve');
     Route::post('/admin/practice-pitches/{id}/reject', [\App\Http\Controllers\PracticePitchController::class, 'reject'])->name('admin.practice-pitches.reject');
+});
+});
+
+// Minimal test route for role middleware
+Route::get('/test-role', function () {
+    return 'Role middleware works!';
+})->middleware('role:admin');
+
+// BDSP specific routes for practice pitches
+Route::middleware(['auth', 'role:bdsp'])->group(function () {
+    Route::get('/bdsp/practice-pitches', [PracticePitchController::class, 'bdspIndex'])->name('bdsp.practice-pitches.index');
+    Route::post('/bdsp/practice-pitches/{id}/feedback', [PracticePitchController::class, 'feedback'])->name('bdsp.practice-pitches.feedback');
 });

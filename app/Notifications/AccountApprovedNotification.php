@@ -10,6 +10,7 @@ use Illuminate\Notifications\Notification;
 class AccountApprovedNotification extends Notification
 {
     use Queueable;
+use RoleBasedUrlTrait;
 
     public function __construct()
     {
@@ -27,7 +28,7 @@ class AccountApprovedNotification extends Notification
             'title' => 'Account Approved',
             'message' => 'Your account has been approved! You can now access all features.',
             'type' => 'approval',
-            'action_url' => route('dashboard'),
+            'action_url' => $this->generateActionUrl($notifiable, 'dashboard'),
         ];
     }
-} 
+}

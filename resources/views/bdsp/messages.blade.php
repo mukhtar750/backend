@@ -28,8 +28,7 @@
                                 $unreadCount = $conversation->getUnreadCount(auth()->id());
                                 $latestMessage = $conversation->latestMessage;
                             @endphp
-                            <div class="flex items-center space-x-3 p-3 rounded-lg hover:bg-gray-50 cursor-pointer transition"
-                                 onclick="window.location.href='{{ route('bdsp.messages.show', $conversation->id) }}'">
+                            <a href="{{ route('bdsp.messages.show', $conversation->id) }}" class="flex items-center space-x-3 p-3 rounded-lg hover:bg-gray-50 cursor-pointer transition">
                                 <div class="w-10 h-10 bg-purple-100 rounded-full flex items-center justify-center">
                                     <i class="bi bi-person text-purple-600"></i>
                                 </div>
@@ -202,6 +201,10 @@ function composeModal() {
                     },
                     body: formData
                 });
+                if (!response.ok) {
+                    const errorText = await response.text();
+                    throw new Error(`Server error: ${response.status} - ${errorText.substring(0, 100)}`);
+                }
                 const data = await response.json();
                 if (data.success) {
                     this.closeModal();
@@ -220,4 +223,4 @@ function composeModal() {
     }
 }
 </script>
-@endsection 
+@endsection

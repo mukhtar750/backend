@@ -8,6 +8,7 @@ use Illuminate\Notifications\Notification;
 class UserPairedNotification extends Notification
 {
     use Queueable;
+use RoleBasedUrlTrait;
 
     public $otherUser;
     public $pairingType;
@@ -26,9 +27,12 @@ class UserPairedNotification extends Notification
     public function toArray($notifiable)
     {
         return [
+            'title' => 'New Pairing',
             'message' => "You have been paired with {$this->otherUser->name} ({$this->otherUser->role}) for " . ucwords(str_replace('_', ' ', $this->pairingType)) . ".",
+            'type' => 'pairing',
             'pairing_type' => $this->pairingType,
             'other_user_id' => $this->otherUser->id,
+            'action_url' => $this->generateActionUrl($notifiable, 'dashboard'),
         ];
     }
 }

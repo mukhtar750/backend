@@ -16,8 +16,44 @@ class MessageController extends Controller
         $user = Auth::user();
         $conversations = $user->getConversations();
         $messageableUsers = $user->getMessageableUsers();
-        
-        return view('messages.index', compact('conversations', 'messageableUsers'));
+
+        $possibleChats = [];
+        $conversationUserIds = [];
+
+        foreach ($conversations as $conv) {
+            $otherUser = $conv->getOtherUser($user->id);
+            $conversationUserIds[] = $otherUser->id;
+            $possibleChats[] = [
+                'type' => 'conversation',
+                'id' => $conv->id,
+                'user' => $otherUser,
+                'unreadCount' => $conv->getUnreadCount($user->id),
+                'latestMessage' => $conv->latestMessage,
+            ];
+        }
+
+        foreach ($messageableUsers as $mu) {
+            if (!in_array($mu->id, $conversationUserIds)) {
+                $possibleChats[] = [
+                    'type' => 'new',
+                    'id' => $mu->id,
+                    'user' => $mu,
+                    'unreadCount' => 0,
+                    'latestMessage' => null,
+                ];
+            }
+        }
+
+        // Dynamic layout selection based on user role
+        $layout = match ($user->role) {
+            'entrepreneur' => 'layouts.entrepreneur',
+            'bdsp' => 'layouts.bdsp',
+            'mentor' => 'layouts.mentor',
+            'admin' => 'admin.layouts.admin',
+            default => 'layouts.app',
+        };
+
+        return view('messages.index', compact('possibleChats', 'messageableUsers', 'layout'));
     }
 
     public function show($conversationId)
@@ -40,6 +76,15 @@ class MessageController extends Controller
             ->get();
 
         $otherUser = $conversation->getOtherUser($user->id);
+
+        // Return JSON for AJAX/JS requests
+        if (request()->wantsJson() || request()->ajax()) {
+            return response()->json([
+                'conversation' => $conversation,
+                'messages' => $messages,
+                'otherUser' => $otherUser,
+            ]);
+        }
 
         return view('messages.show', compact('conversation', 'messages', 'otherUser'));
     }

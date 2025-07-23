@@ -27,7 +27,7 @@
                 <a href="{{ route('entrepreneur.calendar') }}" class="flex items-center px-4 py-2 text-white hover:bg-[#a01a7d] rounded-lg font-medium"><i class="bi bi-calendar-event-fill mr-3"></i> Training Calendar</a>
                 <a href="{{ route('entrepreneur.mentorship') }}" class="flex items-center px-4 py-2 text-white hover:bg-[#a01a7d] rounded-lg font-medium"><i class="bi bi-people-fill mr-3"></i> Mentorship</a>
                 <a href="{{ route('entrepreneur.pitch') }}" class="flex items-center px-4 py-2 text-white hover:bg-[#a01a7d] rounded-lg font-medium"><i class="bi bi-easel-fill mr-3"></i> Pitch Preparation</a>
-                <a href="{{ route('entrepreneur.messages') }}" class="flex items-center gap-3 px-4 py-2 rounded-lg hover:bg-purple-700 {{ $route == 'entrepreneur.messages' ? 'bg-white text-purple-800 font-semibold shadow-sm' : '' }}">
+                <a href="{{ route('messages.index') }}" class="flex items-center gap-3 px-4 py-2 rounded-lg hover:bg-purple-700 {{ $route == 'messages.index' ? 'bg-white text-purple-800 font-semibold shadow-sm' : '' }}">
                     <i class="bi bi-chat-dots"></i> Messages
                 </a>
                 <a href="{{ route('entrepreneur.feedback') }}" class="flex items-center px-4 py-2 text-white hover:bg-[#a01a7d] rounded-lg font-medium"><i class="bi bi-chat-dots-fill mr-3"></i> Feedback</a>

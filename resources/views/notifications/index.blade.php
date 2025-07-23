@@ -27,15 +27,15 @@
                     <div class="flex items-start space-x-4">
                         <!-- Icon -->
                         <div class="flex-shrink-0">
-                            @if($notification->data['type'] === 'registration')
+                            @if(isset($notification->data['type']) && $notification->data['type'] === 'registration')
                                 <div class="w-10 h-10 bg-green-100 rounded-full flex items-center justify-center">
                                     <i class="bi bi-person-plus text-green-600"></i>
                                 </div>
-                            @elseif($notification->data['type'] === 'approval')
+                            @elseif(isset($notification->data['type']) && $notification->data['type'] === 'approval')
                                 <div class="w-10 h-10 bg-blue-100 rounded-full flex items-center justify-center">
                                     <i class="bi bi-check-circle text-blue-600"></i>
                                 </div>
-                            @elseif($notification->data['type'] === 'rejection')
+                            @elseif(isset($notification->data['type']) && $notification->data['type'] === 'rejection')
                                 <div class="w-10 h-10 bg-red-100 rounded-full flex items-center justify-center">
                                     <i class="bi bi-x-circle text-red-600"></i>
                                 </div>
@@ -50,8 +50,8 @@
                         <div class="flex-1 min-w-0">
                             <div class="flex items-center justify-between">
                                 <h3 class="text-sm font-semibold text-gray-900">
-                                    {{ $notification->data['title'] }}
-                                </h3>
+                                {{ $notification->data['title'] ?? 'Notification' }}
+                            </h3>
                                 <div class="flex items-center space-x-2">
                                     <span class="text-xs text-gray-500">
                                         {{ $notification->created_at->diffForHumans() }}
@@ -62,7 +62,7 @@
                                 </div>
                             </div>
                             <p class="text-sm text-gray-600 mt-1">
-                                {{ $notification->data['message'] }}
+                                {{ $notification->data['message'] ?? 'No message available.' }}
                             </p>
                             @if(isset($notification->data['action_url']))
                                 <a href="{{ $notification->data['action_url'] }}" 
@@ -198,4 +198,4 @@ document.addEventListener('DOMContentLoaded', function() {
     updateUnreadCount();
 });
 </script>
-@endsection 
+@endsection
