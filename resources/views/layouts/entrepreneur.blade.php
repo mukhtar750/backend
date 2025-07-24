@@ -7,16 +7,17 @@
     <link rel="preconnect" href="https://fonts.bunny.net">
     <link href="https://fonts.bunny.net/css?family=figtree:400,600&display=swap" rel="stylesheet" />
     <script src="https://cdn.tailwindcss.com"></script>
+    <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"></script>
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css">
-    <link rel="stylesheet" href="{{ asset('css/app.css') }}">
 </head>
 <body class="font-sans antialiased bg-gray-100">
     @php $route = Route::currentRouteName(); @endphp
+    @php $role = auth()->user()->role; @endphp
     <div class="flex h-screen bg-gray-100">
         <!-- Sidebar -->
         <div class="w-64 bg-[#b81d8f] text-white flex flex-col">
             <div class="p-4 text-2xl font-bold border-b border-[#a01a7d]">
-                <i class="bi bi-person-badge-fill mr-2"></i> Innovation Portal
+                <i class="bi bi-person-badge-fill mr-2"></i> VR Portal
             </div>
             <div class="p-4 text-sm border-b border-[#a01a7d] tracking-wide">
                 Entrepreneur Panel
@@ -27,6 +28,8 @@
                 <a href="{{ route('entrepreneur.calendar') }}" class="flex items-center px-4 py-2 text-white hover:bg-[#a01a7d] rounded-lg font-medium"><i class="bi bi-calendar-event-fill mr-3"></i> Training Calendar</a>
                 <a href="{{ route('entrepreneur.mentorship') }}" class="flex items-center px-4 py-2 text-white hover:bg-[#a01a7d] rounded-lg font-medium"><i class="bi bi-people-fill mr-3"></i> Mentorship</a>
                 <a href="{{ route('entrepreneur.pitch') }}" class="flex items-center px-4 py-2 text-white hover:bg-[#a01a7d] rounded-lg font-medium"><i class="bi bi-easel-fill mr-3"></i> Pitch Preparation</a>
+                <a href="{{ route('entrepreneur.startup-profile') }}" class="flex items-center px-4 py-2 text-white hover:bg-[#a01a7d] rounded-lg font-medium"><i class="bi bi-building mr-3"></i> My Startup Profile</a>
+                <a href="{{ route('entrepreneur.tasks') }}" class="flex items-center px-4 py-2 text-white hover:bg-[#a01a7d] rounded-lg font-medium"><i class="bi bi-check2-square mr-3"></i> Assignments & Tasks</a>
                 <a href="{{ route('messages.index') }}" class="flex items-center gap-3 px-4 py-2 rounded-lg hover:bg-purple-700 {{ $route == 'messages.index' ? 'bg-white text-purple-800 font-semibold shadow-sm' : '' }}">
                     <i class="bi bi-chat-dots"></i> Messages
                 </a>
@@ -88,6 +91,5 @@
             </main>
         </div>
     </div>
-    <script src="//unpkg.com/alpinejs" defer></script>
 </body>
-</html> 
+</html>

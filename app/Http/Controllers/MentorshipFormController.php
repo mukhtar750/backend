@@ -23,20 +23,65 @@ class MentorshipFormController extends Controller
                             ->with(['userOne', 'userTwo'])
                             ->get();
 
-        $forms = MentorshipForm::with('fields')->get();
+        // Get all forms grouped by phase
+        $forms = MentorshipForm::where('active', true)->orderBy('phase')->orderBy('order')->with('fields')->get();
+        $formsByPhase = [
+            'first_meeting' => $forms->where('phase', 'first_meeting')->values(),
+            'ongoing_meetings' => $forms->where('phase', 'ongoing_meetings')->values(),
+            'feedback_resources' => $forms->where('phase', 'feedback_resources')->values(),
+        ];
 
-        $submissions = MentorshipFormSubmission::where('user_id', $user->id)->get()->keyBy('mentorship_form_id');
+        // Get all submissions for the current user and their pairings
+        $pairingIds = $pairings->pluck('id');
+        $submissions = MentorshipFormSubmission::whereIn('pairing_id', $pairingIds)
+            ->with('form', 'pairing', 'submitter')
+            ->get();
 
-        return view('mentorship.forms.index', compact('pairings', 'forms', 'submissions'));
+        // Build a status map: [pairing_id][form_id] => submission
+        $statusMap = [];
+        foreach ($submissions as $submission) {
+            $statusMap[$submission->pairing_id][$submission->mentorship_form_id] = $submission;
+        }
+
+        return view('mentorship.forms.index', compact('pairings', 'formsByPhase', 'statusMap'));
     }
 
-    public function create(Request $request)
+    public function dashboard()
     {
-        $formId = $request->query('form_id');
-        $pairingId = $request->query('pairing_id');
+        $user = Auth::user();
+        $pairings = Pairing::where('user_one_id', $user->id)
+                            ->orWhere('user_two_id', $user->id)
+                            ->with(['userOne', 'userTwo'])
+                            ->get();
 
-        $form = MentorshipForm::with('fields')->findOrFail($formId);
-        $pairing = Pairing::with(['userOne', 'userTwo'])->findOrFail($pairingId);
+        $forms = MentorshipForm::where('active', true)->orderBy('phase')->orderBy('order')->with('fields')->get();
+        $formsByPhase = [
+            'first_meeting' => $forms->where('phase', 'first_meeting')->values(),
+            'ongoing_meetings' => $forms->where('phase', 'ongoing_meetings')->values(),
+            'feedback_resources' => $forms->where('phase', 'feedback_resources')->values(),
+        ];
+
+        $pairingIds = $pairings->pluck('id');
+        $submissions = \App\Models\MentorshipFormSubmission::whereIn('pairing_id', $pairingIds)
+            ->with('form', 'pairing', 'submitter')
+            ->get();
+
+        $statusMap = [];
+        foreach ($submissions as $submission) {
+            $statusMap[$submission->pairing_id][$submission->mentorship_form_id] = $submission;
+        }
+
+        return view('mentorship.forms.index', compact('pairings', 'formsByPhase', 'statusMap'));
+    }
+
+    public function create(Request $request, $form, $pairing)
+    {
+        $form = MentorshipForm::with('fields')->findOrFail($form);
+        $pairing = Pairing::with(['userOne', 'userTwo'])->findOrFail($pairing);
+        // Only allow the correct user to fill the form
+        if ($form->completion_by !== auth()->user()->role) {
+            return redirect()->back()->with('error', 'This form is meant to be filled by your ' . $form->completion_by . '.');
+        }
 
         // Check if a submission already exists for this form and pairing by the current user
         $existingSubmission = MentorshipFormSubmission::where('mentorship_form_id', $form->id)
@@ -52,18 +97,18 @@ class MentorshipFormController extends Controller
         return view('mentorship.forms.create', compact('form', 'pairing'));
     }
 
-    public function store(Request $request)
+    public function store(Request $request, $form, $pairing)
     {
-        $form = MentorshipForm::findOrFail($request->input('mentorship_form_id'));
-        $pairing = Pairing::findOrFail($request->input('pairing_id'));
+        $form = MentorshipForm::with('fields')->findOrFail($form);
+        $pairing = Pairing::with(['userOne', 'userTwo'])->findOrFail($pairing);
 
         $rules = [];
         foreach ($form->fields as $field) {
             if ($field->is_required) {
-                $rules[$field->name] = 'required';
+                $rules[$field->label] = 'required';
             }
-            if ($field->type === 'file') {
-                $rules[$field->name] = array_merge($rules[$field->name] ?? [], ['file', 'mimes:pdf,doc,docx,jpg,jpeg,png', 'max:2048']);
+            if ($field->field_type === 'file') {
+                $rules[$field->label] = array_merge($rules[$field->label] ?? [], ['file', 'mimes:pdf,doc,docx,jpg,jpeg,png', 'max:2048']);
             }
         }
 
@@ -75,20 +120,20 @@ class MentorshipFormController extends Controller
 
         $formData = [];
         foreach ($form->fields as $field) {
-            if ($field->type === 'file') {
-                if ($request->hasFile($field->name)) {
-                    $file = $request->file($field->name);
+            if ($field->field_type === 'file') {
+                if ($request->hasFile($field->label)) {
+                    $file = $request->file($field->label);
                     $path = $file->store('mentorship_form_uploads', 'public');
-                    $formData[$field->name] = ['name' => $file->getClientOriginalName(), 'path' => $path];
-                } elseif (isset($validatedData[$field->name])) {
+                    $formData[$field->label] = ['name' => $file->getClientOriginalName(), 'path' => $path];
+                } elseif (isset($validatedData[$field->label])) {
                     // This case handles if a file was required but not uploaded, it would be caught by validation
                     // If it's not required and not uploaded, it simply won't be in formData
                 }
             }
-            elseif ($field->type === 'checkbox') {
-                $formData[$field->name] = $request->has($field->name) ? (array)$request->input($field->name) : [];
+            elseif ($field->field_type === 'checkbox') {
+                $formData[$field->label] = $request->has($field->label) ? (array)$request->input($field->label) : [];
             } else {
-                $formData[$field->name] = $request->input($field->name);
+                $formData[$field->label] = $request->input($field->label);
             }
         }
 
@@ -97,12 +142,83 @@ class MentorshipFormController extends Controller
             $submission = MentorshipFormSubmission::create([
                 'mentorship_form_id' => $form->id,
                 'pairing_id' => $pairing->id,
-                'user_id' => Auth::id(),
+                'submitted_by' => Auth::id(),
                 'form_data' => json_encode($formData),
-                'status' => $request->input('action') === 'draft' ? 'draft' : 'pending_review',
+                'status' => $request->input('action') === 'draft' ? 'draft' : 'submitted',
             ]);
 
+            // Create a MentorshipSession if this is a mentor's ongoing meeting form and not a draft
+            if ($form->phase === 'ongoing_meetings' && $form->completion_by === 'mentor' && $request->input('action') !== 'draft') {
+                // Try to extract date, duration, and topic from form fields
+                // Ensure date is a valid datetime string
+                if (isset($formData['Meeting Date'])) {
+                    $date = $formData['Meeting Date'];
+                    // If only a date (no time), append noon
+                    if (preg_match('/^\d{4}-\d{2}-\d{2}$/', $date)) {
+                        $date .= ' 12:00:00';
+                    }
+                } else {
+                    $date = now();
+                }
+                $duration = 60; // default 60 minutes
+                if (!empty($formData['Meeting Duration'])) {
+                    // Try to extract a number from the duration string (e.g., '1 hour' => 60)
+                    if (preg_match('/(\d+)/', $formData['Meeting Duration'], $matches)) {
+                        $duration = (int)$matches[1];
+                        if (stripos($formData['Meeting Duration'], 'hour') !== false) {
+                            $duration *= 60;
+                        }
+                    }
+                }
+                $topic = $formData['Topics Discussed'] ?? $form->title;
+                // Determine mentor and mentee
+                $mentorId = Auth::id();
+                $menteeId = $pairing->user_one_id == $mentorId ? $pairing->user_two_id : $pairing->user_one_id;
+                $sessionData = [
+                    'pairing_id' => $pairing->id,
+                    'scheduled_by' => $mentorId,
+                    'scheduled_for' => $menteeId,
+                    'date_time' => $date,
+                    'duration' => $duration,
+                    'topic' => is_array($topic) ? (implode(', ', $topic)) : $topic,
+                    'status' => 'pending',
+                    'notes' => null,
+                    'meeting_link' => null,
+                ];
+                \Log::info('Creating MentorshipSession from form submission', $sessionData);
+                try {
+                    $createdSession = \App\Models\MentorshipSession::create($sessionData);
+                    \Log::info('Created MentorshipSession', $createdSession ? $createdSession->toArray() : []);
+                } catch (\Exception $ex) {
+                    \Log::error('Failed to create MentorshipSession: ' . $ex->getMessage(), $sessionData);
+                    return redirect()->back()->with('error', 'Failed to create mentorship session. Please try again or contact support.')->withInput();
+                }
+            }
+
             DB::commit();
+
+            // Notify admin if both mentor and mentee have signed the mentorship agreement
+            if ($form->form_type === 'mentorship_agreement') {
+                $mentor = $pairing->userOne->role === 'mentor' ? $pairing->userOne : $pairing->userTwo;
+                $mentee = $pairing->userOne->role === 'mentee' ? $pairing->userOne : $pairing->userTwo;
+                $agreementForm = $form;
+                $mentorSubmission = \App\Models\MentorshipFormSubmission::where([
+                    'pairing_id' => $pairing->id,
+                    'mentorship_form_id' => $agreementForm->id,
+                    'submitted_by' => $mentor->id,
+                ])->first();
+                $menteeSubmission = \App\Models\MentorshipFormSubmission::where([
+                    'pairing_id' => $pairing->id,
+                    'mentorship_form_id' => $agreementForm->id,
+                    'submitted_by' => $mentee->id,
+                ])->first();
+                if ($mentorSubmission && $mentorSubmission->is_signed && $menteeSubmission && $menteeSubmission->is_signed) {
+                    $admins = \App\Models\User::where('role', 'admin')->get();
+                    foreach ($admins as $admin) {
+                        $admin->notify(new \App\Notifications\AdminMentorshipAgreementCompletedNotification($pairing));
+                    }
+                }
+            }
 
             $message = $request->input('action') === 'draft' ? 'Form saved as draft successfully!' : 'Form submitted for review successfully!';
             return redirect()->route('mentorship.forms.show', $submission->id)->with('success', $message);
@@ -115,13 +231,32 @@ class MentorshipFormController extends Controller
     public function show(MentorshipFormSubmission $submission)
     {
         // Ensure the user can only view their own submissions or if they are part of the pairing
-        if ($submission->user_id !== Auth::id() &&
+        if ($submission->submitted_by !== Auth::id() &&
             !($submission->pairing && ($submission->pairing->user_one_id === Auth::id() || $submission->pairing->user_two_id === Auth::id())))
         {
             abort(403, 'Unauthorized action.');
         }
 
-        $submission->load('form.fields', 'user', 'pairing.userOne', 'pairing.userTwo', 'review');
+        $submission->load('form.fields', 'submitter', 'pairing.userOne', 'pairing.userTwo', 'reviews');
+        $form = $submission->form;
+        $pairing = $submission->pairing;
+
+        if ($form->completion_by === 'both') {
+            $mentor = $pairing->userOne->role === 'mentor' ? $pairing->userOne : $pairing->userTwo;
+            $mentee = $pairing->userOne->role === 'mentee' ? $pairing->userOne : $pairing->userTwo;
+            $mentorSubmission = \App\Models\MentorshipFormSubmission::where([
+                'pairing_id' => $pairing->id,
+                'mentorship_form_id' => $form->id,
+                'submitted_by' => $mentor->id,
+            ])->first();
+            $menteeSubmission = \App\Models\MentorshipFormSubmission::where([
+                'pairing_id' => $pairing->id,
+                'mentorship_form_id' => $form->id,
+                'submitted_by' => $mentee->id,
+            ])->first();
+            return view('mentorship.forms.show-both', compact('form', 'pairing', 'mentorSubmission', 'menteeSubmission'));
+        }
+
         return view('mentorship.forms.show', compact('submission'));
     }
 

@@ -1,4 +1,8 @@
-@extends('layouts.' . auth()->user()->role)
+@php
+    $role = auth()->user()->role;
+    $layout = $role === 'mentee' ? 'layouts.mentee' : ($role === 'entrepreneur' ? 'layouts.entrepreneur' : 'layouts.' . $role);
+@endphp
+@extends($layout)
 
 @section('content')
 <div class="max-w-6xl mx-auto py-6 px-4 sm:px-6 lg:px-8">
@@ -29,31 +33,18 @@
             <!-- Messages List -->
             <div class="flex-1 overflow-y-auto p-4 space-y-4" id="messagesContainer">
                 @foreach($messages as $message)
-                    <div class="flex {{ $message->sender_id === auth()->id() ? 'justify-end' : 'justify-start' }}">
-                        <div class="flex items-end gap-2 {{ $message->sender_id === auth()->id() ? 'flex-row-reverse' : '' }}">
-                            {{-- Avatar --}}
-                            <img src="{{ $message->sender->avatar ?? 'https://i.pravatar.cc/32?u=' . $message->sender_id }}" class="h-8 w-8 rounded-full object-cover" alt="{{ $message->sender->name }}">
-                            <div class="max-w-xs lg:max-w-md">
-                                <div class="px-4 py-2 rounded-lg {{ $message->sender_id === auth()->id() ? 'bg-purple-600 text-white' : 'bg-gray-100 text-gray-900' }}">
-                                    @if($message->isImage())
-                                        <a href="{{ asset('storage/' . $message->file_path) }}" target="_blank">
-                                            <img src="{{ asset('storage/' . $message->file_path) }}" class="max-h-40 rounded mb-2" alt="Image">
-                                        </a>
-                                    @elseif($message->isFile())
-                                        <div class="flex items-center space-x-2">
-                                            <i class="bi bi-file-earmark"></i>
-                                            <span>{{ $message->file_name }}</span>
-                                            <a href="{{ route('messages.download', $message->id) }}" class="text-blue-500">
-                                                <i class="bi bi-download"></i>
-                                            </a>
-                                        </div>
-                                    @endif
-                                    <div>{{ $message->content }}</div>
-                                    <div class="text-xs opacity-75 mt-1">
-                                        {{ $message->sender->name }} • {{ $message->created_at->format('g:i A') }}
-                                    </div>
-                                </div>
-                            </div>
+                    <div class="mb-2 flex items-start @if($message->sender_id === auth()->id()) justify-end @endif">
+                        <div class="max-w-xs w-fit p-3 rounded-lg shadow @if($message->sender_id === auth()->id()) bg-purple-100 text-right @else bg-white @endif">
+                            <div class="text-xs text-gray-500 mb-1">{{ $message->sender->name }}</div>
+                            @if($message->isImage())
+                                <img src="{{ asset('storage/'.$message->file_path) }}" alt="Image" class="rounded mb-2 max-h-40">
+                            @elseif($message->isFile())
+                                <a href="{{ route('messages.downloadFile', $message->id) }}" class="text-blue-600 underline" target="_blank">
+                                    {{ $message->file_name }} ({{ $message->getFileSizeFormatted() }})
+                                </a>
+                            @endif
+                            <div>{{ $message->content }}</div>
+                            <div class="text-[10px] text-gray-400 mt-1">{{ $message->created_at->format('M d, H:i') }}</div>
                         </div>
                     </div>
                 @endforeach
@@ -61,10 +52,13 @@
 
             <!-- Message Input -->
             <div class="border-t border-gray-200 p-4">
-                <form id="messageForm" class="flex items-center space-x-3">
+                <form action="{{ route('messages.store') }}" method="POST" enctype="multipart/form-data" class="flex items-center space-x-3">
+                    @csrf
+                    <input type="hidden" name="recipient_id" id="recipientId" value="{{ $otherUser->id }}">
                     <div class="flex-1">
-                        <textarea id="messageInput" rows="1" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:outline-none resize-none" placeholder="Type your message..."></textarea>
+                        <textarea name="content" id="messageContent" rows="1" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:outline-none resize-none" placeholder="Type your message..." required></textarea>
                     </div>
+                    <input type="file" name="file" id="messageFile" class="hidden">
                     <button type="submit" class="bg-purple-600 text-white px-4 py-2 rounded-lg shadow hover:bg-purple-700 transition">
                         <i class="bi bi-send"></i>
                     </button>
@@ -76,41 +70,15 @@
 
 <script>
 document.addEventListener('DOMContentLoaded', function() {
-    const messageForm = document.getElementById('messageForm');
-    const messageInput = document.getElementById('messageInput');
-    
-    messageForm.addEventListener('submit', async function(e) {
-        e.preventDefault();
-        
-        const content = messageInput.value.trim();
-        if (!content) return;
-
-        const formData = new FormData();
-        formData.append('recipient_id', {{ $otherUser->id }});
-        formData.append('content', content);
-
-        try {
-            const response = await fetch('/messages', {
-                method: 'POST',
-                headers: {
-                    'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content'),
-                },
-                body: formData
-            });
-
-            const data = await response.json();
-
-            if (data.success) {
-                messageInput.value = '';
-                location.reload(); // Simple refresh for now
-            } else {
-                alert(data.message || 'Failed to send message.');
-            }
-        } catch (error) {
-            console.error('Error sending message:', error);
-            alert('Failed to send message. Please try again.');
-        }
-    });
+    var chatContainer = document.getElementById('messagesContainer');
+    if (chatContainer) {
+        chatContainer.scrollTop = chatContainer.scrollHeight;
+    }
 });
 </script>
+@if(session('success'))
+    <div class="fixed top-4 right-4 bg-green-500 text-white px-4 py-2 rounded shadow z-50">
+        {{ session('success') }}
+    </div>
+@endif
 @endsection

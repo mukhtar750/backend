@@ -104,4 +104,44 @@ class AuthController extends Controller
             ->get();
         return view('dashboard.entrepreneur', compact('name', 'milestone', 'daysLeft', 'points', 'pairings'));
     }
+
+    public function menteeDashboard()
+    {
+        $mentee = auth()->user();
+        // Find mentor pairing
+        $mentorPairing = \App\Models\Pairing::where('pairing_type', 'mentor_mentee')
+            ->where(function ($q) use ($mentee) {
+                $q->where('user_one_id', $mentee->id)->orWhere('user_two_id', $mentee->id);
+            })
+            ->with(['userOne', 'userTwo'])
+            ->first();
+        $mentor = null;
+        if ($mentorPairing) {
+            $mentor = $mentorPairing->user_one_id == $mentee->id ? $mentorPairing->userTwo : $mentorPairing->userOne;
+        }
+        // Get upcoming sessions for this mentee
+        $upcomingSessions = \App\Models\MentorshipSession::where(function ($q) use ($mentee) {
+                $q->where('scheduled_by', $mentee->id)
+                  ->orWhere('scheduled_for', $mentee->id);
+            })
+            ->where('date_time', '>=', now())
+            ->orderBy('date_time')
+            ->with(['pairing.userOne', 'pairing.userTwo', 'scheduledBy', 'scheduledFor'])
+            ->get();
+        // Get past sessions for this mentee
+        $pastSessions = \App\Models\MentorshipSession::where(function ($q) use ($mentee) {
+                $q->where('scheduled_by', $mentee->id)
+                  ->orWhere('scheduled_for', $mentee->id);
+            })
+            ->where('date_time', '<', now())
+            ->orderByDesc('date_time')
+            ->with(['pairing.userOne', 'pairing.userTwo', 'scheduledBy', 'scheduledFor'])
+            ->get();
+        // Get recent messages: get mentee's conversations, take latest message from each, sort and limit
+        $conversations = $mentee->getConversations();
+        $messages = $conversations->map(function ($conv) {
+            return $conv->latestMessage;
+        })->filter()->sortByDesc('created_at')->take(5);
+        return view('dashboard.mentee', compact('mentee', 'mentor', 'upcomingSessions', 'pastSessions', 'messages'));
+    }
 }

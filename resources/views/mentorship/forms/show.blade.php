@@ -11,11 +11,11 @@
         <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
             <div>
                 <p class="font-semibold">Submitted By:</p>
-                <p>{{ $submission->submittedBy->name }}</p>
+                <p>{{ $submission->submitter->name ?? 'N/A' }}</p>
             </div>
             <div>
                 <p class="font-semibold">Pairing:</p>
-                <p>{{ $submission->pairing->mentor->name }} & {{ $submission->pairing->mentee->name }}</p>
+                <p>{{ $submission->pairing->userOne->name ?? 'N/A' }} & {{ $submission->pairing->userTwo->name ?? 'N/A' }}</p>
             </div>
             <div>
                 <p class="font-semibold">Status:</p>
@@ -36,7 +36,10 @@
         </div>
 
         <h3 class="text-xl font-semibold mb-3">Form Data</h3>
-        @foreach($submission->form_data as $fieldId => $value)
+        @php
+            $formData = is_array($submission->form_data) ? $submission->form_data : (json_decode($submission->form_data, true) ?: []);
+        @endphp
+        @foreach($formData as $fieldId => $value)
             @php
                 $field = $submission->form->fields->firstWhere('id', $fieldId);
             @endphp
@@ -75,7 +78,7 @@
 
     <div class="flex justify-end">
         <a href="{{ route('mentorship.forms.dashboard') }}" class="bg-gray-300 hover:bg-gray-400 text-gray-800 font-bold py-2 px-4 rounded mr-2">Back to Dashboard</a>
-        @if($submission->isEditable())
+        @if($submission->status === 'draft' && auth()->id() === $submission->submitted_by)
             <a href="{{ route('mentorship.forms.edit', $submission->id) }}" class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded mr-2">Edit Submission</a>
         @endif
         @if($submission->status == 'pending' && auth()->user()->can('review', $submission))

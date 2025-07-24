@@ -1,105 +1,94 @@
 <!DOCTYPE html>
-<html lang="{{ str_replace('_', '-', app()->getLocale()) }}">
+<html lang="en">
 <head>
-    <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Aryaas Venture | Mentor Dashboard</title>
     <meta name="csrf-token" content="{{ csrf_token() }}">
-    <title>@yield('title', 'Mentor Dashboard')</title>
-    <link rel="preconnect" href="https://fonts.bunny.net">
-    <link href="https://fonts.bunny.net/css?family=figtree:400,600&display=swap" rel="stylesheet" />
     <script src="https://cdn.tailwindcss.com"></script>
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css">
-    <link rel="stylesheet" href="{{ asset('css/app.css') }}">
+    <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"></script>
+    @stack('styles')
 </head>
-<body class="font-sans antialiased bg-gray-100">
-    <div class="flex h-screen bg-gray-100">
-        <!-- Sidebar -->
-        <div class="w-64 bg-[#6c3483] text-white flex flex-col">
-            <div class="p-4 text-xl md:text-2xl font-bold border-b border-[#512e5f] whitespace-nowrap overflow-hidden text-ellipsis" title="Venture Ready Portal">
-                VR Portal
+<body class="min-h-screen flex">
+    <!-- Mobile menu button -->
+    <div class="md:hidden fixed top-4 left-4 z-20">
+        <button id="menuBtn" class="p-2 rounded-lg bg-white shadow-md text-indigo-900">
+            <i class="fas fa-bars"></i>
+        </button>
+    </div>
+    <!-- Overlay for mobile -->
+    <div id="overlay" class="overlay"></div>
+    <!-- Sidebar -->
+    <aside id="sidebar" class="sidebar relative w-64 min-h-screen h-auto bg-[#6c3483] text-white shadow-md z-20 flex flex-col flex-shrink-0">
+        <div class="p-6 flex-1 flex flex-col">
+            <div class="flex items-center justify-center mb-8">
+                <img src="{{ asset('images/avatar-placeholder.png') }}" alt="Aryaas Logo" class="h-10 w-10">
+                <h1 class="text-xl font-bold ml-3 text-white">Aryaas</h1>
             </div>
-            <div class="p-4 text-sm border-b border-[#a01a7d] tracking-wide">
-                Mentor Panel
-            </div>
-            <nav class="flex-1 px-4 space-y-2 mt-4">
-                @php $route = Route::currentRouteName(); @endphp
-                <a href="{{ route('mentor.dashboard') }}" class="flex items-center gap-3 px-4 py-2 rounded-lg hover:bg-purple-700 {{ $route == 'mentor.dashboard' ? 'bg-white text-purple-800 font-semibold shadow-sm' : '' }}">
-                    <i class="bi bi-grid-fill"></i> Dashboard
+            <nav class="mt-8 space-y-1 flex-1">
+                <a href="{{ route('mentor.dashboard') }}" class="sidebar-link flex items-center px-4 py-3 rounded-lg transition-all duration-300 {{ request()->routeIs('mentor.dashboard') ? 'bg-white text-[#6c3483] font-semibold shadow-sm' : 'hover:bg-purple-700' }}">
+                    <i class="fas fa-home mr-3"></i>
+                    <span>Dashboard</span>
                 </a>
-                <a href="{{ route('mentor.practice-pitches.index') }}" class="flex items-center gap-3 px-4 py-2 rounded-lg hover:bg-purple-700 {{ $route == 'mentor.practice-pitches.index' ? 'bg-white text-purple-800 font-semibold shadow-sm' : '' }}">
-                    <i class="bi bi-mic-fill"></i> Practice Pitches
+                <a href="{{ route('mentor.mentees.index') }}" class="sidebar-link flex items-center px-4 py-3 rounded-lg transition-all duration-300 {{ request()->routeIs('mentor.mentees.*') ? 'bg-white text-[#6c3483] font-semibold shadow-sm' : 'hover:bg-purple-700' }}">
+                    <i class="fas fa-user-friends mr-3"></i>
+                    <span>Mentees</span>
                 </a>
-                <a href="#" class="flex items-center gap-3 px-4 py-2 rounded-lg hover:bg-purple-700">
-                    <i class="bi bi-person-lines-fill"></i> My Mentees
+                <a href="{{ route('mentor.sessions.index') }}" class="sidebar-link flex items-center px-4 py-3 rounded-lg transition-all duration-300 {{ request()->routeIs('mentor.sessions.*') ? 'bg-white text-[#6c3483] font-semibold shadow-sm' : 'hover:bg-purple-700' }}">
+                    <i class="fas fa-calendar-check mr-3"></i>
+                    <span>Sessions</span>
                 </a>
-                <a href="#" class="flex items-center gap-3 px-4 py-2 rounded-lg hover:bg-purple-700">
-                    <i class="bi bi-calendar-event"></i> Sessions
+                <a href="{{ route('mentor.messages.index') }}" class="sidebar-link flex items-center px-4 py-3 rounded-lg transition-all duration-300 {{ request()->routeIs('mentor.messages.*') ? 'bg-white text-[#6c3483] font-semibold shadow-sm' : 'hover:bg-purple-700' }}">
+                    <i class="fas fa-comments mr-3"></i>
+                    <span>Messages</span>
                 </a>
-                <a href="#" class="flex items-center gap-3 px-4 py-2 rounded-lg hover:bg-purple-700">
-                    <i class="bi bi-chat-dots"></i> Messages
+                <a href="{{ route('mentor.resources') }}" class="sidebar-link flex items-center px-4 py-3 rounded-lg transition-all duration-300 {{ request()->routeIs('mentor.resources') ? 'bg-white text-[#6c3483] font-semibold shadow-sm' : 'hover:bg-purple-700' }}">
+                    <i class="fas fa-book-open mr-3"></i>
+                    <span>Resources</span>
                 </a>
-                <a href="#" class="flex items-center gap-3 px-4 py-2 rounded-lg hover:bg-purple-700">
-                    <i class="bi bi-chat-left-text"></i> Feedback
+                <a href="{{ route('mentor.forms') }}" class="sidebar-link flex items-center px-4 py-3 rounded-lg transition-all duration-300 {{ request()->routeIs('mentor.forms*') ? 'bg-white text-[#6c3483] font-semibold shadow-sm' : 'hover:bg-purple-700' }}">
+                    <i class="fas fa-file-alt mr-3"></i>
+                    <span>Forms</span>
+                </a>
+                <a href="{{ route('mentor.calendar') }}" class="sidebar-link flex items-center px-4 py-3 rounded-lg transition-all duration-300 {{ request()->routeIs('mentor.calendar') ? 'bg-white text-[#6c3483] font-semibold shadow-sm' : 'hover:bg-purple-700' }}">
+                    <i class="fas fa-calendar-alt mr-3"></i>
+                    <span>Calendar</span>
+                </a>
+                <a href="{{ route('mentor.reports') }}" class="sidebar-link flex items-center px-4 py-3 rounded-lg transition-all duration-300 {{ request()->routeIs('mentor.reports') ? 'bg-white text-[#6c3483] font-semibold shadow-sm' : 'hover:bg-purple-700' }}">
+                    <i class="fas fa-chart-line mr-3"></i>
+                    <span>Reports/Outcomes</span>
+                </a>
+                <a href="{{ route('mentor.settings') }}" class="sidebar-link flex items-center px-4 py-3 rounded-lg transition-all duration-300 {{ request()->routeIs('mentor.settings') ? 'bg-white text-[#6c3483] font-semibold shadow-sm' : 'hover:bg-purple-700' }}">
+                    <i class="fas fa-cog mr-3"></i>
+                    <span>Settings</span>
                 </a>
             </nav>
-            <div class="p-4 border-t border-[#512e5f]">
-                <div class="flex items-center mb-3">
-                    <img class="h-10 w-10 rounded-full mr-3 border border-white" src="https://i.pravatar.cc/40" alt="{{ Auth::user()->name }}">
-                    <div>
-                        <div class="font-semibold">{{ Auth::user()->name }}</div>
-                        <div class="text-sm text-purple-100">{{ Auth::user()->email }}</div>
-                    </div>
+        </div>
+        <div class="p-6 border-t border-[#512e5f]">
+            <div class="flex items-center mb-3">
+                <img class="h-10 w-10 rounded-full mr-3 border border-white" src="{{ Auth::user()->profile_photo_url ?? asset('images/avatar-placeholder.png') }}" alt="{{ Auth::user()->name }}">
+                <div>
+                    <div class="font-semibold">{{ Auth::user()->name }}</div>
+                    <div class="text-sm text-purple-100">{{ Auth::user()->email }}</div>
                 </div>
-                <a href="#" class="flex items-center px-4 py-2 text-white hover:bg-[#512e5f] rounded-lg transition-all font-medium">
-                    <i class="bi bi-gear-fill mr-3"></i> Settings
-                </a>
-                <form action="{{ route('logout') }}" method="POST" class="mt-1">
-                    @csrf
-                    <button type="submit" class="flex items-center w-full px-4 py-2 text-white hover:bg-[#512e5f] rounded-lg transition-all font-medium">
-                        <i class="bi bi-box-arrow-right mr-3"></i> Logout
-                    </button>
-                </form>
             </div>
+            <a href="{{ route('mentor.settings') }}" class="flex items-center px-4 py-2 text-white hover:bg-[#512e5f] rounded-lg transition-all font-medium">
+                <i class="fas fa-cog mr-3"></i> Settings
+            </a>
+            <form action="{{ route('logout') }}" method="POST" class="mt-1">
+                @csrf
+                <button type="submit" class="flex items-center w-full px-4 py-2 text-white hover:bg-[#512e5f] rounded-lg transition-all font-medium">
+                    <i class="fas fa-sign-out-alt mr-3"></i> Logout
+                </button>
+            </form>
         </div>
-        <!-- Main content -->
-        <div class="flex-1 flex flex-col overflow-hidden">
-            <!-- Header -->
-            <header class="flex items-center justify-between p-4 bg-white border-b shadow-sm">
-                <div class="flex items-center">
-                    <h1 class="text-2xl font-semibold text-gray-800"><i class="bi bi-grid-fill mr-2"></i> Dashboard</h1>
-                </div>
-                <div class="flex items-center space-x-4">
-                    <div class="relative">
-                        <input type="text" placeholder="Search..." class="border border-gray-300 rounded-md py-2 px-4 pl-10 focus:outline-none focus:ring-2 focus:ring-[#6c3483]">
-                        <i class="bi bi-search absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400"></i>
-                    </div>
-                    @include('components.notification-badge')
-                    <a href="{{ route('messages.index') }}" class="relative text-gray-600 hover:text-gray-800 mr-2">
-                        <i class="bi bi-chat-dots-fill text-xl"></i>
-                        @php
-                            $unreadMessages = auth()->check() ? auth()->user()->getUnreadMessageCount() : 0;
-                        @endphp
-                        @if($unreadMessages > 0)
-                            <span class="absolute -top-2 -right-2 inline-flex items-center justify-center px-1.5 py-0.5 text-xs font-bold text-white bg-blue-500 rounded-full min-w-[18px]">
-                                {{ $unreadMessages > 99 ? '99+' : $unreadMessages }}
-                            </span>
-                        @endif
-                    </a>
-                    <div class="flex items-center">
-                        <img class="h-8 w-8 rounded-full mr-2" src="https://i.pravatar.cc/32" alt="{{ Auth::user()->name }}">
-                        <div>
-                            <div class="font-semibold text-gray-800">{{ Auth::user()->name }}</div>
-                            <div class="text-sm text-gray-500">Mentor</div>
-                        </div>
-                    </div>
-                </div>
-            </header>
-            <!-- Page Content -->
-            <main class="flex-1 overflow-x-hidden overflow-y-auto bg-gray-100 p-6">
-                @yield('content')
-            </main>
+    </aside>
+    <!-- Main Content -->
+    <main class="flex-1 overflow-auto min-h-screen bg-gray-50">
+        <div class="p-6 md:p-8">
+            @yield('content')
         </div>
-    </div>
-    <script src="{{ asset('js/alpine.min.js') }}" defer></script>
+    </main>
+    @stack('scripts')
 </body>
 </html>

@@ -125,7 +125,7 @@
                         <span class="absolute top-6 right-6 bg-blue-100 text-blue-700 text-xs font-semibold px-4 py-1 rounded-full" x-text="session.status.charAt(0).toUpperCase() + session.status.slice(1)"></span>
                         <!-- Avatars, Names, Roles, Meeting Icon -->
                         <div class="flex items-center mb-4">
-                            <img :src="session.pairing.user_one.avatar_url || 'https://via.placeholder.com/40'" alt="User One Avatar" class="h-12 w-12 rounded-full object-cover mr-3 border-2 border-white shadow">
+                            <img :src="session.pairing.user_one.avatar_url || '{{ asset('images/avatar-placeholder.png') }}'" alt="User One Avatar" class="h-12 w-12 rounded-full object-cover mr-3 border-2 border-white shadow">
                             <div class="mr-6">
                                 <p class="font-semibold text-gray-900" x-text="session.pairing.user_one.name"></p>
                                 <p class="text-xs text-gray-500" x-text="session.pairing.user_one.role.charAt(0).toUpperCase() + session.pairing.user_one.role.slice(1)"></p>
@@ -135,7 +135,7 @@
                                     <i class="bi bi-camera-video-fill"></i>
                                 </span>
                             </template>
-                            <img :src="session.pairing.user_two.avatar_url || 'https://via.placeholder.com/40'" alt="User Two Avatar" class="h-12 w-12 rounded-full object-cover ml-3 border-2 border-white shadow">
+                            <img :src="session.pairing.user_two.avatar_url || '{{ asset('images/avatar-placeholder.png') }}'" alt="User Two Avatar" class="h-12 w-12 rounded-full object-cover ml-3 border-2 border-white shadow">
                             <div>
                                 <p class="font-semibold text-gray-900" x-text="session.pairing.user_two.name"></p>
                                 <p class="text-xs text-gray-500" x-text="session.pairing.user_two.role.charAt(0).toUpperCase() + session.pairing.user_two.role.slice(1)"></p>

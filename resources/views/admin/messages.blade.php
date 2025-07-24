@@ -47,7 +47,7 @@
                         $unreadCount = $conversation->getUnreadCount(auth()->id());
                         $latestMessage = $conversation->latestMessage;
                     @endphp
-                    <div class="p-4 hover:bg-gray-50 cursor-pointer" onclick="window.location.href='{{ route('messages.show', $conversation->id) }}'">
+                    <div class="p-4 hover:bg-gray-50 cursor-pointer" onclick="window.location.href='{{ route('admin.messages.show', $conversation->id) }}'">
                         <div class="flex items-start justify-between">
                             <div class="flex items-start space-x-3">
                                 <div class="w-10 h-10 bg-purple-100 rounded-full flex items-center justify-center">

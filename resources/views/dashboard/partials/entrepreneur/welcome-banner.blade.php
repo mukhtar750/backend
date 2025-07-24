@@ -1,7 +1,7 @@
 <div class="rounded-2xl p-8 bg-gradient-to-r from-[#7b2ff2] to-[#f357a8] text-white shadow-lg mb-6">
     <div class="flex flex-col gap-6">
         <div>
-            <h2 class="text-3xl md:text-4xl font-bold mb-2">Welcome back, {{ $name ?? 'Amara' }}! <span class="inline-block">👋</span></h2>
+            <h2 class="text-3xl md:text-4xl font-bold mb-2">Welcome back, {{ $name ?? Auth::user()->name ?? 'Entrepreneur' }}! <span class="inline-block">👋</span></h2>
             <p class="text-base text-pink-100 max-w-xl">You're making excellent progress in your investment readiness journey.</p>
         </div>
         <div class="flex flex-col md:flex-row gap-4 w-full mt-4">

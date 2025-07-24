@@ -110,4 +110,116 @@ class MentorshipSessionController extends Controller
         // TODO: Notify both users
         return redirect()->back()->with('success', 'Session marked as completed.');
     }
+
+    public function create()
+    {
+        // You can pass mentees or other data here if needed
+        return view('mentor.sessions.create');
+    }
+
+    public function mentorScheduleSessionPage()
+    {
+        $mentor = auth()->user();
+        // Get all pairings where this user is a mentor
+        $pairings = \App\Models\Pairing::whereIn('pairing_type', ['mentor_mentee', 'mentor_entrepreneur'])
+            ->where(function ($q) use ($mentor) {
+                $q->where('user_one_id', $mentor->id)->orWhere('user_two_id', $mentor->id);
+            })
+            ->with(['userOne', 'userTwo'])
+            ->get();
+        $pairedMentees = $pairings->map(function ($pairing) use ($mentor) {
+            return $pairing->user_one_id == $mentor->id ? $pairing->userTwo : $pairing->userOne;
+        });
+        // Get recent sessions (last 10)
+        $recentSessions = \App\Models\MentorshipSession::where(function ($query) use ($mentor) {
+            $query->where('scheduled_by', $mentor->id)
+                  ->orWhere('scheduled_for', $mentor->id);
+        })
+        ->with(['pairing.userOne', 'pairing.userTwo', 'scheduledBy', 'scheduledFor'])
+        ->orderBy('date_time', 'desc')
+        ->limit(10)
+        ->get();
+        return view('mentor.sessions.create', compact('pairedMentees', 'recentSessions'));
+    }
+
+    public function mentorScheduleSession(Request $request)
+    {
+        $request->validate([
+            'mentee_id' => 'required|exists:users,id',
+            'session_date' => 'required|date|after_or_equal:today',
+            'session_time' => 'required',
+            'session_type' => 'required|in:1-on-1,group',
+            'topic' => 'required|string|max:255',
+            'notes' => 'nullable|string',
+            'session_link' => 'nullable|url',
+        ]);
+        $mentor = auth()->user();
+        // Check if the mentee is actually paired with this mentor
+        $isPaired = \App\Models\Pairing::whereIn('pairing_type', ['mentor_mentee', 'mentor_entrepreneur'])
+            ->where(function ($q) use ($mentor, $request) {
+                $q->where(function ($q2) use ($mentor, $request) {
+                    $q2->where('user_one_id', $mentor->id)->where('user_two_id', $request->mentee_id);
+                })->orWhere(function ($q2) use ($mentor, $request) {
+                    $q2->where('user_one_id', $request->mentee_id)->where('user_two_id', $mentor->id);
+                });
+            })
+            ->exists();
+        if (!$isPaired) {
+            return response()->json(['error' => 'You can only schedule sessions with your paired mentees or entrepreneurs.'], 403);
+        }
+        // Get the pairing
+        $pairing = \App\Models\Pairing::whereIn('pairing_type', ['mentor_mentee', 'mentor_entrepreneur'])
+            ->where(function ($q) use ($mentor, $request) {
+                $q->where(function ($q2) use ($mentor, $request) {
+                    $q2->where('user_one_id', $mentor->id)->where('user_two_id', $request->mentee_id);
+                })->orWhere(function ($q2) use ($mentor, $request) {
+                    $q2->where('user_one_id', $request->mentee_id)->where('user_two_id', $mentor->id);
+                });
+            })
+            ->first();
+        $sessionDateTime = $request->session_date . ' ' . $request->session_time;
+        $session = \App\Models\MentorshipSession::create([
+            'pairing_id' => $pairing->id,
+            'scheduled_by' => $mentor->id,
+            'scheduled_for' => $request->mentee_id,
+            'date_time' => $sessionDateTime,
+            'duration' => 60,
+            'topic' => $request->topic,
+            'notes' => $request->notes,
+            'meeting_link' => $request->session_link,
+            'status' => 'pending',
+        ]);
+        \Log::info('Mentor scheduled session:', $session->toArray());
+        return response()->json(['success' => true, 'session_id' => $session->id]);
+    }
+
+    // Admin schedules a session between two paired users
+    public function adminStore(Request $request)
+    {
+        $request->validate([
+            'pairing_id' => 'required|exists:pairings,id',
+            'date_time' => 'required|date|after:now',
+            'duration' => 'required|integer|min:15|max:240',
+            'topic' => 'nullable|string|max:255',
+            'meeting_link' => 'nullable|url',
+            'notes' => 'nullable|string',
+        ]);
+        $pairing = \App\Models\Pairing::with(['userOne', 'userTwo'])->findOrFail($request->pairing_id);
+        // Decide who is scheduled_by and scheduled_for (default: userOne is mentor, userTwo is mentee)
+        $scheduledBy = $pairing->user_one_id;
+        $scheduledFor = $pairing->user_two_id;
+        $session = \App\Models\MentorshipSession::create([
+            'pairing_id' => $pairing->id,
+            'scheduled_by' => $scheduledBy,
+            'scheduled_for' => $scheduledFor,
+            'date_time' => $request->date_time,
+            'duration' => $request->duration,
+            'topic' => $request->topic,
+            'meeting_link' => $request->meeting_link,
+            'notes' => $request->notes,
+            'status' => 'pending',
+        ]);
+        // Optionally notify both users here
+        return redirect()->back()->with('success', 'Session scheduled successfully!');
+    }
 }

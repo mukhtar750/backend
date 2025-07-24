@@ -46,48 +46,23 @@
         <!-- Give Feedback Tab -->
         <div x-show="tab === 'give'" class="mt-6 space-y-4">
             <div class="font-semibold text-gray-800 mb-2">Available for Feedback</div>
-            <!-- Feedback Card 1: Mentor -->
+            @forelse($pairedUsers as $paired)
             <div class="bg-white rounded-xl shadow p-5 flex flex-col md:flex-row md:items-center gap-4 justify-between">
                 <div class="flex items-center gap-4">
-                    <img src="https://randomuser.me/api/portraits/men/32.jpg" class="h-12 w-12 rounded-full object-cover" alt="Mentor">
+                    <img src="{{ $paired->profile_photo_url ?? asset('images/avatar-placeholder.png') }}" class="h-12 w-12 rounded-full object-cover" alt="{{ $paired->name }}">
                     <div>
-                        <div class="font-semibold text-gray-900">Dr. Kemi Adebayo</div>
-                        <div class="text-xs text-gray-500">Business Consultant</div>
-                        <div class="text-xs text-gray-400">Last session: 2025-01-20</div>
-                        <div class="text-xs text-gray-400">Topic: Business Model Validation</div>
+                        <div class="font-semibold text-gray-900">{{ $paired->name }}</div>
+                        <div class="text-xs text-gray-500">{{ ucfirst($paired->role) }}</div>
                     </div>
                 </div>
                 <div class="flex items-center gap-2 mt-2 md:mt-0">
-                    <span class="bg-purple-100 text-purple-700 text-xs font-semibold px-3 py-1 rounded-full">mentor</span>
-                    <button @click="showModal = true; feedbackTarget = {type: 'mentor', id: 1, name: 'Dr. Kemi Adebayo'}; rating = 0" class="bg-[#b81d8f] text-white px-5 py-2 rounded-lg font-semibold hover:bg-[#a01a7d] transition">Give Feedback</button>
+                    <span class="bg-purple-100 text-purple-700 text-xs font-semibold px-3 py-1 rounded-full">{{ $paired->role }}</span>
+                    <button @click="showModal = true; feedbackTarget = {type: '{{ $paired->role }}', id: {{ $paired->id }}, name: '{{ $paired->name }}'}; rating = 0" class="bg-[#b81d8f] text-white px-5 py-2 rounded-lg font-semibold hover:bg-[#a01a7d] transition">Give Feedback</button>
                 </div>
             </div>
-            <!-- Feedback Card 2: Training -->
-            <div class="bg-white rounded-xl shadow p-5 flex flex-col md:flex-row md:items-center gap-4 justify-between">
-                <div class="flex items-center gap-4">
-                    <img src="https://randomuser.me/api/portraits/men/45.jpg" class="h-12 w-12 rounded-full object-cover" alt="Trainer">
-                    <div>
-                        <div class="font-semibold text-gray-900">Financial Planning Workshop</div>
-                        <div class="text-xs text-gray-500">by Grace Mwangi</div>
-                        <div class="text-xs text-gray-400">Completed: 2025-01-18</div>
-                    </div>
-                </div>
-                <div class="flex items-center gap-2 mt-2 md:mt-0">
-                    <span class="bg-blue-100 text-blue-700 text-xs font-semibold px-3 py-1 rounded-full">training</span>
-                    <button @click="showModal = true; feedbackTarget = {type: 'training', id: 2, name: 'Financial Planning Workshop'}; rating = 0" class="bg-[#b81d8f] text-white px-5 py-2 rounded-lg font-semibold hover:bg-[#a01a7d] transition">Give Feedback</button>
-                </div>
-            </div>
-            <!-- Feedback Card 3: Platform -->
-            <div class="bg-white rounded-xl shadow p-5 flex flex-col md:flex-row md:items-center gap-4 justify-between">
-                <div>
-                    <div class="font-semibold text-gray-900">AWN Information Management Portal</div>
-                    <div class="text-xs text-gray-400">Last used: Today</div>
-                </div>
-                <div class="flex items-center gap-2 mt-2 md:mt-0">
-                    <span class="bg-green-100 text-green-700 text-xs font-semibold px-3 py-1 rounded-full">platform</span>
-                    <button @click="showModal = true; feedbackTarget = {type: 'platform', id: null, name: 'AWN Information Management Portal'}; rating = 0" class="bg-[#b81d8f] text-white px-5 py-2 rounded-lg font-semibold hover:bg-[#a01a7d] transition">Give Feedback</button>
-                </div>
-            </div>
+            @empty
+            <div class="text-gray-500">No paired users available for feedback.</div>
+            @endforelse
             <!-- Feedback Modal -->
             <div x-show="showModal" class="fixed inset-0 z-50 flex items-center justify-center bg-black/40" style="display: none;" @keydown.escape.window="showModal = false">
                 <div class="bg-white rounded-2xl shadow-xl w-full max-w-lg mx-auto p-6 relative animate-fade-in">

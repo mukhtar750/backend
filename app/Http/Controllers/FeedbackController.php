@@ -50,6 +50,13 @@ class FeedbackController extends Controller
             return view('bdsp.feedback', compact('pairedUsers', 'feedbacks'));
         }
         // Entrepreneur and other roles
+        // Get paired users (mentors, bdsp, etc.)
+        $pairings = \App\Models\Pairing::where(function($q) use ($user) {
+            $q->where('user_one_id', $user->id)->orWhere('user_two_id', $user->id);
+        })->get();
+        $pairedUsers = $pairings->map(function($pairing) use ($user) {
+            return $pairing->user_one_id == $user->id ? $pairing->userTwo : $pairing->userOne;
+        });
         // Feedback given by the user
         $feedbackGiven = \App\Models\Feedback::where('user_id', $user->id)->latest()->get();
         // Feedback received (if user is a mentor, bdsp, etc.)
@@ -63,7 +70,7 @@ class FeedbackController extends Controller
             'avg_rating_given' => $feedbackGiven->avg('rating'),
             'avg_rating_received' => $feedbackReceived->avg('rating'),
         ];
-        return view('dashboard.entrepreneur-feedback', compact('feedbackGiven', 'feedbackReceived', 'stats'));
+        return view('dashboard.entrepreneur-feedback', compact('pairedUsers', 'feedbackGiven', 'feedbackReceived', 'stats'));
     }
 
     public function destroy($id)

@@ -15,6 +15,9 @@ trait RoleBasedUrlTrait
             case 'entrepreneur':
                 return route($baseRoute);
             case 'investor':
+                if ($baseRoute === 'dashboard') {
+                    return route('dashboard.investor');
+                }
                 return route('investor.' . $baseRoute);
             case 'admin':
                 return route('admin.' . $baseRoute);

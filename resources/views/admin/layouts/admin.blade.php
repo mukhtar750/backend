@@ -6,11 +6,7 @@
     <meta name="csrf-token" content="{{ csrf_token() }}">
     <title>@yield('title', 'Admin Dashboard')</title>
 
-    <!-- Tailwind CSS CDN -->
     <script src="https://cdn.tailwindcss.com"></script>
-    <!-- Bootstrap Icons CDN -->
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css">
-    <!-- Alpine.js CDN -->
     <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"></script>
     <style>
         .active {
@@ -24,7 +20,7 @@
 <div class="flex h-screen">
     <!-- Sidebar -->
     <aside class="w-64 bg-purple-800 text-white flex flex-col">
-        <div class="px-6 py-4 text-2xl font-bold">Innovation Portal</div>
+        <div class="px-6 py-4 text-2xl font-bold">VR Portal</div>
         <div class="px-6 text-sm mb-4">Admin Panel</div>
         <nav class="flex-1 px-4 space-y-2">
             @php $route = Route::currentRouteName(); @endphp

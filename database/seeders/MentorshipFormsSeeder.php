@@ -106,6 +106,76 @@ class MentorshipFormsSeeder extends Seeder
             ],
         ]);
 
+        // First Meeting (Mentor Reflection)
+        $firstMeetingMentor = MentorshipForm::create([
+            'form_type' => 'first_meeting_mentor',
+            'title' => 'First Meeting (Mentor Reflection)',
+            'description' => 'Mentor: Reflect on your first meeting with your mentee.',
+            'order' => 1,
+            'phase' => 'first_meeting',
+            'completion_by' => 'mentor',
+            'requires_signature' => false,
+            'active' => true,
+        ]);
+        $this->createFormFields($firstMeetingMentor, [
+            [
+                'field_type' => 'textarea',
+                'label' => 'What were your first impressions of your mentee?',
+                'description' => '',
+                'required' => true,
+                'order' => 1,
+            ],
+            [
+                'field_type' => 'textarea',
+                'label' => 'What goals did you discuss?',
+                'description' => '',
+                'required' => true,
+                'order' => 2,
+            ],
+            [
+                'field_type' => 'textarea',
+                'label' => 'What are your next steps as a mentor?',
+                'description' => '',
+                'required' => true,
+                'order' => 3,
+            ],
+        ]);
+
+        // First Meeting (Mentee Reflection)
+        $firstMeetingMentee = MentorshipForm::create([
+            'form_type' => 'first_meeting_mentee',
+            'title' => 'First Meeting (Mentee Reflection)',
+            'description' => 'Mentee: Reflect on your first meeting with your mentor.',
+            'order' => 2,
+            'phase' => 'first_meeting',
+            'completion_by' => 'mentee',
+            'requires_signature' => false,
+            'active' => true,
+        ]);
+        $this->createFormFields($firstMeetingMentee, [
+            [
+                'field_type' => 'textarea',
+                'label' => 'What were your first impressions of your mentor?',
+                'description' => '',
+                'required' => true,
+                'order' => 1,
+            ],
+            [
+                'field_type' => 'textarea',
+                'label' => 'What goals did you discuss?',
+                'description' => '',
+                'required' => true,
+                'order' => 2,
+            ],
+            [
+                'field_type' => 'textarea',
+                'label' => 'What are your next steps as a mentee?',
+                'description' => '',
+                'required' => true,
+                'order' => 3,
+            ],
+        ]);
+
         // Form 2: Success Description
         $form2 = MentorshipForm::create([
             'form_type' => 'success_description',
@@ -507,6 +577,28 @@ class MentorshipFormsSeeder extends Seeder
             ],
         ]);
 
+        // Add mentor review fields to forms that require mentor review/signature
+        $formsNeedingMentorReview = [$form9];
+        foreach ($formsNeedingMentorReview as $form) {
+            $order = MentorshipFormField::where('mentorship_form_id', $form->id)->max('order') + 1;
+            MentorshipFormField::create([
+                'mentorship_form_id' => $form->id,
+                'field_type' => 'textarea',
+                'label' => 'Mentor Comments',
+                'description' => 'Mentor review/comments on this submission',
+                'required' => false,
+                'order' => $order,
+            ]);
+            MentorshipFormField::create([
+                'mentorship_form_id' => $form->id,
+                'field_type' => 'checkbox',
+                'label' => 'Mentor Signature',
+                'description' => 'Mentor signature/approval for this form',
+                'required' => true,
+                'order' => $order + 1,
+            ]);
+        }
+
         // Form 10: Action Plan
         $form10 = MentorshipForm::create([
             'form_type' => 'action_plan',
@@ -565,6 +657,28 @@ class MentorshipFormsSeeder extends Seeder
             ],
         ]);
 
+        // Add mentor review fields to forms that require mentor review/signature
+        $formsNeedingMentorReview = [$form10];
+        foreach ($formsNeedingMentorReview as $form) {
+            $order = MentorshipFormField::where('mentorship_form_id', $form->id)->max('order') + 1;
+            MentorshipFormField::create([
+                'mentorship_form_id' => $form->id,
+                'field_type' => 'textarea',
+                'label' => 'Mentor Comments',
+                'description' => 'Mentor review/comments on this submission',
+                'required' => false,
+                'order' => $order,
+            ]);
+            MentorshipFormField::create([
+                'mentorship_form_id' => $form->id,
+                'field_type' => 'checkbox',
+                'label' => 'Mentor Signature',
+                'description' => 'Mentor signature/approval for this form',
+                'required' => true,
+                'order' => $order + 1,
+            ]);
+        }
+
         // Form 11: Mentor/Mentee Feedback
         $form11 = MentorshipForm::create([
             'form_type' => 'mentorship_feedback',
@@ -616,6 +730,28 @@ class MentorshipFormsSeeder extends Seeder
                 'order' => 5,
             ],
         ]);
+
+        // Add mentor review fields to forms that require mentor review/signature
+        $formsNeedingMentorReview = [$form11];
+        foreach ($formsNeedingMentorReview as $form) {
+            $order = MentorshipFormField::where('mentorship_form_id', $form->id)->max('order') + 1;
+            MentorshipFormField::create([
+                'mentorship_form_id' => $form->id,
+                'field_type' => 'textarea',
+                'label' => 'Mentor Comments',
+                'description' => 'Mentor review/comments on this submission',
+                'required' => false,
+                'order' => $order,
+            ]);
+            MentorshipFormField::create([
+                'mentorship_form_id' => $form->id,
+                'field_type' => 'checkbox',
+                'label' => 'Mentor Signature',
+                'description' => 'Mentor signature/approval for this form',
+                'required' => true,
+                'order' => $order + 1,
+            ]);
+        }
 
         // Form 12: Suggested Resources
         $form12 = MentorshipForm::create([
@@ -674,6 +810,31 @@ class MentorshipFormsSeeder extends Seeder
                 'order' => 6,
             ],
         ]);
+
+        // Add mentor review fields to forms that require mentor review/signature
+        $formsNeedingMentorReview = [];
+        foreach (['form1','form2','form3','form4','form5','form6','form7','form9','form10','form11'] as $var) {
+            if (isset($$var)) $formsNeedingMentorReview[] = $$var;
+        }
+        foreach ($formsNeedingMentorReview as $form) {
+            $order = MentorshipFormField::where('mentorship_form_id', $form->id)->max('order') + 1;
+            MentorshipFormField::create([
+                'mentorship_form_id' => $form->id,
+                'field_type' => 'textarea',
+                'label' => 'Mentor Comments',
+                'description' => 'Mentor review/comments on this submission',
+                'required' => false,
+                'order' => $order,
+            ]);
+            MentorshipFormField::create([
+                'mentorship_form_id' => $form->id,
+                'field_type' => 'checkbox',
+                'label' => 'Mentor Signature',
+                'description' => 'Mentor signature/approval for this form',
+                'required' => true,
+                'order' => $order + 1,
+            ]);
+        }
     }
 
     /**

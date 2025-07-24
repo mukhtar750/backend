@@ -44,7 +44,7 @@
                                         <p class="text-xs text-gray-400">{{ $latestMessage->created_at->diffForHumans() }}</p>
                                     @endif
                                 </div>
-                            </div>
+                            </a>
                         @empty
                             <div class="text-center py-8">
                                 <div class="w-16 h-16 bg-gray-100 rounded-full flex items-center justify-center mx-auto mb-4">
@@ -96,47 +96,16 @@
                 </button>
             </div>
             <!-- Form -->
-            <form @submit.prevent="sendMessage()" class="space-y-4">
-                <!-- Recipient -->
-                <div>
-                    <label class="block text-sm font-medium text-gray-700 mb-2">To:</label>
-                    <select x-model="recipientId" class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:outline-none" required>
-                        <option value="">Select recipient...</option>
-                        @foreach($messageableUsers as $user)
-                            <option value="{{ $user->id }}">{{ $user->name }} ({{ ucfirst($user->role) }})</option>
-                        @endforeach
-                    </select>
+            <form action="{{ route('messages.store') }}" method="POST" enctype="multipart/form-data" class="flex items-center space-x-3">
+                @csrf
+                <input type="hidden" name="recipient_id" id="recipientId" value="{{ $otherUser->id }}">
+                <div class="flex-1">
+                    <textarea name="content" id="messageContent" rows="1" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:outline-none resize-none" placeholder="Type your message..." required></textarea>
                 </div>
-                <!-- Message -->
-                <div>
-                    <label class="block text-sm font-medium text-gray-700 mb-2">Message:</label>
-                    <textarea x-model="content" rows="4" class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:outline-none" placeholder="Type your message..." required></textarea>
-                </div>
-                <!-- File Upload -->
-                <div>
-                    <label class="block text-sm font-medium text-gray-700 mb-2">Attachment (optional):</label>
-                    <input type="file" x-ref="fileInput" @change="handleFileSelect()" class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:outline-none">
-                </div>
-                <!-- Selected File -->
-                <div x-show="selectedFile" class="flex items-center space-x-2 p-2 bg-gray-50 rounded">
-                    <i class="bi bi-file-earmark text-gray-500"></i>
-                    <template x-if="selectedFile">
-                        <span x-text="selectedFile.name" class="text-sm text-gray-700"></span>
-                    </template>
-                    <button @click="removeFile()" type="button" class="text-red-500 hover:text-red-700">
-                        <i class="bi bi-x"></i>
-                    </button>
-                </div>
-                <!-- Actions -->
-                <div class="flex items-center justify-end space-x-3 pt-4">
-                    <button type="button" @click="closeModal()" class="px-4 py-2 text-gray-600 hover:text-gray-800">
-                        Cancel
-                    </button>
-                    <button type="submit" :disabled="sending" class="bg-purple-600 text-white px-4 py-2 rounded-lg shadow hover:bg-purple-700 transition disabled:opacity-50">
-                        <span x-show="!sending">Send Message</span>
-                        <span x-show="sending">Sending...</span>
-                    </button>
-                </div>
+                <input type="file" name="file" id="messageFile" class="hidden">
+                <button type="submit" class="bg-purple-600 text-white px-4 py-2 rounded-lg shadow hover:bg-purple-700 transition">
+                    <i class="bi bi-send"></i>
+                </button>
             </form>
         </div>
     </div>

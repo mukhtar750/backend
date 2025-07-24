@@ -10,6 +10,10 @@ use App\Http\Controllers\AdminDashboardController;
 use App\Http\Controllers\NotificationController;
 use App\Http\Controllers\MentorController;
 use App\Http\Controllers\PracticePitchController;
+use App\Http\Controllers\IdeaController;
+use App\Http\Controllers\CommentController;
+use App\Http\Controllers\PitchController;
+use App\Http\Controllers\VoteController;
 
 /*
 |--------------------------------------------------------------------------
@@ -63,6 +67,7 @@ Route::middleware(['auth'])->group(function () {
     Route::get('/messages/unread-count', [\App\Http\Controllers\MessageController::class, 'getUnreadCount'])->name('messages.unreadCount');
     Route::get('/messages/{message}/download', [\App\Http\Controllers\MessageController::class, 'downloadFile'])->name('messages.download');
     Route::delete('/messages/{message}', [\App\Http\Controllers\MessageController::class, 'deleteMessage'])->name('messages.delete');
+    Route::get('/messages/create', [\App\Http\Controllers\MessageController::class, 'create'])->middleware(['auth'])->name('messages.create');
 
     // Group Chat Routes
     Route::get('/groups/{slug}', [\App\Http\Controllers\GroupController::class, 'show'])->name('groups.show');
@@ -72,7 +77,7 @@ Route::middleware(['auth'])->group(function () {
 
 // BDSP and Mentor specific routes
 Route::middleware(['auth', 'role:bdsp,mentor'])->group(function () {
-    Route::get('/mentor/dashboard', [\App\Http\Controllers\MentorController::class, 'dashboard'])->name('mentor.dashboard');
+    Route::get('/mentor/dashboard', [\App\Http\Controllers\MentorDashboardController::class, 'index'])->middleware(['auth'])->name('mentor.dashboard');
     Route::get('/mentor/practice-pitches', [PracticePitchController::class, 'mentorIndex'])->name('mentor.practice-pitches.index');
     Route::post('/mentor/practice-pitches/{id}/feedback', [PracticePitchController::class, 'feedback'])->name('mentor.practice-pitches.feedback');
 });
@@ -122,6 +127,8 @@ Route::middleware(['auth', 'role:admin,staff'])->prefix('admin')->name('admin.')
     Route::get('/messages', function () {
         return view('admin.messages'); // Placeholder for messages page
     })->name('messages');
+
+    Route::get('/messages/{conversation}', [\App\Http\Controllers\MessageController::class, 'adminShow'])->name('messages.show');
 
     Route::get('/settings', function () {
         return view('admin.settings'); // Placeholder for settings page
@@ -240,6 +247,15 @@ Route::middleware(['auth'])->group(function () {
             ->toArray();
         return view('dashboard.entrepreneur-calendar', compact('sessions', 'registrations'));
     })->name('entrepreneur.calendar');
+    Route::get('/dashboard/entrepreneur-startup-profile', function () {
+        $user = auth()->user();
+        return view('dashboard.entrepreneur-startup-profile', compact('user'));
+    })->name('entrepreneur.startup-profile');
+    Route::get('/dashboard/entrepreneur-tasks', function () {
+        $user = auth()->user();
+        $tasks = \DB::table('tasks')->where('user_id', $user->id)->orderBy('due_date', 'asc')->get();
+        return view('dashboard.entrepreneur-tasks', compact('tasks'));
+    })->name('entrepreneur.tasks');
     Route::get('/dashboard/entrepreneur-mentorship', function () {
         $user = auth()->user();
         $mentors = \App\Models\User::where('role', 'mentor')->where('is_approved', true)->get();
@@ -324,20 +340,17 @@ Route::middleware(['auth'])->group(function () {
 // Mentor Registration & Dashboard
 Route::get('/register/mentor', [\App\Http\Controllers\MentorRegisterController::class, 'showRegistrationForm'])->name('register.mentor');
 Route::post('/register/mentor', [\App\Http\Controllers\MentorRegisterController::class, 'register']);
-Route::get('/dashboard/mentor', function () {
-    return view('dashboard.mentor');
-})->middleware(['auth'])->name('dashboard.mentor');
+Route::get('/dashboard/mentor', [\App\Http\Controllers\MentorDashboardController::class, 'index'])->middleware(['auth'])->name('dashboard.mentor');
 
 // Mentee Registration & Dashboard
 Route::get('/register/mentee', [\App\Http\Controllers\MenteeRegisterController::class, 'showRegistrationForm'])->name('register.mentee');
 Route::post('/register/mentee', [\App\Http\Controllers\MenteeRegisterController::class, 'register']);
-Route::get('/dashboard/mentee', function () {
-    return view('dashboard.mentee');
-})->middleware(['auth'])->name('dashboard.mentee');
+Route::get('/dashboard/mentee', [\App\Http\Controllers\AuthController::class, 'menteeDashboard'])->middleware(['auth'])->name('dashboard.mentee');
 
 // Mentorship Session Booking & Management
 Route::middleware(['auth'])->group(function () {
-    Route::resource('mentorship-sessions', \App\Http\Controllers\MentorshipSessionController::class)->except(['edit', 'update', 'destroy']);
+    Route::post('mentorship-sessions', [\App\Http\Controllers\MentorshipSessionController::class, 'adminStore'])->name('mentorship-sessions.store');
+    Route::resource('mentorship-sessions', \App\Http\Controllers\MentorshipSessionController::class)->except(['edit', 'update', 'destroy', 'store']);
     Route::post('mentorship-sessions/{mentorship_session}/confirm', [\App\Http\Controllers\MentorshipSessionController::class, 'confirm'])->name('mentorship-sessions.confirm');
     Route::post('mentorship-sessions/{mentorship_session}/cancel', [\App\Http\Controllers\MentorshipSessionController::class, 'cancel'])->name('mentorship-sessions.cancel');
     Route::post('mentorship-sessions/{mentorship_session}/complete', [\App\Http\Controllers\MentorshipSessionController::class, 'complete'])->name('mentorship-sessions.complete');
@@ -433,4 +446,79 @@ Route::get('/test-role', function () {
 Route::middleware(['auth', 'role:bdsp'])->group(function () {
     Route::get('/bdsp/practice-pitches', [PracticePitchController::class, 'bdspIndex'])->name('bdsp.practice-pitches.index');
     Route::post('/bdsp/practice-pitches/{id}/feedback', [PracticePitchController::class, 'feedback'])->name('bdsp.practice-pitches.feedback');
+});
+
+Route::get('/mentor/sessions', function () {
+    $mentor = auth()->user();
+    $sessions = \App\Models\MentorshipSession::where(function ($q) use ($mentor) {
+        $q->where('scheduled_by', $mentor->id)
+          ->orWhere('scheduled_for', $mentor->id);
+    })
+    ->where('date_time', '>=', now())
+    ->orderBy('date_time')
+    ->with(['pairing.userOne', 'pairing.userTwo', 'scheduledBy', 'scheduledFor'])
+    ->get();
+    return view('mentor.sessions.index', compact('sessions'));
+})->middleware(['auth'])->name('mentor.sessions.index');
+Route::get('/mentor/sessions/create', [\App\Http\Controllers\MentorshipSessionController::class, 'mentorScheduleSessionPage'])->middleware(['auth'])->name('mentor.sessions.create');
+Route::post('/mentor/sessions/create', [\App\Http\Controllers\MentorshipSessionController::class, 'mentorScheduleSession'])->middleware(['auth']);
+Route::get('/mentor/messages', [\App\Http\Controllers\MessageController::class, 'index'])->middleware(['auth'])->name('mentor.messages.index');
+Route::get('/mentor/messages/{conversation}', [\App\Http\Controllers\MessageController::class, 'show'])->middleware(['auth'])->name('mentor.messages.show');
+Route::get('/mentor/mentees', function () {
+    $mentor = auth()->user();
+    $pairings = \App\Models\Pairing::whereIn('pairing_type', ['mentor_mentee', 'mentor_entrepreneur'])
+        ->where(function ($q) use ($mentor) {
+            $q->where('user_one_id', $mentor->id)->orWhere('user_two_id', $mentor->id);
+        })
+        ->with(['userOne', 'userTwo'])
+        ->get();
+    $mentees = $pairings->map(function ($pairing) use ($mentor) {
+        return $pairing->user_one_id == $mentor->id ? $pairing->userTwo : $pairing->userOne;
+    });
+    return view('mentor.mentees.index', compact('mentees'));
+})->middleware(['auth'])->name('mentor.mentees.index');
+Route::get('/mentor/mentees/{id}', function ($id) {
+    $mentee = \App\Models\User::findOrFail($id);
+    return view('mentor.mentees.show', compact('mentee'));
+})->middleware(['auth'])->name('mentor.mentees.show');
+
+Route::get('/mentor/calendar', function () {
+    $mentor = auth()->user();
+    $sessions = \App\Models\MentorshipSession::where(function ($q) use ($mentor) {
+        $q->where('scheduled_by', $mentor->id)
+          ->orWhere('scheduled_for', $mentor->id);
+    })
+    ->where('date_time', '>=', now())
+    ->orderBy('date_time')
+    ->with(['pairing.userOne', 'pairing.userTwo', 'scheduledBy', 'scheduledFor'])
+    ->get();
+    return view('mentor.calendar', compact('sessions'));
+})->middleware(['auth'])->name('mentor.calendar');
+
+Route::get('/mentor/resources', function () {
+    return view('mentor.resources');
+})->middleware(['auth'])->name('mentor.resources');
+
+Route::get('/mentor/settings', function () {
+    return view('mentor.settings');
+})->middleware(['auth'])->name('mentor.settings');
+
+Route::get('/mentor/forms', [\App\Http\Controllers\MentorshipFormController::class, 'index'])->middleware(['auth'])->name('mentor.forms');
+
+Route::get('/mentor/reports', function () {
+    return view('mentor.reports');
+})->middleware(['auth'])->name('mentor.reports');
+
+// Idea Bank MVP routes
+Route::middleware(['auth'])->group(function () {
+    Route::resource('ideas', IdeaController::class);
+    Route::resource('ideas.comments', CommentController::class)->shallow();
+    Route::resource('ideas.pitches', PitchController::class)->shallow();
+    Route::resource('ideas.votes', VoteController::class)->shallow();
+});
+
+// Admin moderation routes for ideas
+Route::middleware(['auth'])->group(function () {
+    Route::post('admin/ideas/{idea}/approve', [IdeaController::class, 'approve'])->name('admin.ideas.approve');
+    Route::post('admin/ideas/{idea}/reject', [IdeaController::class, 'reject'])->name('admin.ideas.reject');
 });

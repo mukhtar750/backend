@@ -166,6 +166,14 @@ class User extends Authenticatable
         }
     }
 
+    // Explicit role helpers
+    public function isAdmin() { return $this->role === 'admin'; }
+    public function isMentor() { return $this->role === 'mentor'; }
+    public function isMentee() { return $this->role === 'mentee'; }
+    public function isEntrepreneur() { return $this->role === 'entrepreneur'; }
+    public function isBDSP() { return $this->role === 'bdsp'; }
+    public function isInvestor() { return $this->role === 'investor'; }
+
     public function getMessageableUsers()
     {
         $users = User::where('is_approved', true)
@@ -175,5 +183,25 @@ class User extends Authenticatable
         return $users->filter(function ($user) {
             return $this->canMessage($user);
         });
+    }
+
+    public function ideas()
+    {
+        return $this->hasMany(Idea::class);
+    }
+
+    public function comments()
+    {
+        return $this->hasMany(Comment::class);
+    }
+
+    public function pitches()
+    {
+        return $this->hasMany(Pitch::class);
+    }
+
+    public function votes()
+    {
+        return $this->hasMany(Vote::class);
     }
 }

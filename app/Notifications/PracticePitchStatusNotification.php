@@ -77,6 +77,15 @@ public $type;
 
     protected function getActionUrl($notifiable)
     {
-        return $this->generateActionUrl($notifiable, 'practice-pitches.index');
+        // Admins should always go to the admin practice pitches page
+        if ($notifiable->role === 'admin' || $notifiable->role === 'staff') {
+            return route('admin.practice-pitches.index');
+        }
+        $route = $this->generateActionUrl($notifiable, 'practice-pitches.index');
+        // For mentors and BDSPs, add highlight query param
+        if (in_array($notifiable->role, ['mentor', 'bdsp']) && $this->type === 'mentor_new') {
+            return $route . '?highlight=' . $this->pitch->id;
+        }
+        return $route;
     }
 }

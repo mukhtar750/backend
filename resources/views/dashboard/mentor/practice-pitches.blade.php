@@ -1,6 +1,9 @@
 @extends('layouts.mentor')
 @section('title', 'Practice Pitches for Feedback')
 @section('content')
+@php
+    $highlightId = request('highlight');
+@endphp
 <div class="max-w-4xl mx-auto mt-10 space-y-10">
     <h2 class="text-2xl font-bold mb-4">Pitches Awaiting Your Feedback</h2>
 
@@ -19,8 +22,11 @@
             </thead>
             <tbody class="bg-white divide-y divide-gray-200">
                 @forelse($awaitingPitches as $pitch)
-                    <tr>
-                        <td class="px-4 py-2">{{ $pitch->user->name ?? 'Unknown' }}</td>
+                    <tr @if($highlightId == $pitch->id) class="bg-yellow-100 animate-pulse" @endif>
+                        <td class="px-4 py-2">
+                            <img src="{{ $pitch->user->profile_photo_url ?? asset('images/avatar-placeholder.png') }}" alt="Entrepreneur" class="h-8 w-8 rounded-full object-cover mr-2">
+                            {{ $pitch->user->name ?? 'Unknown' }}
+                        </td>
                         <td class="px-4 py-2 font-semibold">{{ $pitch->title }}</td>
                         <td class="px-4 py-2">
                             @if(Str::contains($pitch->file_type, 'mp4'))

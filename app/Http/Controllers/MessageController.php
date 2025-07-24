@@ -89,12 +89,47 @@ class MessageController extends Controller
         return view('messages.show', compact('conversation', 'messages', 'otherUser'));
     }
 
+    public function adminShow($conversationId)
+    {
+        $user = Auth::user();
+        $conversation = \App\Models\Conversation::with(['userOne', 'userTwo', 'messages.sender'])
+            ->findOrFail($conversationId);
+
+        // Check if user is participant (admin can see all)
+        if ($user->role !== 'admin' && !$conversation->isParticipant($user->id)) {
+            abort(403, 'You are not authorized to view this conversation.');
+        }
+
+        // Mark messages as read
+        $conversation->markAsRead($user->id);
+
+        $messages = $conversation->messages()
+            ->with('sender')
+            ->orderBy('created_at', 'asc')
+            ->get();
+
+        $otherUser = $conversation->getOtherUser($user->id);
+
+        return view('admin.messages.show', compact('conversation', 'messages', 'otherUser'));
+    }
+
+    public function create(Request $request)
+    {
+        $recipientId = $request->input('recipient');
+        $recipient = null;
+        if ($recipientId) {
+            $recipient = \App\Models\User::find($recipientId);
+        }
+        $messageableUsers = auth()->user()->getMessageableUsers();
+        return view('messages.create', compact('recipient', 'messageableUsers'));
+    }
+
     public function store(Request $request)
     {
         $request->validate([
             'recipient_id' => 'required|exists:users,id',
             'content' => 'required|string|max:1000',
-            'file' => 'nullable|file|max:10240', // 10MB max
+            'file' => 'nullable|file|mimes:pdf,doc,docx,mp4,png,jpeg,jpg|max:10240', // 10MB, allowed types
         ]);
 
         $user = Auth::user();
@@ -116,26 +151,16 @@ class MessageController extends Controller
         $fileName = null;
         $fileSize = null;
         $messageType = 'text';
-
         if ($request->hasFile('file')) {
             $file = $request->file('file');
             $fileName = $file->getClientOriginalName();
             $fileSize = $file->getSize();
-            
-            // Determine file type
             $extension = strtolower($file->getClientOriginalExtension());
             $imageExtensions = ['jpg', 'jpeg', 'png', 'gif', 'webp'];
-            
-            if (in_array($extension, $imageExtensions)) {
-                $messageType = 'image';
-            } else {
-                $messageType = 'file';
-            }
-
+            $messageType = in_array($extension, $imageExtensions) ? 'image' : 'file';
             $filePath = $file->store('messages', 'public');
         }
 
-        // Create message
         $message = Message::create([
             'conversation_id' => $conversation->id,
             'sender_id' => $user->id,
@@ -146,19 +171,19 @@ class MessageController extends Controller
             'file_size' => $fileSize,
         ]);
 
-        // Update conversation last message time
-        $conversation->update([
-            'last_message_at' => now()
-        ]);
-
-        // Load sender relationship for response
         $message->load('sender');
 
-        return response()->json([
-            'success' => true,
-            'message' => $message,
-            'conversation' => $conversation
-        ]);
+        if ($request->wantsJson() || $request->ajax()) {
+            return response()->json([
+                'success' => true,
+                'message' => $message,
+                'conversation' => $conversation,
+            ]);
+        }
+
+        // For normal form POST, redirect to the correct conversation page
+        $route = $user->role === 'admin' ? 'admin.messages.show' : 'messages.show';
+        return redirect()->route($route, $conversation->id)->with('success', 'Message sent!');
     }
 
     public function getConversations()

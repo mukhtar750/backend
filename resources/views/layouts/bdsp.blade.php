@@ -7,9 +7,9 @@
     <title>@yield('title', 'BDSP Dashboard')</title>
     <link rel="preconnect" href="https://fonts.bunny.net">
     <link href="https://fonts.bunny.net/css?family=figtree:400,600&display=swap" rel="stylesheet" />
-    <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css">
-    <link rel="stylesheet" href="{{ asset('css/app.css') }}">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"></script>
 </head>
 <body class="font-sans antialiased bg-gray-100">
     <div class="flex h-screen bg-gray-100">
@@ -106,7 +106,5 @@
             </main>
         </div>
     </div>
-    <script src="{{ asset('js/alpine.min.js') }}" defer></script>
-    <!-- Removed problematic emoji script -->
 </body>
 </html>

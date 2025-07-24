@@ -4,7 +4,7 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <meta name="csrf-token" content="{{ csrf_token() }}">
-    <title>@yield('title', 'Innovation Portal')</title>
+    <title>@yield('title', 'VR Portal')</title>
 
     <!-- Tailwind CSS CDN -->
     <script src="https://cdn.tailwindcss.com"></script>
@@ -21,7 +21,7 @@
                 <div class="flex items-center">
                     <a href="{{ route('dashboard') }}" class="flex items-center space-x-2">
                         <img src="https://cdn-icons-png.flaticon.com/512/616/616494.png" alt="Logo" class="h-8 w-8">
-                        <span class="text-xl font-bold text-gray-800">Innovation Portal</span>
+                        <span class="text-xl font-bold text-gray-800">VR Portal</span>
                     </a>
                 </div>
                 

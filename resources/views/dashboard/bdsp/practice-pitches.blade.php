@@ -3,6 +3,9 @@
 @section('title', 'Practice Pitches')
 
 @section('content')
+    @php
+        $highlightId = request('highlight');
+    @endphp
     <div class="max-w-7xl mx-auto py-6 px-4 sm:px-6 lg:px-8">
         <h1 class="text-3xl font-bold text-gray-900 mb-6">Practice Pitches Awaiting Feedback</h1>
         <div class="bg-white overflow-hidden shadow-sm sm:rounded-lg">
@@ -19,7 +22,7 @@
                     </thead>
                     <tbody class="bg-white divide-y divide-gray-200">
                         @forelse ($awaitingPitches as $pitch)
-                            <tr>
+                            <tr @if($highlightId == $pitch->id) class="bg-yellow-100 animate-pulse" @endif>
                                 <td class="px-6 py-4 whitespace-nowrap">{{ $pitch->user->name }}</td>
                                 <td class="px-6 py-4 whitespace-nowrap">{{ $pitch->title }}</td>
                                 <td class="px-6 py-4 whitespace-nowrap">

@@ -29,7 +29,7 @@ class GroupController extends Controller
 
         $request->validate([
             'content' => 'required|string|max:1000',
-            'file' => 'nullable|file|max:10240',
+            'file' => 'nullable|file|mimes:pdf,doc,docx,mp4,png,jpeg,jpg|max:10240', // 10MB, allowed types
         ]);
 
         $filePath = null;
