@@ -16,6 +16,13 @@ return new class extends Migration
             $table->string('name');
             $table->text('description')->nullable();
             $table->string('logo')->nullable();
+            $table->string('sector')->nullable();
+            $table->string('funding_stage')->nullable();
+            $table->foreignId('founder_id')->nullable()->constrained('users')->onDelete('set null');
+            $table->string('website')->nullable();
+            $table->string('year_founded')->nullable();
+            $table->integer('team_size')->nullable();
+            $table->string('status')->default('active');
             $table->timestamps();
         });
     }

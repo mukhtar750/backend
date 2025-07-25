@@ -53,6 +53,63 @@
     </div>
     @if($idea->status === 'approved' || (auth()->check() && (auth()->user()->isAdmin() || auth()->id() === $idea->user_id)))
     <div class="bg-white rounded-xl shadow p-6 mb-6">
+        <h2 class="text-lg font-bold mb-4">Pitches</h2>
+        @php
+            $user = auth()->user();
+            $userPitch = $user && $user->role === 'entrepreneur' ? $idea->pitches->where('user_id', $user->id)->first() : null;
+            $canPitch = $user && $user->role === 'entrepreneur' && !$userPitch;
+            $visiblePitches = $user && $user->isAdmin() ? $idea->pitches : ($userPitch ? collect([$userPitch]) : $idea->pitches->where('status', 'approved'));
+        @endphp
+        @if($canPitch)
+            <form action="{{ route('ideas.pitches.store', $idea) }}" method="POST" class="mb-6">
+                @csrf
+                <textarea name="content" class="form-input w-full rounded-md mb-2" rows="3" placeholder="Pitch your solution or business plan..." required></textarea>
+                @error('content')<div class="text-red-600 text-xs mb-2">{{ $message }}</div>@enderror
+                <div class="flex justify-end">
+                    <button type="submit" class="px-4 py-2 rounded-lg font-semibold bg-yellow-500 text-white hover:bg-yellow-600">Submit Pitch</button>
+                </div>
+            </form>
+        @elseif($userPitch)
+            <div class="mb-4 p-4 bg-yellow-50 rounded">
+                <div class="flex items-center gap-2 mb-1">
+                    <span class="font-semibold">Your Pitch</span>
+                    <span class="text-xs px-2 py-1 rounded {{ $userPitch->status === 'approved' ? 'bg-green-100 text-green-800' : ($userPitch->status === 'pending' ? 'bg-yellow-100 text-yellow-800' : 'bg-red-100 text-red-800') }}">
+                        {{ ucfirst($userPitch->status) }}
+                    </span>
+                </div>
+                <div>{{ $userPitch->content }}</div>
+            </div>
+        @endif
+        @forelse($visiblePitches as $pitch)
+            <div class="mb-4 border-b pb-2">
+                <div class="flex items-center gap-2 text-xs text-gray-500 mb-1">
+                    <span>{{ $pitch->user->name ?? 'Unknown' }}</span>
+                    <span>{{ $pitch->created_at->diffForHumans() }}</span>
+                    <span class="px-2 py-1 rounded {{ $pitch->status === 'approved' ? 'bg-green-100 text-green-800' : ($pitch->status === 'pending' ? 'bg-yellow-100 text-yellow-800' : 'bg-red-100 text-red-800') }}">{{ ucfirst($pitch->status) }}</span>
+                    @if(auth()->check() && auth()->user()->isAdmin())
+                        @if($pitch->status !== 'approved')
+                            <form action="{{ route('admin.pitches.approve', $pitch) }}" method="POST" class="inline-block ml-2">
+                                @csrf
+                                <button class="px-2 py-1 bg-green-100 text-green-800 rounded text-xs">Approve</button>
+                            </form>
+                        @endif
+                        @if($pitch->status !== 'rejected')
+                            <form action="{{ route('admin.pitches.reject', $pitch) }}" method="POST" class="inline-block ml-2">
+                                @csrf
+                                <button class="px-2 py-1 bg-yellow-100 text-yellow-800 rounded text-xs">Reject</button>
+                            </form>
+                        @endif
+                    @endif
+                </div>
+                <div class="text-gray-800">{{ $pitch->content }}</div>
+            </div>
+        @empty
+            <div class="text-gray-400">No pitches yet.</div>
+        @endforelse
+    </div>
+    @endif
+    @if($idea->status === 'approved' || (auth()->check() && (auth()->user()->isAdmin() || auth()->id() === $idea->user_id)))
+    <div class="bg-white rounded-xl shadow p-6 mb-6">
         <h2 class="text-lg font-bold mb-4">Comments</h2>
         @foreach($idea->comments as $comment)
             <div class="mb-4 border-b pb-2">

@@ -71,25 +71,37 @@
     <div class="bg-white rounded-xl border border-gray-200 p-8 mb-10 shadow-sm">
         <div class="text-lg font-semibold mb-6 text-gray-900">Portfolio Insights</div>
         <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-6">
-            <div class="flex flex-col items-center justify-center">
-                <div class="text-3xl font-bold text-gray-900">{{ $portfolioTotal ?? '$2.5M' }}</div>
-                <div class="text-sm text-gray-500">Total Investments</div>
-                <div class="text-xs text-green-600 mt-1">{{ $portfolioTotalChange ?? '+15% This year' }}</div>
+            <div class="relative flex flex-col items-center justify-center">
+                <div class="absolute inset-0 bg-white/80 flex items-center justify-center z-10 rounded-xl">
+                    <span class="bg-yellow-100 text-yellow-800 px-4 py-1 rounded-full font-semibold text-sm shadow">Coming Soon!</span>
+                </div>
+                <div class="text-3xl font-bold text-gray-900 opacity-30">{{ $portfolioTotal ?? '$2.5M' }}</div>
+                <div class="text-sm text-gray-500 opacity-30">Total Investments</div>
+                <div class="text-xs text-green-600 mt-1 opacity-30">{{ $portfolioTotalChange ?? '+15% This year' }}</div>
             </div>
-            <div class="flex flex-col items-center justify-center">
-                <div class="text-3xl font-bold text-gray-900">{{ $portfolioActive ?? 12 }}</div>
-                <div class="text-sm text-gray-500">Active Startups</div>
-                <div class="text-xs text-green-600 mt-1">{{ $portfolioActiveChange ?? '+3 This quarter' }}</div>
+            <div class="relative flex flex-col items-center justify-center">
+                <div class="absolute inset-0 bg-white/80 flex items-center justify-center z-10 rounded-xl">
+                    <span class="bg-yellow-100 text-yellow-800 px-4 py-1 rounded-full font-semibold text-sm shadow">Coming Soon!</span>
+                </div>
+                <div class="text-3xl font-bold text-gray-900 opacity-30">{{ $portfolioActive ?? 12 }}</div>
+                <div class="text-sm text-gray-500 opacity-30">Active Startups</div>
+                <div class="text-xs text-green-600 mt-1 opacity-30">{{ $portfolioActiveChange ?? '+3 This quarter' }}</div>
             </div>
-            <div class="flex flex-col items-center justify-center">
-                <div class="text-3xl font-bold text-gray-900">{{ $portfolioROI ?? '3.2x' }}</div>
-                <div class="text-sm text-gray-500">Avg. ROI</div>
-                <div class="text-xs text-green-600 mt-1">{{ $portfolioROIChange ?? '+0.5x Portfolio avg' }}</div>
+            <div class="relative flex flex-col items-center justify-center">
+                <div class="absolute inset-0 bg-white/80 flex items-center justify-center z-10 rounded-xl">
+                    <span class="bg-yellow-100 text-yellow-800 px-4 py-1 rounded-full font-semibold text-sm shadow">Coming Soon!</span>
+                </div>
+                <div class="text-3xl font-bold text-gray-900 opacity-30">{{ $portfolioROI ?? '3.2x' }}</div>
+                <div class="text-sm text-gray-500 opacity-30">Avg. ROI</div>
+                <div class="text-xs text-green-600 mt-1 opacity-30">{{ $portfolioROIChange ?? '+0.5x Portfolio avg' }}</div>
             </div>
-            <div class="flex flex-col items-center justify-center">
-                <div class="text-3xl font-bold text-gray-900">{{ $portfolioExits ?? 2 }}</div>
-                <div class="text-sm text-gray-500">Exit Events</div>
-                <div class="text-xs text-green-600 mt-1">{{ $portfolioExitsChange ?? '+1 This year' }}</div>
+            <div class="relative flex flex-col items-center justify-center">
+                <div class="absolute inset-0 bg-white/80 flex items-center justify-center z-10 rounded-xl">
+                    <span class="bg-yellow-100 text-yellow-800 px-4 py-1 rounded-full font-semibold text-sm shadow">Coming Soon!</span>
+                </div>
+                <div class="text-3xl font-bold text-gray-900 opacity-30">{{ $portfolioExits ?? 2 }}</div>
+                <div class="text-sm text-gray-500 opacity-30">Exit Events</div>
+                <div class="text-xs text-green-600 mt-1 opacity-30">{{ $portfolioExitsChange ?? '+1 This year' }}</div>
             </div>
         </div>
     </div>

@@ -47,6 +47,14 @@
                 <a href="{{ route('bdsp.practice-pitches.index') }}" class="flex items-center gap-3 px-4 py-2 rounded-lg hover:bg-purple-700 {{ $route == 'bdsp.practice-pitches.index' ? 'bg-white text-purple-800 font-semibold shadow-sm' : '' }}">
     <i class="bi bi-mic-fill"></i> Practice Pitches
 </a>
+                <a href="{{ route('bdsp.tasks.index') }}" class="sidebar-link flex items-center px-4 py-3 rounded-lg transition-all duration-300 {{ request()->routeIs('bdsp.tasks.*') ? 'bg-white text-[#6c3483] font-semibold shadow-sm' : 'hover:bg-purple-700' }}">
+                    <i class="fas fa-tasks mr-3"></i>
+                    <span>Tasks</span>
+                </a>
+                <a href="{{ route('ideas.index') }}" class="sidebar-link flex items-center px-4 py-3 rounded-lg transition-all duration-300 {{ request()->routeIs('ideas.*') ? 'bg-white text-[#6c3483] font-semibold shadow-sm' : 'hover:bg-yellow-400 hover:text-[#6c3483]' }}">
+                    <i class="fas fa-lightbulb mr-3"></i>
+                    <span>Ideas Bank</span>
+                </a>
             </nav>
             <div class="p-4 border-t border-[#512e5f]">
                 <div class="flex items-center mb-3">

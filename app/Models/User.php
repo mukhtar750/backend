@@ -204,4 +204,13 @@ class User extends Authenticatable
     {
         return $this->hasMany(Vote::class);
     }
+
+    public function taskSubmissions()
+    {
+        return $this->hasMany(TaskSubmission::class, 'user_id');
+    }
+    public function reviewedTaskSubmissions()
+    {
+        return $this->hasMany(TaskSubmission::class, 'reviewed_by');
+    }
 }

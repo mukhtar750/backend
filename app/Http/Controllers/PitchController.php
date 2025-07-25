@@ -79,4 +79,20 @@ class PitchController extends Controller
     {
         //
     }
+
+    public function approve(Pitch $pitch)
+    {
+        if (!auth()->user()->isAdmin()) abort(403);
+        $pitch->status = 'approved';
+        $pitch->save();
+        return back()->with('success', 'Pitch approved!');
+    }
+
+    public function reject(Pitch $pitch)
+    {
+        if (!auth()->user()->isAdmin()) abort(403);
+        $pitch->status = 'rejected';
+        $pitch->save();
+        return back()->with('success', 'Pitch rejected.');
+    }
 }

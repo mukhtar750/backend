@@ -78,45 +78,60 @@
     <div>
         <h3 class="text-xl font-semibold mb-4">Idea Bank</h3>
         <div class="mb-4 flex flex-col md:flex-row md:items-center gap-4">
-            <form class="flex-1 flex gap-2">
-                <input type="text" class="flex-1 border border-gray-300 rounded-lg p-2 focus:ring-[#b81d8f] focus:border-[#b81d8f]" placeholder="Share a new idea...">
+            <form class="flex-1 flex gap-2" action="{{ route('ideas.store') }}" method="POST">
+                @csrf
+                <input type="text" name="title" class="flex-1 border border-gray-300 rounded-lg p-2 focus:ring-[#b81d8f] focus:border-[#b81d8f]" placeholder="Share a new idea..." required>
                 <button type="submit" class="bg-[#b81d8f] text-white px-5 py-2 rounded-lg font-semibold hover:bg-[#a01a7d] transition">Submit Idea</button>
             </form>
             <div class="flex gap-2">
-                <select class="border border-gray-300 rounded-lg p-2 focus:ring-[#b81d8f] focus:border-[#b81d8f]">
-                    <option>All Categories</option>
-                    <option>Fintech</option>
-                    <option>Health</option>
-                    <option>Education</option>
-                </select>
-                <input type="text" class="border border-gray-300 rounded-lg p-2 focus:ring-[#b81d8f] focus:border-[#b81d8f]" placeholder="Search ideas...">
+                <input type="text" class="border border-gray-300 rounded-lg p-2 focus:ring-[#b81d8f] focus:border-[#b81d8f]" placeholder="Search ideas..." disabled>
             </div>
         </div>
         <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-            <div class="bg-white rounded-xl shadow p-5 flex flex-col">
-                <div class="flex items-center gap-2 mb-2"><i class="bi bi-lightbulb text-yellow-400 text-xl"></i> <span class="font-semibold">Smart Health Tracker</span></div>
-                <div class="text-sm text-gray-500 mb-2">A wearable device that tracks health metrics and provides real-time feedback to users and doctors.</div>
-                <div class="flex flex-wrap gap-2 mb-3">
-                    <span class="bg-blue-100 text-blue-700 px-3 py-1 rounded-full text-xs font-medium">Health</span>
-                    <span class="bg-purple-100 text-purple-700 px-3 py-1 rounded-full text-xs font-medium">Wearables</span>
+            @php
+                $user = auth()->user();
+                $ideas = \App\Models\Idea::with(['pitches' => function($q) use ($user) { $q->where('user_id', $user->id); }])
+                    ->where('status', 'approved')->latest()->take(6)->get();
+            @endphp
+            @forelse($ideas as $idea)
+                <div class="bg-white rounded-xl shadow p-5 flex flex-col">
+                    <div class="flex items-center gap-2 mb-2"><i class="bi bi-lightbulb text-yellow-400 text-xl"></i> <span class="font-semibold">{{ $idea->title }}</span></div>
+                    <div class="text-sm text-gray-500 mb-2">{{ Str::limit($idea->description, 80) }}</div>
+                    <div class="flex flex-wrap gap-2 mb-3">
+                        @foreach(explode(',', $idea->tags ?? '') as $tag)
+                            @if(trim($tag))
+                                <span class="bg-purple-100 text-purple-700 px-3 py-1 rounded-full text-xs font-medium">{{ trim($tag) }}</span>
+                            @endif
+                        @endforeach
+                    </div>
+                    <div class="flex gap-2 mt-auto">
+                        @php $userPitch = $idea->pitches->first(); @endphp
+                        @if($user->role === 'entrepreneur' && !$userPitch)
+                            <form action="{{ route('ideas.pitches.store', $idea) }}" method="POST">
+                                @csrf
+                                <input type="hidden" name="content" value="I'd like to pitch this idea!">
+                                <button type="submit" class="bg-[#b81d8f] text-white px-4 py-2 rounded-lg font-medium hover:bg-[#a01a7d] transition">Pitch This Idea</button>
+                            </form>
+                        @elseif($userPitch)
+                            <span class="px-3 py-1 rounded-full text-xs font-medium {{ $userPitch->status === 'approved' ? 'bg-green-100 text-green-800' : ($userPitch->status === 'pending' ? 'bg-yellow-100 text-yellow-800' : 'bg-red-100 text-red-800') }}">
+                                {{ ucfirst($userPitch->status) }}
+                            </span>
+                        @endif
+                        <form action="{{ route('ideas.votes.store', $idea) }}" method="POST">
+                            @csrf
+                            <input type="hidden" name="type" value="up">
+                            <button type="submit" class="border border-gray-300 rounded-lg px-4 py-2 text-gray-700 font-medium hover:bg-gray-100 transition"><i class="bi bi-hand-thumbs-up"></i> Like ({{ $idea->upvotes }})</button>
+                        </form>
+                    </div>
                 </div>
-                <div class="flex gap-2 mt-auto">
-                    <button class="bg-[#b81d8f] text-white px-4 py-2 rounded-lg font-medium hover:bg-[#a01a7d] transition">Pitch This Idea</button>
-                    <button class="border border-gray-300 rounded-lg px-4 py-2 text-gray-700 font-medium hover:bg-gray-100 transition">Like</button>
+            @empty
+                <div class="bg-white rounded-xl shadow p-5 flex flex-col col-span-2">
+                    <div class="font-semibold mb-2">No ideas available yet.</div>
                 </div>
-            </div>
-            <div class="bg-white rounded-xl shadow p-5 flex flex-col">
-                <div class="flex items-center gap-2 mb-2"><i class="bi bi-lightbulb text-yellow-400 text-xl"></i> <span class="font-semibold">EduConnect Platform</span></div>
-                <div class="text-sm text-gray-500 mb-2">A platform connecting students with mentors and learning resources globally.</div>
-                <div class="flex flex-wrap gap-2 mb-3">
-                    <span class="bg-green-100 text-green-700 px-3 py-1 rounded-full text-xs font-medium">Education</span>
-                    <span class="bg-purple-100 text-purple-700 px-3 py-1 rounded-full text-xs font-medium">Platform</span>
-                </div>
-                <div class="flex gap-2 mt-auto">
-                    <button class="bg-[#b81d8f] text-white px-4 py-2 rounded-lg font-medium hover:bg-[#a01a7d] transition">Pitch This Idea</button>
-                    <button class="border border-gray-300 rounded-lg px-4 py-2 text-gray-700 font-medium hover:bg-gray-100 transition">Like</button>
-                </div>
-            </div>
+            @endforelse
+        </div>
+        <div class="mt-4 text-right">
+            <a href="{{ route('ideas.index') }}" class="text-[#b81d8f] font-semibold hover:underline">View All Ideas</a>
         </div>
     </div>
     <!-- Recommendations -->

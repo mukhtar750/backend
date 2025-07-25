@@ -58,6 +58,14 @@
                     <i class="fas fa-chart-line mr-3"></i>
                     <span>Reports/Outcomes</span>
                 </a>
+                <a href="{{ route('mentor.tasks.index') }}" class="sidebar-link flex items-center px-4 py-3 rounded-lg transition-all duration-300 {{ request()->routeIs('mentor.tasks.*') ? 'bg-white text-[#6c3483] font-semibold shadow-sm' : 'hover:bg-purple-700' }}">
+                    <i class="fas fa-tasks mr-3"></i>
+                    <span>Tasks</span>
+                </a>
+                <a href="{{ route('ideas.index') }}" class="sidebar-link flex items-center px-4 py-3 rounded-lg transition-all duration-300 {{ request()->routeIs('ideas.*') ? 'bg-white text-[#6c3483] font-semibold shadow-sm' : 'hover:bg-yellow-400 hover:text-[#6c3483]' }}">
+                    <i class="fas fa-lightbulb mr-3"></i>
+                    <span>Ideas Bank</span>
+                </a>
                 <a href="{{ route('mentor.settings') }}" class="sidebar-link flex items-center px-4 py-3 rounded-lg transition-all duration-300 {{ request()->routeIs('mentor.settings') ? 'bg-white text-[#6c3483] font-semibold shadow-sm' : 'hover:bg-purple-700' }}">
                     <i class="fas fa-cog mr-3"></i>
                     <span>Settings</span>

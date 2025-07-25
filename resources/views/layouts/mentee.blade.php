@@ -30,6 +30,9 @@
                     <i class="bi bi-chat-dots"></i> Messages
                 </a>
                 <a href="{{ route('entrepreneur.feedback') }}" class="flex items-center px-4 py-2 text-white hover:bg-[#a01a7d] rounded-lg font-medium"><i class="bi bi-chat-dots-fill mr-3"></i> Feedback</a>
+                <a href="{{ route('ideas.index') }}" class="flex items-center px-4 py-2 text-white hover:bg-yellow-400 hover:text-[#b81d8f] rounded-lg font-medium {{ request()->routeIs('ideas.*') ? 'bg-white text-[#b81d8f] font-semibold shadow-sm' : '' }}">
+                    <i class="bi bi-lightbulb mr-3"></i> Ideas Bank
+                </a>
             </nav>
             <div class="p-4 border-t border-[#a01a7d]">
                 <div class="flex items-center mb-3">

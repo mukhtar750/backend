@@ -59,6 +59,7 @@ Route::middleware(['auth'])->group(function () {
 // Messaging Routes
 Route::middleware(['auth'])->group(function () {
     Route::get('/messages', [\App\Http\Controllers\MessageController::class, 'index'])->name('messages.index');
+    Route::get('/messages/create', [\App\Http\Controllers\MessageController::class, 'create'])->middleware(['auth'])->name('messages.create');
     Route::get('/messages/{conversation}', [\App\Http\Controllers\MessageController::class, 'show'])->name('messages.show');
     Route::post('/messages', [\App\Http\Controllers\MessageController::class, 'store'])->name('messages.store');
     Route::get('/messages/conversations', [\App\Http\Controllers\MessageController::class, 'getConversations'])->name('messages.conversations');
@@ -67,9 +68,10 @@ Route::middleware(['auth'])->group(function () {
     Route::get('/messages/unread-count', [\App\Http\Controllers\MessageController::class, 'getUnreadCount'])->name('messages.unreadCount');
     Route::get('/messages/{message}/download', [\App\Http\Controllers\MessageController::class, 'downloadFile'])->name('messages.download');
     Route::delete('/messages/{message}', [\App\Http\Controllers\MessageController::class, 'deleteMessage'])->name('messages.delete');
-    Route::get('/messages/create', [\App\Http\Controllers\MessageController::class, 'create'])->middleware(['auth'])->name('messages.create');
+});
 
-    // Group Chat Routes
+// Group Chat Routes
+Route::middleware(['auth'])->group(function () {
     Route::get('/groups/{slug}', [\App\Http\Controllers\GroupController::class, 'show'])->name('groups.show');
     Route::post('/groups/{slug}/messages', [\App\Http\Controllers\GroupController::class, 'storeMessage'])->name('groups.messages.store');
     Route::get('/groups/{slug}/messages', [\App\Http\Controllers\GroupController::class, 'getMessages'])->name('groups.messages.get');
@@ -91,6 +93,16 @@ Route::middleware(['auth', 'role:admin,staff'])->prefix('admin')->name('admin.')
     Route::get('/user-management', [AdminController::class, 'userManagement'])->name('user-management');
     Route::get('/user-management/{id}/edit', [AdminController::class, 'editUser'])->name('editUser');
     Route::put('/user-management/{id}', [AdminController::class, 'updateUser'])->name('updateUser');
+    
+    // Startup Profile Management
+    Route::patch('/startups/{startup}/approve', [\App\Http\Controllers\StartupController::class, 'approve'])->name('startups.approve');
+    Route::patch('/startups/{startup}/reject', [\App\Http\Controllers\StartupController::class, 'reject'])->name('startups.reject');
+    Route::delete('/startups/{startup}', [\App\Http\Controllers\StartupController::class, 'destroy'])->name('startups.destroy');
+    
+    // Task Management
+    Route::post('/tasks', [\App\Http\Controllers\TaskController::class, 'store'])->name('tasks.store');
+    Route::put('/tasks/{task}', [\App\Http\Controllers\TaskController::class, 'update'])->name('tasks.update');
+    Route::delete('/tasks/{task}', [\App\Http\Controllers\TaskController::class, 'destroy'])->name('tasks.destroy');
 
     // Admin Training Schedules CRUD
     Route::get('/training-programs', [AdminController::class, 'trainingPrograms'])->name('training_programs');
@@ -200,7 +212,10 @@ Route::get('/dashboard/entrepreneur', function () {
         ->where('user_one_id', $user->id)
         ->orWhere('user_two_id', $user->id)
         ->get();
-    return view('dashboard.entrepreneur', compact('pairings'));
+    $tasks = \App\Models\Task::where('assignee_id', $user->id)
+        ->orderBy('due_date')
+        ->get();
+    return view('dashboard.entrepreneur', compact('pairings', 'tasks'));
 })->middleware('auth')->name('dashboard.entrepreneur');
 
 // BDSP Dashboard and Management (protected)
@@ -247,15 +262,18 @@ Route::middleware(['auth'])->group(function () {
             ->toArray();
         return view('dashboard.entrepreneur-calendar', compact('sessions', 'registrations'));
     })->name('entrepreneur.calendar');
-    Route::get('/dashboard/entrepreneur-startup-profile', function () {
-        $user = auth()->user();
-        return view('dashboard.entrepreneur-startup-profile', compact('user'));
-    })->name('entrepreneur.startup-profile');
-    Route::get('/dashboard/entrepreneur-tasks', function () {
-        $user = auth()->user();
-        $tasks = \DB::table('tasks')->where('user_id', $user->id)->orderBy('due_date', 'asc')->get();
-        return view('dashboard.entrepreneur-tasks', compact('tasks'));
-    })->name('entrepreneur.tasks');
+    // Startup Profile Routes
+    Route::get('/dashboard/entrepreneur-startup-profile', [\App\Http\Controllers\StartupController::class, 'index'])->name('entrepreneur.startup-profile');
+    Route::get('/dashboard/entrepreneur-startup-profile/create', [\App\Http\Controllers\StartupController::class, 'create'])->name('entrepreneur.startup-profile.create');
+    Route::get('/dashboard/entrepreneur-startup-profile/{startup}/edit', [\App\Http\Controllers\StartupController::class, 'edit'])->name('entrepreneur.startup-profile.edit');
+    Route::post('/dashboard/entrepreneur-startup-profile', [\App\Http\Controllers\StartupController::class, 'store'])->name('entrepreneur.startup-profile.store');
+    Route::put('/dashboard/entrepreneur-startup-profile/{startup}', [\App\Http\Controllers\StartupController::class, 'update'])->name('entrepreneur.startup-profile.update');
+    Route::delete('/dashboard/entrepreneur-startup-profile/{startup}', [\App\Http\Controllers\StartupController::class, 'destroy'])->name('entrepreneur.startup-profile.destroy');
+    
+    // Tasks Routes
+    Route::get('/dashboard/entrepreneur-tasks', [\App\Http\Controllers\TaskController::class, 'index'])->name('entrepreneur.tasks');
+    Route::post('/dashboard/entrepreneur-tasks/{task}/complete', [\App\Http\Controllers\TaskController::class, 'markAsCompleted'])->name('entrepreneur.tasks.complete');
+    Route::post('/dashboard/entrepreneur-tasks/{task}/in-progress', [\App\Http\Controllers\TaskController::class, 'markAsInProgress'])->name('entrepreneur.tasks.in-progress');
     Route::get('/dashboard/entrepreneur-mentorship', function () {
         $user = auth()->user();
         $mentors = \App\Models\User::where('role', 'mentor')->where('is_approved', true)->get();
@@ -521,4 +539,42 @@ Route::middleware(['auth'])->group(function () {
 Route::middleware(['auth'])->group(function () {
     Route::post('admin/ideas/{idea}/approve', [IdeaController::class, 'approve'])->name('admin.ideas.approve');
     Route::post('admin/ideas/{idea}/reject', [IdeaController::class, 'reject'])->name('admin.ideas.reject');
+});
+
+// Admin moderation routes for pitches
+Route::middleware(['auth'])->group(function () {
+    Route::post('admin/pitches/{pitch}/approve', [PitchController::class, 'approve'])->name('admin.pitches.approve');
+    Route::post('admin/pitches/{pitch}/reject', [PitchController::class, 'reject'])->name('admin.pitches.reject');
+});
+
+// Investor startup profile access routes
+Route::middleware(['auth'])->group(function () {
+    Route::post('/investor/startup/{startup}/request-access', [\App\Http\Controllers\InvestorController::class, 'requestAccess'])->name('investor.request_access');
+    Route::get('/investor/startup-profiles', [\App\Http\Controllers\InvestorController::class, 'startupProfiles'])->name('investor.startup_profiles');
+    Route::get('/investor/startup/{startup}', [\App\Http\Controllers\InvestorController::class, 'viewStartup'])->name('investor.view_startup');
+});
+
+// Entrepreneur access request management routes
+Route::middleware(['auth'])->group(function () {
+    Route::get('/entrepreneur/access-requests', [\App\Http\Controllers\StartupController::class, 'accessRequests'])->name('entrepreneur.access_requests');
+    Route::post('/entrepreneur/access-request/{requestId}/approve', [\App\Http\Controllers\StartupController::class, 'approveAccess'])->name('entrepreneur.approve_access');
+    Route::post('/entrepreneur/access-request/{requestId}/reject', [\App\Http\Controllers\StartupController::class, 'rejectAccess'])->name('entrepreneur.reject_access');
+    Route::post('/entrepreneur/access-request/{requestId}/revoke', [\App\Http\Controllers\StartupController::class, 'revokeAccess'])->name('entrepreneur.revoke_access');
+});
+
+// Task submission routes
+Route::middleware(['auth'])->group(function () {
+    Route::post('/tasks/{task}/submissions', [\App\Http\Controllers\TaskSubmissionController::class, 'store'])->name('tasks.submissions.store');
+    Route::get('/submissions/{submission}', [\App\Http\Controllers\TaskSubmissionController::class, 'show'])->name('submissions.show');
+    Route::post('/submissions/{submission}/review', [\App\Http\Controllers\TaskSubmissionController::class, 'review'])->name('submissions.review');
+});
+
+Route::middleware(['auth'])->group(function () {
+    Route::get('/bdsp/tasks', [\App\Http\Controllers\TaskController::class, 'bdspIndex'])->name('bdsp.tasks.index');
+    Route::get('/mentor/tasks', [\App\Http\Controllers\TaskController::class, 'mentorIndex'])->name('mentor.tasks.index');
+});
+
+Route::middleware(['auth'])->group(function () {
+    Route::get('/tasks/create', [\App\Http\Controllers\TaskController::class, 'create'])->name('tasks.create');
+    Route::post('/tasks', [\App\Http\Controllers\TaskController::class, 'store'])->name('tasks.store');
 });

@@ -1,0 +1,184 @@
+<?php
+
+namespace App\Http\Controllers;
+
+use App\Models\Task;
+use App\Models\User;
+use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
+
+class TaskController extends Controller
+{
+    /**
+     * Display the entrepreneur's tasks and assignments
+     */
+    public function index(Request $request)
+    {
+        $user = Auth::user();
+        
+        // Get tasks assigned to this entrepreneur
+        $tasksQuery = Task::where('assignee_id', $user->id);
+        
+        // Filter by status if provided
+        if ($request->has('status') && $request->status != 'all') {
+            $tasksQuery->where('status', $request->status);
+        }
+        
+        // Filter by priority if provided
+        if ($request->has('priority') && $request->priority != 'all') {
+            $tasksQuery->where('priority', $request->priority);
+        }
+        
+        // Sort tasks
+        $sort = $request->get('sort', 'due_date');
+        $direction = $request->get('direction', 'asc');
+        
+        $tasksQuery->orderBy($sort, $direction);
+        
+        $tasks = $tasksQuery->paginate(10);
+        
+        // Get task counts for summary cards
+        $totalTasks = Task::where('assignee_id', $user->id)->count();
+        $completedTasks = Task::where('assignee_id', $user->id)->where('status', 'completed')->count();
+        $inProgressTasks = Task::where('assignee_id', $user->id)->where('status', 'in_progress')->count();
+        $overdueTasks = Task::where('assignee_id', $user->id)
+            ->where('status', '!=', 'completed')
+            ->where('due_date', '<', now())
+            ->count();
+        
+        return view('entrepreneur.tasks', compact(
+            'tasks', 
+            'totalTasks', 
+            'completedTasks', 
+            'inProgressTasks', 
+            'overdueTasks'
+        ));
+    }
+    
+    /**
+     * Mark a task as completed
+     */
+    public function markAsCompleted(Task $task)
+    {
+        // Check if the authenticated user is the assignee of this task
+        if (Auth::id() !== $task->assignee_id) {
+            return redirect()->back()->with('error', 'You are not authorized to update this task.');
+        }
+        
+        $task->status = 'completed';
+        $task->completed_at = now();
+        $task->save();
+        
+        return redirect()->back()->with('success', 'Task marked as completed!');
+    }
+    
+    /**
+     * Mark a task as in progress
+     */
+    public function markAsInProgress(Task $task)
+    {
+        // Check if the authenticated user is the assignee of this task
+        if (Auth::id() !== $task->assignee_id) {
+            return redirect()->back()->with('error', 'You are not authorized to update this task.');
+        }
+        
+        $task->status = 'in_progress';
+        $task->save();
+        
+        return redirect()->back()->with('success', 'Task marked as in progress!');
+    }
+    
+    /**
+     * Admin method to create a new task for an entrepreneur
+     */
+    public function store(Request $request)
+    {
+        $request->validate([
+            'title' => 'required|string|max:255',
+            'description' => 'required|string',
+            'assignee_id' => 'required|exists:users,id',
+            'due_date' => 'required|date',
+            'priority' => 'required|in:low,medium,high',
+        ]);
+        
+        $task = new Task();
+        $task->title = $request->title;
+        $task->description = $request->description;
+        $task->assignee_id = $request->assignee_id;
+        $task->assigner_id = Auth::id();
+        $task->due_date = $request->due_date;
+        $task->priority = $request->priority;
+        $task->status = 'pending';
+        $task->save();
+        
+        $task->assignee->notify(new \App\Notifications\AssignmentAssignedNotification($task));
+        
+        return redirect()->back()->with('success', 'Task assigned successfully!');
+    }
+    
+    /**
+     * Admin method to update a task
+     */
+    public function update(Request $request, Task $task)
+    {
+        $request->validate([
+            'title' => 'required|string|max:255',
+            'description' => 'required|string',
+            'assignee_id' => 'required|exists:users,id',
+            'due_date' => 'required|date',
+            'priority' => 'required|in:low,medium,high',
+            'status' => 'required|in:pending,in_progress,completed,cancelled',
+        ]);
+        
+        $task->title = $request->title;
+        $task->description = $request->description;
+        $task->assignee_id = $request->assignee_id;
+        $task->due_date = $request->due_date;
+        $task->priority = $request->priority;
+        $task->status = $request->status;
+        
+        if ($request->status === 'completed' && !$task->completed_at) {
+            $task->completed_at = now();
+        }
+        
+        $task->save();
+        
+        return redirect()->back()->with('success', 'Task updated successfully!');
+    }
+    
+    /**
+     * Admin method to delete a task
+     */
+    public function destroy(Task $task)
+    {
+        $task->delete();
+        
+        return redirect()->back()->with('success', 'Task deleted successfully!');
+    }
+
+    // BDSP: View tasks assigned by this BDSP
+    public function bdspIndex()
+    {
+        $user = auth()->user();
+        $tasks = \App\Models\Task::where('assigner_id', $user->id)->orderBy('due_date')->get();
+        return view('bdsp.tasks', compact('tasks'));
+    }
+
+    // Mentor: View tasks assigned by this Mentor
+    public function mentorIndex()
+    {
+        $user = auth()->user();
+        $tasks = \App\Models\Task::where('assigner_id', $user->id)->orderBy('due_date')->get();
+        return view('mentor.tasks', compact('tasks'));
+    }
+
+    public function create()
+    {
+        $user = auth()->user();
+        $pairings = $user->allPairings()->get();
+        $pairedUsers = $pairings->map(function($pairing) use ($user) {
+            return $pairing->user_one_id == $user->id ? $pairing->userTwo : $pairing->userOne;
+        });
+        return view('tasks.create', compact('pairedUsers'));
+    }
+}

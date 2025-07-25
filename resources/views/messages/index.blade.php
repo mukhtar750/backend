@@ -5,14 +5,19 @@
     <div class="bg-white rounded-lg shadow">
         <!-- Header -->
         <div class="px-6 py-4 border-b border-gray-200">
-            <div class="flex items-center justify-between">
-                <div class="flex items-center space-x-3">
-                    <i class="bi bi-chat-dots-fill text-2xl text-purple-600"></i>
-                    <h1 class="text-2xl font-bold text-gray-900">Messages</h1>
+            @php
+                $admin = \App\Models\User::where('role', 'admin')->where('is_approved', true)->first();
+            @endphp
+            <div class="flex justify-between items-center mb-6">
+                <h1 class="text-3xl font-bold text-gray-800">Messages</h1>
+                <div class="flex gap-2">
+                    <a href="{{ route('messages.create') }}" class="bg-purple-600 text-white px-4 py-2 rounded-lg font-semibold shadow hover:bg-purple-700 transition">New Message</a>
+                    @if($admin && auth()->user()->role !== 'admin')
+                        <a href="{{ route('messages.create', ['recipient' => $admin->id]) }}" class="bg-yellow-500 text-white px-4 py-2 rounded-lg font-semibold shadow hover:bg-yellow-600 transition flex items-center">
+                            <i class="bi bi-person-badge mr-2"></i> Message Admin
+                        </a>
+                    @endif
                 </div>
-                <a href="{{ route('messages.create') }}" class="bg-purple-600 text-white px-4 py-2 rounded-lg shadow hover:bg-purple-700 transition flex items-center">
-                    <i class="bi bi-plus-circle mr-2"></i> New Message
-                </a>
             </div>
         </div>
         <div class="flex h-96">

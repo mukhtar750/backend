@@ -150,7 +150,16 @@ class AdminController extends Controller
         $allUsers = User::all(); // Fetch all users
         $users = User::where('is_approved', false)->get(); // Pending users
         $pairings = \App\Models\Pairing::with(['userOne', 'userTwo'])->get(); // Fetch all pairings with related users
-        return view('admin.user-management', compact('allUsers', 'users', 'pairings'));
+        
+        // Fetch startups for the Startup Profiles tab, eager load founder
+        $startups = \App\Models\Startup::with('founder')->get();
+        
+        // Get entrepreneurs with business details for startup profiles
+        $entrepreneurs = User::where('role', 'entrepreneur')
+            ->whereNotNull('business_name')
+            ->get();
+            
+        return view('admin.user-management', compact('allUsers', 'users', 'pairings', 'startups', 'entrepreneurs'));
     }
 
     public function editUser($id)
@@ -486,7 +495,19 @@ class AdminController extends Controller
             $query->where('is_approved', false);
         }
         $resources = $query->paginate(20);
-        return view('admin.content_management', compact('resources', 'status'));
+
+        // Ensure all required variables are passed
+        $contents = collect(); // Empty collection for now
+        $categories = \DB::table('categories')->get();
+        $pendingPitches = collect();
+        $approvedPitches = collect();
+        $rejectedPitches = collect();
+        $reviewedPitches = collect();
+
+        return view('admin.content_management', compact(
+            'resources', 'status', 'contents', 'categories',
+            'pendingPitches', 'approvedPitches', 'rejectedPitches', 'reviewedPitches'
+        ));
     }
 
     public function approveResource($id)
