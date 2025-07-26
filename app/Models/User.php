@@ -213,4 +213,20 @@ class User extends Authenticatable
     {
         return $this->hasMany(TaskSubmission::class, 'reviewed_by');
     }
+
+    /**
+     * Get all startup info requests made by this investor
+     */
+    public function startupInfoRequests()
+    {
+        return $this->hasMany(StartupInfoRequest::class, 'investor_id');
+    }
+
+    /**
+     * Get approved startup info requests made by this investor
+     */
+    public function approvedStartupInfoRequests()
+    {
+        return $this->hasMany(StartupInfoRequest::class, 'investor_id')->where('status', 'approved');
+    }
 }

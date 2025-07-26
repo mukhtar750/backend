@@ -2,8 +2,8 @@
     <div class="container">
         <div class="row align-items-center mb-4">
             <div class="col-md-4 mb-3 mb-md-0">
-                <h5 class="fw-bold">AWN Portal</h5>
-                <p class="small">Empowering Women in Business</p>
+                <img src="/images/logo.jpg" alt="AWN Logo" class="w-14 h-14 object-contain rounded-full shadow-lg transition-transform hover:scale-105 mb-3">
+                <p class="small">Empowering female entrepreneurs to build successful, scalable ventures.</p>
             </div>
             <div class="col-md-4 mb-3 mb-md-0 text-center">
                 <a href="#" class="text-white me-3"><i class="bi bi-facebook fs-4"></i></a>
@@ -12,17 +12,13 @@
                 <a href="#" class="text-white"><i class="bi bi-instagram fs-4"></i></a>
             </div>
             <div class="col-md-4">
-                <form>
-                    <label for="newsletter" class="form-label">Subscribe to our newsletter</label>
-                    <div class="input-group">
-                        <input type="email" class="form-control" id="newsletter" placeholder="Email address">
-                        <button class="btn btn-primary" type="submit">Subscribe</button>
-                    </div>
-                </form>
-            </div>
+                <p class="small mb-1">Phone: +234-9122777758</p>
+                <p class="small mb-1">Email: hello@aryawomennigeria.org</p>
+                <p class="small">31 Parakou Street, Wuse 2, Abuja, Nigeria</p>
+            
         </div>
         <div class="text-center small">
             &copy; {{ date('Y') }} Arya Women Nigeria. All rights reserved.
         </div>
     </div>
-</footer> 
+</footer>

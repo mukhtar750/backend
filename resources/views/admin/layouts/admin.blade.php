@@ -82,7 +82,7 @@
         <!-- Top Navigation -->
         <header class="flex items-center justify-between bg-white p-4 shadow-sm border-b">
             <div class="flex items-center gap-3">
-                <img src="https://cdn-icons-png.flaticon.com/512/616/616494.png" alt="Logo" class="h-7 w-7 mr-2">
+                <img src="/images/logo.jpg" alt="AWN Logo" class="h-7 w-7 mr-2">
                 <h2 class="text-2xl font-semibold text-gray-800">Dashboard</h2>
             </div>
             <div class="flex items-center gap-4 flex-1 justify-end">

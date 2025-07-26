@@ -131,126 +131,72 @@
 
     <!-- Teaser Startup Cards (Limited View) -->
     <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-10">
-        <!-- Example Card 1 -->
+        @forelse($approvedStartups ?? [] as $startup)
         <div class="bg-white rounded-xl border border-gray-200 p-6 flex flex-col shadow-sm">
             <div class="flex items-center gap-3 mb-2">
-                <img src="https://randomuser.me/api/portraits/women/44.jpg" class="rounded-full w-12 h-12" alt="">
+                @if($startup->logo)
+                    <img src="{{ asset('storage/' . $startup->logo) }}" class="rounded-full w-12 h-12 object-cover" alt="{{ $startup->name }}">
+                @else
+                    <div class="rounded-full w-12 h-12 bg-gray-300 flex items-center justify-center">
+                        <i class="bi bi-building text-gray-600"></i>
+                    </div>
+                @endif
                 <div>
-                    <div class="font-bold text-lg text-gray-900">EcoTech Solutions</div>
-                    <div class="text-xs text-gray-500">by Sarah Johnson &middot; Updated 2 days ago</div>
+                    <div class="font-bold text-lg text-gray-900">{{ $startup->name }}</div>
+                    <div class="text-xs text-gray-500">by {{ $startup->founder->name ?? 'Unknown' }} &middot; Updated {{ $startup->updated_at->diffForHumans() }}</div>
                 </div>
             </div>
             <div class="mb-2">
                 <span class="text-xs text-gray-500">Sector</span>
-                <span class="font-semibold text-gray-800 ml-2">Clean Technology</span>
+                <span class="font-semibold text-gray-800 ml-2">{{ $startup->sector ?? 'N/A' }}</span>
             </div>
             <div class="mb-2">
                 <span class="text-xs text-gray-500">Stage</span>
-                <span class="font-semibold text-gray-800 ml-2">Seed</span>
+                <span class="font-semibold text-gray-800 ml-2">{{ $startup->funding_stage ?? 'N/A' }}</span>
             </div>
             <div class="mb-2 flex gap-4">
-                <div><span class="text-xs text-gray-500">Seeking</span> <span class="font-semibold text-green-600 ml-1">$250K</span></div>
-                <div><span class="text-xs text-gray-500">Revenue</span> <span class="font-semibold text-gray-800 ml-1">$25K MRR</span></div>
+                <div><span class="text-xs text-gray-500">Seeking</span> <span class="font-semibold text-green-600 ml-1">{{ $startup->funding_needed ?? 'N/A' }}</span></div>
+                <div><span class="text-xs text-gray-500">Revenue</span> <span class="font-semibold text-gray-800 ml-1">{{ $startup->monthly_revenue ?? 'N/A' }}</span></div>
             </div>
-            <div class="text-sm text-gray-600 mb-3">Sustainable packaging solutions for e-commerce businesses with biodegradable materials.</div>
+            <div class="text-sm text-gray-600 mb-3">{{ Str::limit($startup->tagline ?? $startup->description ?? 'No description available', 100) }}</div>
             <div class="flex flex-wrap gap-2 mb-3">
-                <span class="bg-blue-100 text-blue-700 px-3 py-1 rounded-full text-xs font-medium">B2B</span>
-                <span class="bg-green-100 text-green-700 px-3 py-1 rounded-full text-xs font-medium">Sustainability</span>
-                <span class="bg-purple-100 text-purple-700 px-3 py-1 rounded-full text-xs font-medium">E-commerce</span>
+                @if($startup->sector)
+                    <span class="bg-blue-100 text-blue-700 px-3 py-1 rounded-full text-xs font-medium">{{ $startup->sector }}</span>
+                @endif
+                @if($startup->funding_stage)
+                    <span class="bg-green-100 text-green-700 px-3 py-1 rounded-full text-xs font-medium">{{ $startup->funding_stage }}</span>
+                @endif
+                @if($startup->headquarters_location)
+                    <span class="bg-purple-100 text-purple-700 px-3 py-1 rounded-full text-xs font-medium">{{ $startup->headquarters_location }}</span>
+                @endif
             </div>
             <div class="flex justify-between text-xs text-gray-500 mb-3">
-                <div>Traction <span class="font-semibold text-gray-800 ml-1">50K+ users</span></div>
-                <div>Team Size <span class="font-semibold text-gray-800 ml-1">8 people</span></div>
+                <div>Team Size <span class="font-semibold text-gray-800 ml-1">{{ $startup->team_size ?? 'N/A' }}</span></div>
+                <div>Founded <span class="font-semibold text-gray-800 ml-1">{{ $startup->year_founded ?? 'N/A' }}</span></div>
             </div>
             <div class="flex items-center gap-2 text-xs text-gray-400 mb-3">
-                <i class="bi bi-geo-alt"></i> Lagos, Nigeria
-                <span class="ml-auto flex items-center gap-1 text-yellow-500"><i class="bi bi-star-fill"></i> 4.8</span>
+                <i class="bi bi-geo-alt"></i> {{ $startup->headquarters_location ?? 'Location not specified' }}
             </div>
             <div class="flex gap-2 mt-auto">
-                <button class="bg-green-600 text-white px-4 py-2 rounded-lg font-medium flex-1 hover:bg-green-700 transition" data-request-access>View Profile</button>
-                <button class="border border-gray-300 rounded-lg px-4 py-2 text-gray-700 font-medium flex-1 hover:bg-gray-100 transition">Request Access</button>
+                @if($startup->hasInvestorAccess(Auth::id()))
+                    <a href="{{ route('investor.startup-profile', $startup->id) }}" class="bg-green-600 text-white px-4 py-2 rounded-lg font-medium flex-1 hover:bg-green-700 transition text-center">View Full Profile</a>
+                @else
+                    <form action="{{ route('startup.info-request.store', $startup->id) }}" method="POST" class="flex-1">
+                        @csrf
+                        <button type="submit" class="w-full bg-green-600 text-white px-4 py-2 rounded-lg font-medium hover:bg-green-700 transition">Request More Info</button>
+                    </form>
+                @endif
             </div>
         </div>
-        <!-- Example Card 2 -->
-        <div class="bg-white rounded-xl border border-gray-200 p-6 flex flex-col shadow-sm">
-            <div class="flex items-center gap-3 mb-2">
-                <img src="https://randomuser.me/api/portraits/men/32.jpg" class="rounded-full w-12 h-12" alt="">
-                <div>
-                    <div class="font-bold text-lg text-gray-900">FinanceFlow</div>
-                    <div class="text-xs text-gray-500">by Michael Chen &middot; Updated 1 day ago</div>
-                </div>
+        @empty
+        <div class="col-span-3 text-center py-12">
+            <div class="text-gray-500 mb-4">
+                <i class="bi bi-building text-4xl"></i>
             </div>
-            <div class="mb-2">
-                <span class="text-xs text-gray-500">Sector</span>
-                <span class="font-semibold text-gray-800 ml-2">Fintech</span>
-            </div>
-            <div class="mb-2">
-                <span class="text-xs text-gray-500">Stage</span>
-                <span class="font-semibold text-gray-800 ml-2">Pre-Series A</span>
-            </div>
-            <div class="mb-2 flex gap-4">
-                <div><span class="text-xs text-gray-500">Seeking</span> <span class="font-semibold text-green-600 ml-1">$500K</span></div>
-                <div><span class="text-xs text-gray-500">Revenue</span> <span class="font-semibold text-gray-800 ml-1">$45K MRR</span></div>
-            </div>
-            <div class="text-sm text-gray-600 mb-3">Digital banking platform for small businesses across Africa with integrated payment solutions.</div>
-            <div class="flex flex-wrap gap-2 mb-3">
-                <span class="bg-blue-100 text-blue-700 px-3 py-1 rounded-full text-xs font-medium">B2B</span>
-                <span class="bg-blue-100 text-blue-700 px-3 py-1 rounded-full text-xs font-medium">Banking</span>
-                <span class="bg-purple-100 text-purple-700 px-3 py-1 rounded-full text-xs font-medium">Payments</span>
-            </div>
-            <div class="flex justify-between text-xs text-gray-500 mb-3">
-                <div>Traction <span class="font-semibold text-gray-800 ml-1">1K+ businesses</span></div>
-                <div>Team Size <span class="font-semibold text-gray-800 ml-1">12 people</span></div>
-            </div>
-            <div class="flex items-center gap-2 text-xs text-gray-400 mb-3">
-                <i class="bi bi-geo-alt"></i> Cape Town, South Africa
-                <span class="ml-auto flex items-center gap-1 text-yellow-500"><i class="bi bi-star-fill"></i> 4.6</span>
-            </div>
-            <div class="flex gap-2 mt-auto">
-                <button class="bg-green-600 text-white px-4 py-2 rounded-lg font-medium flex-1 hover:bg-green-700 transition" data-request-access>View Profile</button>
-                <button class="border border-gray-300 rounded-lg px-4 py-2 text-gray-700 font-medium flex-1 hover:bg-gray-100 transition">Request Access</button>
-            </div>
+            <h3 class="text-lg font-semibold text-gray-900 mb-2">No Startup Profiles Available</h3>
+            <p class="text-gray-600">There are currently no approved startup profiles to display. Check back later for new opportunities.</p>
         </div>
-        <!-- Example Card 3 -->
-        <div class="bg-white rounded-xl border border-gray-200 p-6 flex flex-col shadow-sm">
-            <div class="flex items-center gap-3 mb-2">
-                <img src="https://randomuser.me/api/portraits/men/54.jpg" class="rounded-full w-12 h-12" alt="">
-                <div>
-                    <div class="font-bold text-lg text-gray-900">HealthTech Hub</div>
-                    <div class="text-xs text-gray-500">by Aisha Patel &middot; Updated 3 hours ago</div>
-                </div>
-            </div>
-            <div class="mb-2">
-                <span class="text-xs text-gray-500">Sector</span>
-                <span class="font-semibold text-gray-800 ml-2">Healthcare</span>
-            </div>
-            <div class="mb-2">
-                <span class="text-xs text-gray-500">Stage</span>
-                <span class="font-semibold text-gray-800 ml-2">Series A</span>
-            </div>
-            <div class="mb-2 flex gap-4">
-                <div><span class="text-xs text-gray-500">Seeking</span> <span class="font-semibold text-green-600 ml-1">$1M</span></div>
-                <div><span class="text-xs text-gray-500">Revenue</span> <span class="font-semibold text-gray-800 ml-1">$80K MRR</span></div>
-            </div>
-            <div class="text-sm text-gray-600 mb-3">Telemedicine platform connecting patients with healthcare providers across rural Africa.</div>
-            <div class="flex flex-wrap gap-2 mb-3">
-                <span class="bg-blue-100 text-blue-700 px-3 py-1 rounded-full text-xs font-medium">B2C</span>
-                <span class="bg-blue-100 text-blue-700 px-3 py-1 rounded-full text-xs font-medium">Healthcare</span>
-                <span class="bg-purple-100 text-purple-700 px-3 py-1 rounded-full text-xs font-medium">Telemedicine</span>
-            </div>
-            <div class="flex justify-between text-xs text-gray-500 mb-3">
-                <div>Traction <span class="font-semibold text-gray-800 ml-1">10K+ patients</span></div>
-                <div>Team Size <span class="font-semibold text-gray-800 ml-1">15 people</span></div>
-            </div>
-            <div class="flex items-center gap-2 text-xs text-gray-400 mb-3">
-                <i class="bi bi-geo-alt"></i> Nairobi, Kenya
-                <span class="ml-auto flex items-center gap-1 text-yellow-500"><i class="bi bi-star-fill"></i> 4.9</span>
-            </div>
-            <div class="flex gap-2 mt-auto">
-                <button class="bg-green-600 text-white px-4 py-2 rounded-lg font-medium flex-1 hover:bg-green-700 transition" data-request-access>View Profile</button>
-                <button class="border border-gray-300 rounded-lg px-4 py-2 text-gray-700 font-medium flex-1 hover:bg-gray-100 transition">Request Access</button>
-            </div>
-        </div>
+        @endforelse
     </div>
 
     <!-- IRP Impact Stories / Success Stories Placeholder -->

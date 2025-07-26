@@ -27,6 +27,7 @@
         <button @click="tab = 'users'" :class="tab === 'users' ? 'border-b-2 border-[#b81d8f] text-[#b81d8f]' : 'text-gray-500'" class="px-4 py-2 font-semibold focus:outline-none">Users</button>
         <button @click="tab = 'pairings'" :class="tab === 'pairings' ? 'border-b-2 border-[#b81d8f] text-[#b81d8f]' : 'text-gray-500'" class="px-4 py-2 font-semibold focus:outline-none">Pairings</button>
         <button @click="tab = 'startup-profiles'" :class="tab === 'startup-profiles' ? 'border-b-2 border-[#b81d8f] text-[#b81d8f]' : 'text-gray-500'" class="px-4 py-2 font-semibold focus:outline-none">Startup Profiles</button>
+        <button @click="tab = 'info-requests'" :class="tab === 'info-requests' ? 'border-b-2 border-[#b81d8f] text-[#b81d8f]' : 'text-gray-500'" class="px-4 py-2 font-semibold focus:outline-none">Info Requests</button>
     </nav>
 
     <!-- Users Tab -->
@@ -251,16 +252,22 @@
                                 {{ $startup->created_at->format('M d, Y') }}
                             </td>
                             <td class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium space-x-2">
-                                <a href="#" class="text-indigo-600 hover:text-indigo-900">
+                                <a href="{{ route('admin.startups.show', $startup->id) }}" class="text-indigo-600 hover:text-indigo-900">
                                     <i class="bi bi-eye"></i> View
                                 </a>
                                 @if($startup->status === 'pending')
-                                    <button class="text-green-600 hover:text-green-900">
-                                        <i class="bi bi-check-circle"></i> Approve
-                                    </button>
-                                    <button class="text-red-600 hover:text-red-900">
-                                        <i class="bi bi-x-circle"></i> Reject
-                                    </button>
+                                    <form action="{{ route('admin.startups.approve', $startup->id) }}" method="POST" class="inline-block">
+                                        @csrf
+                                        <button type="submit" class="text-green-600 hover:text-green-900">
+                                            <i class="bi bi-check-circle"></i> Approve
+                                        </button>
+                                    </form>
+                                    <form action="{{ route('admin.startups.reject', $startup->id) }}" method="POST" class="inline-block">
+                                        @csrf
+                                        <button type="submit" class="text-red-600 hover:text-red-900">
+                                            <i class="bi bi-x-circle"></i> Reject
+                                        </button>
+                                    </form>
                                 @endif
                             </td>
                         </tr>
@@ -273,6 +280,110 @@
                 <i class="bi bi-building text-6xl text-gray-300 mb-4"></i>
                 <h3 class="text-lg font-medium text-gray-900 mb-2">No Startup Profiles</h3>
                 <p class="text-gray-500">No startup profiles have been submitted yet.</p>
+            </div>
+        @endif
+    </div>
+
+    <!-- Info Requests Tab -->
+    <div x-show="tab === 'info-requests'" class="mt-6">
+        <div class="flex justify-between items-center mb-4">
+            <h3 class="text-lg font-medium text-gray-900">Startup Info Requests</h3>
+            <div class="flex gap-2">
+                <select class="border border-gray-300 rounded-lg px-3 py-2 text-sm focus:ring-purple-500 focus:border-purple-500">
+                    <option value="">All Status</option>
+                    <option value="pending">Pending</option>
+                    <option value="approved">Approved</option>
+                    <option value="rejected">Rejected</option>
+                </select>
+            </div>
+        </div>
+        
+        @if(isset($startupInfoRequests) && $startupInfoRequests->count() > 0)
+            <div class="overflow-x-auto">
+                <table class="min-w-full divide-y divide-gray-200">
+                    <thead class="bg-gray-50">
+                        <tr>
+                            <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Investor</th>
+                            <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Startup</th>
+                            <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Status</th>
+                            <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Request Date</th>
+                            <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Message</th>
+                            <th scope="col" class="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody class="bg-white divide-y divide-gray-200">
+                        @foreach($startupInfoRequests as $request)
+                        <tr>
+                            <td class="px-6 py-4 whitespace-nowrap">
+                                <div class="flex items-center">
+                                    <div class="h-10 w-10 rounded-full bg-gray-300 flex items-center justify-center">
+                                        <i class="bi bi-person text-gray-600"></i>
+                                    </div>
+                                    <div class="ml-4">
+                                        <div class="text-sm font-medium text-gray-900">{{ $request->investor->name }}</div>
+                                        <div class="text-sm text-gray-500">{{ $request->investor->email }}</div>
+                                    </div>
+                                </div>
+                            </td>
+                            <td class="px-6 py-4 whitespace-nowrap">
+                                <div class="text-sm font-medium text-gray-900">{{ $request->startup->name }}</div>
+                                <div class="text-sm text-gray-500">{{ $request->startup->sector ?? 'N/A' }}</div>
+                            </td>
+                            <td class="px-6 py-4 whitespace-nowrap">
+                                @if($request->status === 'pending')
+                                    <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-yellow-100 text-yellow-800">
+                                        Pending
+                                    </span>
+                                @elseif($request->status === 'approved')
+                                    <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-green-100 text-green-800">
+                                        Approved
+                                    </span>
+                                @else
+                                    <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-red-100 text-red-800">
+                                        Rejected
+                                    </span>
+                                @endif
+                            </td>
+                            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                                {{ $request->created_at->format('M d, Y H:i') }}
+                            </td>
+                            <td class="px-6 py-4 text-sm text-gray-900">
+                                {{ Str::limit($request->request_message ?? 'No message provided', 50) }}
+                            </td>
+                            <td class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium space-x-2">
+                                @if($request->status === 'pending')
+                                    <form action="{{ route('admin.startup-info-requests.approve', $request->id) }}" method="POST" class="inline-block">
+                                        @csrf
+                                        <button type="submit" class="text-green-600 hover:text-green-900">
+                                            <i class="bi bi-check-circle"></i> Approve
+                                        </button>
+                                    </form>
+                                    <form action="{{ route('admin.startup-info-requests.reject', $request->id) }}" method="POST" class="inline-block">
+                                        @csrf
+                                        <button type="submit" class="text-red-600 hover:text-red-900">
+                                            <i class="bi bi-x-circle"></i> Reject
+                                        </button>
+                                    </form>
+                                @else
+                                    <span class="text-gray-400">
+                                        @if($request->status === 'approved')
+                                            Approved {{ $request->approved_at ? $request->approved_at->format('M d, Y') : '' }}
+                                        @else
+                                            Rejected {{ $request->rejected_at ? $request->rejected_at->format('M d, Y') : '' }}
+                                        @endif
+                                    </span>
+                                @endif
+                            </td>
+                        </tr>
+                        @endforeach
+                    </tbody>
+                </table>
+            </div>
+        @else
+            <div class="text-center py-12">
+                <i class="bi bi-inbox text-6xl text-gray-300 mb-4"></i>
+                <h3 class="text-lg font-medium text-gray-900 mb-2">No Info Requests</h3>
+                <p class="text-gray-500">No startup information requests have been made yet.</p>
             </div>
         @endif
     </div>

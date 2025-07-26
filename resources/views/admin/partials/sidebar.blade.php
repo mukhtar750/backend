@@ -3,7 +3,7 @@
     <!-- Sidebar - Brand -->
     <a class="sidebar-brand d-flex align-items-center justify-content-center" href="{{ route('admin.dashboard') }}">
         <div class="sidebar-brand-icon rotate-n-15">
-            <i class="fas fa-laugh-wink"></i>
+            <img src="/images/logo.jpg" alt="AWN Logo" style="width: 40px; height: 40px;">
         </div>
         <div class="sidebar-brand-text mx-3">Admin Panel</div>
     </a>

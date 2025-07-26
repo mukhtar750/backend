@@ -353,9 +353,7 @@
         <div class="container mx-auto px-6">
             <div class="grid grid-cols-1 md:grid-cols-4 gap-8">
                 <div>
-                    <div class="w-12 h-12 rounded-full bg-[#b81d8f] flex items-center justify-center text-white font-bold text-xl mb-4">
-                        AWN
-                    </div>
+                    <img src="/images/logo.jpg" alt="AWN Logo" class="w-14 h-14 object-contain rounded-full shadow-lg transition-transform hover:scale-105 mb-3">
                     <p class="text-gray-400">
                         Empowering female entrepreneurs to build successful, scalable ventures.
                     </p>
@@ -386,22 +384,22 @@
                     <ul class="space-y-2">
                         <li class="flex items-center">
                             <i class="fas fa-envelope text-gray-400 mr-2"></i>
-                            <span class="text-gray-400">contact@awnventure.org</span>
+                            <span class="text-gray-400">hello@aryawomennigeria.org</span>
                         </li>
                         <li class="flex items-center">
                             <i class="fas fa-phone text-gray-400 mr-2"></i>
-                            <span class="text-gray-400">+1 (234) 567-8900</span>
+                            <span class="text-gray-400">+234-9122777758</span>
                         </li>
                         <li class="flex items-center">
                             <i class="fas fa-map-marker-alt text-gray-400 mr-2"></i>
-                            <span class="text-gray-400">123 Entrepreneur St, Innovation City</span>
+                            <span class="text-gray-400">31 Parakou Street, Wuse 2, Abuja, Nigeria</span>
                         </li>
                     </ul>
                 </div>
             </div>
             
             <div class="border-t border-gray-800 mt-12 pt-8 text-center text-gray-400">
-                <p>&copy; 2023 AWN Venture Readiness Portal. All rights reserved.</p>
+                <p>&copy; {{ date('Y') }} Arya Women Nigeria. All rights reserved.</p>
             </div>
         </div>
     </footer>

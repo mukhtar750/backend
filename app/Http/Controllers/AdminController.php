@@ -159,7 +159,12 @@ class AdminController extends Controller
             ->whereNotNull('business_name')
             ->get();
             
-        return view('admin.user-management', compact('allUsers', 'users', 'pairings', 'startups', 'entrepreneurs'));
+        // Fetch startup info requests for the Info Requests tab
+        $startupInfoRequests = \App\Models\StartupInfoRequest::with(['investor', 'startup'])
+            ->orderBy('created_at', 'desc')
+            ->get();
+            
+        return view('admin.user-management', compact('allUsers', 'users', 'pairings', 'startups', 'entrepreneurs', 'startupInfoRequests'));
     }
 
     public function editUser($id)

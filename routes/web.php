@@ -204,7 +204,13 @@ Route::get('/register/entrepreneur', [EntrepreneurRegisterController::class, 'sh
 Route::post('/register/entrepreneur', [EntrepreneurRegisterController::class, 'register']);
 
 // Dashboards
-Route::view('/dashboard/investor', 'dashboard.investor')->middleware('auth')->name('dashboard.investor');
+Route::get('/dashboard/investor', function () {
+    $approvedStartups = \App\Models\Startup::where('status', 'approved')
+        ->with('founder')
+        ->orderBy('created_at', 'desc')
+        ->get();
+    return view('dashboard.investor', compact('approvedStartups'));
+})->middleware('auth')->name('dashboard.investor');
 Route::get('/dashboard/bdsp', [\App\Http\Controllers\BDSPController::class, 'dashboard'])->middleware('auth')->name('dashboard.bdsp');
 Route::get('/dashboard/entrepreneur', function () {
     $user = auth()->user();
@@ -577,4 +583,23 @@ Route::middleware(['auth'])->group(function () {
 Route::middleware(['auth'])->group(function () {
     Route::get('/tasks/create', [\App\Http\Controllers\TaskController::class, 'create'])->name('tasks.create');
     Route::post('/tasks', [\App\Http\Controllers\TaskController::class, 'store'])->name('tasks.store');
+});
+
+// Admin Startup Profile Management
+Route::middleware(['auth', 'admin'])->group(function () {
+    Route::get('/admin/startups/{startup}', [\App\Http\Controllers\AdminStartupController::class, 'show'])->name('admin.startups.show');
+    Route::post('/admin/startups/{startup}/approve', [\App\Http\Controllers\AdminStartupController::class, 'approve'])->name('admin.startups.approve');
+    Route::post('/admin/startups/{startup}/reject', [\App\Http\Controllers\AdminStartupController::class, 'reject'])->name('admin.startups.reject');
+});
+
+// Startup Info Request Routes
+Route::middleware(['auth'])->group(function () {
+    Route::post('/startups/{startup}/request-info', [\App\Http\Controllers\StartupInfoRequestController::class, 'store'])->name('startup.info-request.store');
+    Route::get('/investor/startup/{startup}', [\App\Http\Controllers\StartupInfoRequestController::class, 'show'])->name('investor.startup-profile');
+});
+
+// Admin Startup Info Request Management
+Route::middleware(['auth', 'admin'])->group(function () {
+    Route::post('/admin/startup-info-requests/{infoRequest}/approve', [\App\Http\Controllers\StartupInfoRequestController::class, 'approve'])->name('admin.startup-info-requests.approve');
+    Route::post('/admin/startup-info-requests/{infoRequest}/reject', [\App\Http\Controllers\StartupInfoRequestController::class, 'reject'])->name('admin.startup-info-requests.reject');
 });

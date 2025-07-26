@@ -55,4 +55,31 @@ class Startup extends Model
     {
         return $this->belongsTo(User::class, 'founder_id');
     }
+
+    /**
+     * Get all info requests for this startup
+     */
+    public function infoRequests()
+    {
+        return $this->hasMany(StartupInfoRequest::class);
+    }
+
+    /**
+     * Get approved info requests for this startup
+     */
+    public function approvedInfoRequests()
+    {
+        return $this->hasMany(StartupInfoRequest::class)->where('status', 'approved');
+    }
+
+    /**
+     * Check if a specific investor has access to this startup
+     */
+    public function hasInvestorAccess($investorId)
+    {
+        return $this->infoRequests()
+            ->where('investor_id', $investorId)
+            ->where('status', 'approved')
+            ->exists();
+    }
 }
