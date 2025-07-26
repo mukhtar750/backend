@@ -260,28 +260,42 @@ function notificationModal() {
     }
 }
 
-// Update notification count periodically
-setInterval(function() {
-    fetch('/notifications/unread-count')
-    .then(response => response.json())
-    .then(data => {
-        const badge = document.querySelector('[x-data="notificationModal()"] .absolute');
-        if (data.count > 0) {
-            if (badge) {
-                badge.textContent = data.count > 99 ? '99+' : data.count;
-                badge.style.display = 'inline-flex';
+// Update notification count periodically only if notification component exists
+const notificationComponent = document.querySelector('[x-data="notificationModal()"]');
+if (notificationComponent) {
+    setInterval(function() {
+        fetch('/notifications/unread-count')
+        .then(response => {
+            if (!response.ok) {
+                throw new Error('Network response was not ok');
+            }
+            return response.json();
+        })
+        .then(data => {
+            const badge = document.querySelector('[x-data="notificationModal()"] .absolute');
+            if (data.count > 0) {
+                if (badge) {
+                    badge.textContent = data.count > 99 ? '99+' : data.count;
+                    badge.style.display = 'inline-flex';
+                } else {
+                    const button = document.querySelector('[x-data="notificationModal()"] button');
+                    if (button) {
+                        const newBadge = document.createElement('span');
+                        newBadge.className = 'absolute -top-2 -right-2 inline-flex items-center justify-center px-1.5 py-0.5 text-xs font-bold text-white bg-red-500 rounded-full min-w-[18px]';
+                        newBadge.textContent = data.count > 99 ? '99+' : data.count;
+                        button.appendChild(newBadge);
+                    }
+                }
             } else {
-                const button = document.querySelector('[x-data="notificationModal()"] button');
-                const newBadge = document.createElement('span');
-                newBadge.className = 'absolute -top-2 -right-2 inline-flex items-center justify-center px-1.5 py-0.5 text-xs font-bold text-white bg-red-500 rounded-full min-w-[18px]';
-                newBadge.textContent = data.count > 99 ? '99+' : data.count;
-                button.appendChild(newBadge);
+                if (badge) {
+                    badge.style.display = 'none';
+                }
             }
-        } else {
-            if (badge) {
-                badge.style.display = 'none';
-            }
-        }
-    });
-}, 30000); // Update every 30 seconds
+        })
+        .catch(error => {
+            // Silently handle errors to prevent console spam
+            // console.error('Error updating notification count:', error);
+        });
+    }, 30000); // Update every 30 seconds
+}
 </script> 
