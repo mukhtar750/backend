@@ -1,14 +1,6 @@
 @extends('admin.layouts.admin')
 
 @section('content')
-    {{-- DEBUG BLOCK: Remove after fixing --}}
-    <div class="bg-yellow-100 text-yellow-900 p-4 mb-4 rounded">
-        <strong>Debug:</strong>
-        <div><b>$contents:</b> {{ isset($contents) ? $contents->count() : 'NOT SET' }}</div>
-        <div><b>$resources:</b> {{ isset($resources) ? (is_object($resources) && method_exists($resources, 'count') ? $resources->count() : 'SET') : 'NOT SET' }}</div>
-        <div><b>$categories:</b> {{ isset($categories) ? $categories->count() : 'NOT SET' }}</div>
-        <div><b>$status:</b> {{ isset($status) ? $status : 'NOT SET' }}</div>
-    </div>
     <div class="flex justify-between items-center mb-6">
         <h1 class="text-3xl font-bold text-gray-800">Content Management</h1>
     </div>
