@@ -13,6 +13,7 @@ class MentorshipSession extends Model
         'date_time',
         'duration',
         'topic',
+        'session_type',
         'status',
         'notes',
         'meeting_link',

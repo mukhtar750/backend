@@ -30,6 +30,7 @@
             <button @click="showBooking = false" class="absolute top-4 right-4 text-gray-400 hover:text-gray-600 text-2xl">&times;</button>
             <h3 class="text-2xl font-bold mb-4">Book New Mentorship Session</h3>
             <form @submit.prevent="submitForm()">
+                @csrf
                 <!-- Professional Selection -->
                 <div class="mb-6">
                     <label class="block text-gray-700 font-medium mb-2">Select Professional: <span class="text-red-500">*</span></label>
@@ -118,6 +119,16 @@ function mentorshipBooking(professionals) {
             notes: ''
         },
 
+        // Watch for changes in selectedProfessional and update formData
+        init() {
+            this.$watch('selectedProfessional', (value) => {
+                if (value) {
+                    this.formData.professional_id = value;
+                    console.log('Professional selected:', value);
+                }
+            });
+        },
+
         resetForm() {
             this.formData = {
                 professional_id: '',
@@ -132,33 +143,53 @@ function mentorshipBooking(professionals) {
         },
 
         async submitForm() {
-            if (!this.formData.professional_id || !this.formData.topic || !this.formData.session_type || 
-                !this.formData.session_date || !this.formData.session_time) {
-                alert('Please fill in all required fields.');
+            console.log('Submitting form...');
+            console.log('Form Data:', this.formData);
+            console.log('Selected Professional:', this.selectedProfessional);
+            
+            // Check each required field individually
+            const missingFields = [];
+            if (!this.formData.professional_id) missingFields.push('Professional');
+            if (!this.formData.topic) missingFields.push('Topic');
+            if (!this.formData.session_type) missingFields.push('Session Type');
+            if (!this.formData.session_date) missingFields.push('Session Date');
+            if (!this.formData.session_time) missingFields.push('Session Time');
+            
+            if (missingFields.length > 0) {
+                console.log('Missing fields:', missingFields);
+                alert('Please fill in all required fields: ' + missingFields.join(', '));
                 return;
             }
 
             this.submitting = true;
 
             const formData = new FormData();
+            formData.append('_token', document.querySelector('input[name="_token"]').value);
             formData.append('mentor_id', this.formData.professional_id);
             formData.append('topic', this.formData.topic);
             formData.append('session_type', this.formData.session_type);
-            formData.append('date_time', this.formData.session_date + ' ' + this.formData.session_time);
+            
+            // Create proper datetime format
+            const dateTime = this.formData.session_date + ' ' + this.formData.session_time + ':00';
+            formData.append('date_time', dateTime);
+            
             formData.append('session_link', this.formData.session_link);
             formData.append('notes', this.formData.notes);
+
+            console.log('Sending data to server:', Object.fromEntries(formData));
 
             try {
                 const response = await fetch('{{ route("entrepreneur.mentorship-sessions.store") }}', {
                     method: 'POST',
                     headers: {
-                        'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content'),
                         'Accept': 'application/json',
                     },
                     body: formData
                 });
 
+                console.log('Response status:', response.status);
                 const data = await response.json();
+                console.log('Response data:', data);
 
                 if (data.success) {
                     alert('Session scheduled successfully!');

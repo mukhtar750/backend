@@ -226,6 +226,8 @@ class MentorshipSessionController extends Controller
     // Entrepreneur books a session with a mentor
     public function entrepreneurStore(Request $request)
     {
+        \Log::info('Entrepreneur session booking request:', $request->all());
+        
         $request->validate([
             'mentor_id' => 'required|exists:users,id',
             'topic' => 'required|string|max:255',
@@ -272,7 +274,7 @@ class MentorshipSessionController extends Controller
         // Notify the professional
         $professional = \App\Models\User::find($request->mentor_id);
         if ($professional) {
-            $professional->notify(new \App\Notifications\SessionScheduledNotification($session));
+            $professional->notify(new \App\Notifications\SessionScheduledNotification($session, $entrepreneur));
         }
 
         return response()->json([
