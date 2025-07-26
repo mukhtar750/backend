@@ -57,7 +57,9 @@
 
         <div class="p-4 border-t border-purple-700">
             <div class="flex items-center mb-2">
-                <img class="h-10 w-10 rounded-full mr-3" src="https://via.placeholder.com/40" alt="Sarah Admin">
+                <div class="h-10 w-10 rounded-full bg-gray-300 flex items-center justify-center mr-3">
+                    <i class="bi bi-person text-gray-600"></i>
+                </div>
                 <div>
                     <div class="font-semibold">Sarah Admin</div>
                     <div class="text-sm text-gray-300">admin@awn.org</div>
@@ -93,7 +95,9 @@
                 </a>
                 @include('components.notification-badge')
                 <div class="flex items-center">
-                    <img class="h-8 w-8 rounded-full mr-2" src="https://via.placeholder.com/32" alt="Sarah Admin">
+                    <div class="h-8 w-8 rounded-full bg-gray-300 flex items-center justify-center mr-2">
+                        <i class="bi bi-person text-gray-600 text-sm"></i>
+                    </div>
                     <div>
                         <div class="font-semibold text-gray-800 text-sm">Sarah Admin</div>
                         <div class="text-xs text-gray-500">Admin</div>

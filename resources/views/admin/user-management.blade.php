@@ -62,7 +62,9 @@
                     <tr>
                         <td class="px-6 py-4 whitespace-nowrap">
                             <div class="flex items-center">
-                                <img class="h-10 w-10 rounded-full" src="https://via.placeholder.com/40" alt="">
+                                <div class="h-10 w-10 rounded-full bg-gray-300 flex items-center justify-center">
+                                    <i class="bi bi-person text-gray-600"></i>
+                                </div>
                                 <div class="ml-4">
                                     <div class="text-sm font-medium text-gray-900">{{ $user->name }}</div>
                                     <div class="text-sm text-gray-500">{{ $user->email }}</div>
@@ -135,7 +137,9 @@
                             <td class="px-6 py-4 whitespace-nowrap">
                                 <div class="flex items-center">
                                     <div class="flex-shrink-0 h-10 w-10">
-                                        <img class="h-10 w-10 rounded-full" src="https://via.placeholder.com/40" alt="">
+                                        <div class="h-10 w-10 rounded-full bg-gray-300 flex items-center justify-center">
+                                            <i class="bi bi-person text-gray-600"></i>
+                                        </div>
                                     </div>
                                     <div class="ml-4">
                                         <div class="text-sm font-medium text-gray-900">{{ $pairing->userOne->name }}</div>
@@ -146,7 +150,9 @@
                             <td class="px-6 py-4 whitespace-nowrap">
                                 <div class="flex items-center">
                                     <div class="flex-shrink-0 h-10 w-10">
-                                        <img class="h-10 w-10 rounded-full" src="https://via.placeholder.com/40" alt="">
+                                        <div class="h-10 w-10 rounded-full bg-gray-300 flex items-center justify-center">
+                                            <i class="bi bi-person text-gray-600"></i>
+                                        </div>
                                     </div>
                                     <div class="ml-4">
                                         <div class="text-sm font-medium text-gray-900">{{ $pairing->userTwo->name }}</div>
@@ -183,17 +189,10 @@
                 </tbody>
             </table>
         </div>
+    </div>
     
     <!-- Startup Profiles Tab -->
     <div x-show="tab === 'startup-profiles'" class="mt-6">
-        <!-- Debug Info -->
-        <div class="mb-4 p-4 bg-blue-50 border border-blue-200 rounded-lg">
-            <h4 class="font-semibold text-blue-800 mb-2">Debug Information:</h4>
-            <p class="text-sm text-blue-700">Total Startups: {{ $startups->count() }}</p>
-            <p class="text-sm text-blue-700">Startup IDs: {{ $startups->pluck('id')->join(', ') }}</p>
-            <p class="text-sm text-blue-700">Startup Names: {{ $startups->pluck('name')->join(', ') }}</p>
-        </div>
-        
         @if($startups->count() > 0)
             <div class="overflow-x-auto">
                 <table class="min-w-full divide-y divide-gray-200">
