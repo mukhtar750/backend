@@ -222,4 +222,63 @@ class MentorshipSessionController extends Controller
         // Optionally notify both users here
         return redirect()->back()->with('success', 'Session scheduled successfully!');
     }
+
+    // Entrepreneur books a session with a mentor
+    public function entrepreneurStore(Request $request)
+    {
+        $request->validate([
+            'mentor_id' => 'required|exists:users,id',
+            'topic' => 'required|string|max:255',
+            'date_time' => 'required|date|after:now',
+            'session_type' => 'required|in:1-on-1,group',
+            'session_link' => 'nullable|url',
+            'notes' => 'nullable|string',
+        ]);
+
+        $entrepreneur = auth()->user();
+
+        // Check if the entrepreneur is paired with this professional (mentor or BDSP)
+        $pairing = \App\Models\Pairing::whereIn('pairing_type', ['mentor_entrepreneur', 'bdsp_entrepreneur'])
+            ->where(function ($q) use ($entrepreneur, $request) {
+                $q->where(function ($q2) use ($entrepreneur, $request) {
+                    $q2->where('user_one_id', $entrepreneur->id)->where('user_two_id', $request->mentor_id);
+                })->orWhere(function ($q2) use ($entrepreneur, $request) {
+                    $q2->where('user_one_id', $request->mentor_id)->where('user_two_id', $entrepreneur->id);
+                });
+            })
+            ->first();
+
+        if (!$pairing) {
+            return response()->json([
+                'success' => false,
+                'message' => 'You can only book sessions with professionals you are paired with.'
+            ], 403);
+        }
+
+        // Create the session
+        $session = \App\Models\MentorshipSession::create([
+            'pairing_id' => $pairing->id,
+            'scheduled_by' => $entrepreneur->id,
+            'scheduled_for' => $request->mentor_id,
+            'date_time' => $request->date_time,
+            'duration' => 60, // Default 60 minutes
+            'topic' => $request->topic,
+            'session_type' => $request->session_type,
+            'meeting_link' => $request->session_link,
+            'notes' => $request->notes,
+            'status' => 'pending',
+        ]);
+
+        // Notify the professional
+        $professional = \App\Models\User::find($request->mentor_id);
+        if ($professional) {
+            $professional->notify(new \App\Notifications\SessionScheduledNotification($session));
+        }
+
+        return response()->json([
+            'success' => true,
+            'message' => 'Session booked successfully!',
+            'session_id' => $session->id
+        ]);
+    }
 }

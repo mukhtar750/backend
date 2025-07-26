@@ -302,7 +302,7 @@ class AdminController extends Controller
     {
         \Log::info('Pairing: Received request', $request->all());
         $validator = \Validator::make($request->all(), [
-            'pairing_type' => 'required|in:mentor_mentee,bdsp_entrepreneur,investor_entrepreneur',
+            'pairing_type' => 'required|in:mentor_mentee,bdsp_entrepreneur,investor_entrepreneur,mentor_entrepreneur',
             'user_one_id' => 'required|exists:users,id|different:user_two_id',
             'user_two_id' => 'required|exists:users,id',
         ], [

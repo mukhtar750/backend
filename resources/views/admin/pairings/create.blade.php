@@ -92,14 +92,14 @@
                 </div>
                 <div class="mb-4" id="mentor_entrepreneur_selectors" style="display:none;">
                     <label class="block text-gray-700 font-semibold mb-2">Mentor</label>
-                    <select name="user_one_id" class="w-full border-gray-300 rounded-md shadow-sm mb-2">
+                    <select class="w-full border-gray-300 rounded-md shadow-sm mb-2">
                         <option value="">Select Mentor</option>
                         @foreach($mentors as $mentor)
                             <option value="{{ $mentor->id }}">{{ $mentor->name }} ({{ $mentor->email }})</option>
                         @endforeach
                     </select>
                     <label class="block text-gray-700 font-semibold mb-2">Entrepreneur</label>
-                    <select name="user_two_id" class="w-full border-gray-300 rounded-md shadow-sm">
+                    <select class="w-full border-gray-300 rounded-md shadow-sm">
                         <option value="">Select Entrepreneur</option>
                         @foreach($entrepreneurs as $e)
                             <option value="{{ $e->id }}">{{ $e->name }} ({{ $e->email }})</option>

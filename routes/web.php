@@ -282,15 +282,41 @@ Route::middleware(['auth'])->group(function () {
     Route::post('/dashboard/entrepreneur-tasks/{task}/in-progress', [\App\Http\Controllers\TaskController::class, 'markAsInProgress'])->name('entrepreneur.tasks.in-progress');
     Route::get('/dashboard/entrepreneur-mentorship', function () {
         $user = auth()->user();
-        $mentors = \App\Models\User::where('role', 'mentor')->where('is_approved', true)->get();
-        $mentorsArray = $mentors->map(function($m) {
+        
+        // Get paired mentors
+        $mentorPairings = \App\Models\Pairing::where('pairing_type', 'mentor_entrepreneur')
+            ->where(function($q) use ($user) {
+                $q->where('user_one_id', $user->id)->orWhere('user_two_id', $user->id);
+            })->get();
+        $mentorIds = $mentorPairings->map(function($pairing) use ($user) {
+            return $pairing->user_one_id == $user->id ? $pairing->user_two_id : $pairing->user_one_id;
+        });
+        
+        // Get paired BDSPs
+        $bdspPairings = \App\Models\Pairing::where('pairing_type', 'bdsp_entrepreneur')
+            ->where(function($q) use ($user) {
+                $q->where('user_one_id', $user->id)->orWhere('user_two_id', $user->id);
+            })->get();
+        $bdspIds = $bdspPairings->map(function($pairing) use ($user) {
+            return $pairing->user_one_id == $user->id ? $pairing->user_two_id : $pairing->user_one_id;
+        });
+        
+        // Get all paired professionals (mentors + BDSPs)
+        $allProfessionalIds = array_merge($mentorIds->all(), $bdspIds->all());
+        $professionals = \App\Models\User::whereIn('id', $allProfessionalIds)
+            ->where('is_approved', true)
+            ->get();
+        
+        $professionalsArray = $professionals->map(function($p) {
             return [
-                'id' => $m->id,
-                'name' => $m->name,
-                'specialty' => $m->specialty ?? 'Mentor',
-                'avg_rating' => $m->avg_rating ?? '4.8',
+                'id' => $p->id,
+                'name' => $p->name,
+                'role' => $p->role,
+                'specialty' => $p->specialty ?? ucfirst($p->role),
+                'avg_rating' => $p->avg_rating ?? '4.8',
             ];
         })->values();
+        
         $sessions = \App\Models\MentorshipSession::with(['pairing.userOne', 'pairing.userTwo', 'scheduledBy', 'scheduledFor'])
             ->where(function($q) use ($user) {
                 $q->where('scheduled_by', $user->id)
@@ -300,7 +326,7 @@ Route::middleware(['auth'])->group(function () {
             ->where('status', '!=', 'cancelled')
             ->orderBy('date_time', 'asc')
             ->get();
-        return view('dashboard.entrepreneur-mentorship', compact('mentors', 'mentorsArray', 'sessions'));
+        return view('dashboard.entrepreneur-mentorship', compact('professionals', 'professionalsArray', 'sessions'));
     })->name('entrepreneur.mentorship');
     Route::get('/dashboard/entrepreneur-pitch', function () {
         $user = auth()->user();
@@ -374,6 +400,7 @@ Route::get('/dashboard/mentee', [\App\Http\Controllers\AuthController::class, 'm
 // Mentorship Session Booking & Management
 Route::middleware(['auth'])->group(function () {
     Route::post('mentorship-sessions', [\App\Http\Controllers\MentorshipSessionController::class, 'adminStore'])->name('mentorship-sessions.store');
+    Route::post('entrepreneur/mentorship-sessions', [\App\Http\Controllers\MentorshipSessionController::class, 'entrepreneurStore'])->name('entrepreneur.mentorship-sessions.store');
     Route::resource('mentorship-sessions', \App\Http\Controllers\MentorshipSessionController::class)->except(['edit', 'update', 'destroy', 'store']);
     Route::post('mentorship-sessions/{mentorship_session}/confirm', [\App\Http\Controllers\MentorshipSessionController::class, 'confirm'])->name('mentorship-sessions.confirm');
     Route::post('mentorship-sessions/{mentorship_session}/cancel', [\App\Http\Controllers\MentorshipSessionController::class, 'cancel'])->name('mentorship-sessions.cancel');
