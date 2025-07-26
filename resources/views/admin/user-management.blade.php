@@ -110,9 +110,9 @@
     <!-- Pairings Tab -->
     <div x-show="tab === 'pairings'" class="mt-6">
         <div class="flex justify-between items-center mb-4">
-            <h2 class="text-xl font-bold text-gray-800">User Pairings</h2>
-            <a href="{{ route('admin.pairings.create') }}" class="bg-[#b81d8f] text-white px-4 py-2 rounded-lg shadow hover:bg-[#a01a7d] transition flex items-center">
-                <i class="bi bi-plus-circle mr-2"></i> Create New Pairing
+            <h3 class="text-lg font-medium text-gray-900">Mentorship Pairings</h3>
+            <a href="{{ route('admin.pairings.create') }}" class="bg-purple-600 text-white px-4 py-2 rounded-lg hover:bg-purple-700 transition">
+                <i class="bi bi-plus-circle mr-2"></i>Create Pairing
             </a>
         </div>
         
@@ -120,12 +120,12 @@
             <table class="min-w-full divide-y divide-gray-200">
                 <thead class="bg-gray-50">
                     <tr>
-                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Pairing Type</th>
-                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">User One</th>
-                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">User Two</th>
-                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Created</th>
-                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Mentorship Agreement</th>
-                        <th class="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">Actions</th>
+                        <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Mentor</th>
+                        <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Mentee</th>
+                        <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Status</th>
+                        <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Created</th>
+                        <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Mentorship Agreement</th>
+                        <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Actions</th>
                     </tr>
                 </thead>
                 <tbody class="bg-white divide-y divide-gray-200">
@@ -133,54 +133,42 @@
                         @foreach($pairings as $pairing)
                         <tr>
                             <td class="px-6 py-4 whitespace-nowrap">
-                                <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-purple-100 text-purple-800">{{ ucwords(str_replace('_', ' ', $pairing->pairing_type)) }}</span>
-                            </td>
-                            <td class="px-6 py-4 whitespace-nowrap">
                                 <div class="flex items-center">
-                                    <img class="h-8 w-8 rounded-full" src="https://via.placeholder.com/32" alt="">
-                                    <div class="ml-3">
+                                    <div class="flex-shrink-0 h-10 w-10">
+                                        <img class="h-10 w-10 rounded-full" src="https://via.placeholder.com/40" alt="">
+                                    </div>
+                                    <div class="ml-4">
                                         <div class="text-sm font-medium text-gray-900">{{ $pairing->userOne->name }}</div>
-                                        <div class="text-xs text-gray-500">{{ $pairing->userOne->email }}</div>
-                                        <div class="text-xs text-gray-400">{{ ucfirst($pairing->userOne->role) }}</div>
+                                        <div class="text-sm text-gray-500">{{ ucfirst($pairing->userOne->role) }}</div>
                                     </div>
                                 </div>
                             </td>
                             <td class="px-6 py-4 whitespace-nowrap">
                                 <div class="flex items-center">
-                                    <img class="h-8 w-8 rounded-full" src="https://via.placeholder.com/32" alt="">
-                                    <div class="ml-3">
+                                    <div class="flex-shrink-0 h-10 w-10">
+                                        <img class="h-10 w-10 rounded-full" src="https://via.placeholder.com/40" alt="">
+                                    </div>
+                                    <div class="ml-4">
                                         <div class="text-sm font-medium text-gray-900">{{ $pairing->userTwo->name }}</div>
-                                        <div class="text-xs text-gray-500">{{ $pairing->userTwo->email }}</div>
-                                        <div class="text-xs text-gray-400">{{ ucfirst($pairing->userTwo->role) }}</div>
+                                        <div class="text-sm text-gray-500">{{ ucfirst($pairing->userTwo->role) }}</div>
                                     </div>
                                 </div>
                             </td>
-                            <td class="px-6 py-4 text-sm text-gray-500">{{ $pairing->created_at->format('Y-m-d') }}</td>
-                            <td class="px-6 py-4 text-sm">
-                                @php
-                                    $agreementForm = \App\Models\MentorshipForm::where('form_type', 'mentorship_agreement')->first();
-                                    $mentor = $pairing->userOne->role === 'mentor' ? $pairing->userOne : $pairing->userTwo;
-                                    $mentee = $pairing->userOne->role === 'mentee' ? $pairing->userOne : $pairing->userTwo;
-                                    $mentorSubmission = $agreementForm ? \App\Models\MentorshipFormSubmission::where([
-                                        'pairing_id' => $pairing->id,
-                                        'mentorship_form_id' => $agreementForm->id,
-                                        'submitted_by' => $mentor->id,
-                                    ])->first() : null;
-                                    $menteeSubmission = $agreementForm ? \App\Models\MentorshipFormSubmission::where([
-                                        'pairing_id' => $pairing->id,
-                                        'mentorship_form_id' => $agreementForm->id,
-                                        'submitted_by' => $mentee->id,
-                                    ])->first() : null;
-                                @endphp
-                                <div>
-                                    <span class="font-semibold">Mentor:</span> {{ $mentorSubmission && $mentorSubmission->is_signed ? 'Signed' : 'Pending' }}<br>
-                                    <span class="font-semibold">Mentee:</span> {{ $menteeSubmission && $menteeSubmission->is_signed ? 'Signed' : 'Pending' }}
-                                </div>
+                            <td class="px-6 py-4 whitespace-nowrap">
+                                <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-green-100 text-green-800">Active</span>
                             </td>
-                            <td class="px-6 py-4 text-right text-sm font-medium">
-                                <form action="{{ route('admin.pairings.destroy', $pairing->id) }}" method="POST" onsubmit="return confirm('Are you sure you want to unpair these users?');">
+                            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                                {{ $pairing->created_at->format('M d, Y') }}
+                            </td>
+                            <td class="px-6 py-4 whitespace-nowrap">
+                                <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-yellow-100 text-yellow-800">Pending</span>
+                            </td>
+                            <td class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
+                                <form action="{{ route('admin.pairings.destroy', $pairing->id) }}" method="POST" class="inline-block">
                                     @csrf @method('DELETE')
-                                    <button type="submit" class="text-red-600 hover:text-red-900"><i class="bi bi-x-circle"></i> Unpair</button>
+                                    <button type="submit" class="text-red-600 hover:text-red-900">
+                                        <i class="bi bi-trash"></i> Remove
+                                    </button>
                                 </form>
                             </td>
                         </tr>
@@ -198,26 +186,96 @@
     
     <!-- Startup Profiles Tab -->
     <div x-show="tab === 'startup-profiles'" class="mt-6">
-        <table border="1" style="width:100%; background: #fff;">
-            <thead>
-                <tr>
-                    <th>ID</th>
-                    <th>Name</th>
-                    <th>Founder</th>
-                    <th>Status</th>
-                </tr>
-            </thead>
-            <tbody>
-                @foreach($startups as $startup)
-                    <tr>
-                        <td>{{ $startup->id }}</td>
-                        <td>{{ $startup->name }}</td>
-                        <td>{{ $startup->founder->name ?? 'Unknown' }}</td>
-                        <td>{{ $startup->status }}</td>
-                    </tr>
-                @endforeach
-            </tbody>
-        </table>
+        <!-- Debug Info -->
+        <div class="mb-4 p-4 bg-blue-50 border border-blue-200 rounded-lg">
+            <h4 class="font-semibold text-blue-800 mb-2">Debug Information:</h4>
+            <p class="text-sm text-blue-700">Total Startups: {{ $startups->count() }}</p>
+            <p class="text-sm text-blue-700">Startup IDs: {{ $startups->pluck('id')->join(', ') }}</p>
+            <p class="text-sm text-blue-700">Startup Names: {{ $startups->pluck('name')->join(', ') }}</p>
+        </div>
+        
+        @if($startups->count() > 0)
+            <div class="overflow-x-auto">
+                <table class="min-w-full divide-y divide-gray-200">
+                    <thead class="bg-gray-50">
+                        <tr>
+                            <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Startup</th>
+                            <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Founder</th>
+                            <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Sector</th>
+                            <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Status</th>
+                            <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Created</th>
+                            <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody class="bg-white divide-y divide-gray-200">
+                        @foreach($startups as $startup)
+                        <tr>
+                            <td class="px-6 py-4 whitespace-nowrap">
+                                <div class="flex items-center">
+                                    <div class="flex-shrink-0 h-10 w-10">
+                                        @if($startup->logo)
+                                            <img class="h-10 w-10 rounded-full" src="{{ asset('storage/' . $startup->logo) }}" alt="{{ $startup->name }}">
+                                        @else
+                                            <div class="h-10 w-10 rounded-full bg-gray-300 flex items-center justify-center">
+                                                <i class="bi bi-building text-gray-600"></i>
+                                            </div>
+                                        @endif
+                                    </div>
+                                    <div class="ml-4">
+                                        <div class="text-sm font-medium text-gray-900">{{ $startup->name }}</div>
+                                        <div class="text-sm text-gray-500">{{ $startup->tagline ?? 'No tagline' }}</div>
+                                        <div class="text-xs text-gray-400">{{ $startup->website ?? 'No website' }}</div>
+                                    </div>
+                                </div>
+                            </td>
+                            <td class="px-6 py-4 whitespace-nowrap">
+                                <div class="text-sm text-gray-900">{{ $startup->founder->name ?? 'Unknown' }}</div>
+                                <div class="text-sm text-gray-500">{{ $startup->founder->email ?? 'No email' }}</div>
+                            </td>
+                            <td class="px-6 py-4 whitespace-nowrap">
+                                <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-blue-100 text-blue-800">
+                                    {{ $startup->sector ?? 'N/A' }}
+                                </span>
+                            </td>
+                            <td class="px-6 py-4 whitespace-nowrap">
+                                @if($startup->status === 'approved')
+                                    <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-green-100 text-green-800">Approved</span>
+                                @elseif($startup->status === 'pending')
+                                    <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-yellow-100 text-yellow-800">Pending</span>
+                                @elseif($startup->status === 'rejected')
+                                    <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-red-100 text-red-800">Rejected</span>
+                                @else
+                                    <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-gray-100 text-gray-800">{{ ucfirst($startup->status) }}</span>
+                                @endif
+                            </td>
+                            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                                {{ $startup->created_at->format('M d, Y') }}
+                            </td>
+                            <td class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium space-x-2">
+                                <a href="#" class="text-indigo-600 hover:text-indigo-900">
+                                    <i class="bi bi-eye"></i> View
+                                </a>
+                                @if($startup->status === 'pending')
+                                    <button class="text-green-600 hover:text-green-900">
+                                        <i class="bi bi-check-circle"></i> Approve
+                                    </button>
+                                    <button class="text-red-600 hover:text-red-900">
+                                        <i class="bi bi-x-circle"></i> Reject
+                                    </button>
+                                @endif
+                            </td>
+                        </tr>
+                        @endforeach
+                    </tbody>
+                </table>
+            </div>
+        @else
+            <div class="text-center py-12">
+                <i class="bi bi-building text-6xl text-gray-300 mb-4"></i>
+                <h3 class="text-lg font-medium text-gray-900 mb-2">No Startup Profiles</h3>
+                <p class="text-gray-500">No startup profiles have been submitted yet.</p>
+            </div>
+        @endif
     </div>
 </div>
 
