@@ -14,6 +14,7 @@ use App\Http\Controllers\IdeaController;
 use App\Http\Controllers\CommentController;
 use App\Http\Controllers\PitchController;
 use App\Http\Controllers\VoteController;
+use Illuminate\Http\Request;
 
 /*
 |--------------------------------------------------------------------------
@@ -582,6 +583,7 @@ Route::middleware(['auth'])->group(function () {
 
 // Investor startup profile access routes
 Route::middleware(['auth'])->group(function () {
+    Route::get('/investor/dashboard', [\App\Http\Controllers\InvestorController::class, 'dashboard'])->name('investor.dashboard');
     Route::post('/investor/startup/{startup}/request-access', [\App\Http\Controllers\InvestorController::class, 'requestAccess'])->name('investor.request_access');
     Route::get('/investor/startup-profiles', [\App\Http\Controllers\InvestorController::class, 'startupProfiles'])->name('investor.startup_profiles');
     Route::get('/investor/startup/{startup}', [\App\Http\Controllers\InvestorController::class, 'viewStartup'])->name('investor.view_startup');
@@ -630,3 +632,31 @@ Route::middleware(['auth', 'admin'])->group(function () {
     Route::post('/admin/startup-info-requests/{infoRequest}/approve', [\App\Http\Controllers\StartupInfoRequestController::class, 'approve'])->name('admin.startup-info-requests.approve');
     Route::post('/admin/startup-info-requests/{infoRequest}/reject', [\App\Http\Controllers\StartupInfoRequestController::class, 'reject'])->name('admin.startup-info-requests.reject');
 });
+
+// Debug route for testing file uploads (remove in production)
+Route::get('/test-upload', function () {
+    return view('test-upload');
+})->name('test.upload');
+
+Route::post('/test-upload', function (Request $request) {
+    \Log::info('Test upload started', [
+        'upload_max_filesize' => ini_get('upload_max_filesize'),
+        'post_max_size' => ini_get('post_max_size'),
+        'max_execution_time' => ini_get('max_execution_time'),
+        'memory_limit' => ini_get('memory_limit'),
+    ]);
+    
+    if ($request->hasFile('file')) {
+        try {
+            $file = $request->file('file');
+            $path = $file->store('test_uploads', 'public');
+            \Log::info('File uploaded successfully', ['path' => $path]);
+            return response()->json(['success' => true, 'path' => $path]);
+        } catch (\Exception $e) {
+            \Log::error('File upload failed', ['error' => $e->getMessage()]);
+            return response()->json(['success' => false, 'error' => $e->getMessage()], 500);
+        }
+    }
+    
+    return response()->json(['success' => false, 'error' => 'No file provided'], 400);
+})->name('test.upload.store');

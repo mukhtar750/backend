@@ -178,10 +178,16 @@
                 <i class="bi bi-geo-alt"></i> {{ $startup->headquarters_location ?? 'Location not specified' }}
             </div>
             <div class="flex gap-2 mt-auto">
-                @if($startup->hasInvestorAccess(Auth::id()))
+                @php
+                    $hasAccess = \App\Models\StartupInfoRequest::where('investor_id', Auth::id())
+                        ->where('startup_id', $startup->id)
+                        ->where('status', 'approved')
+                        ->exists();
+                @endphp
+                @if($hasAccess)
                     <a href="{{ route('investor.startup-profile', $startup->id) }}" class="bg-green-600 text-white px-4 py-2 rounded-lg font-medium flex-1 hover:bg-green-700 transition text-center">View Full Profile</a>
                 @else
-                    <form action="{{ route('startup.info-request.store', $startup->id) }}" method="POST" class="flex-1">
+                    <form action="{{ route('investor.request_access', $startup->id) }}" method="POST" class="flex-1">
                         @csrf
                         <button type="submit" class="w-full bg-green-600 text-white px-4 py-2 rounded-lg font-medium hover:bg-green-700 transition">Request More Info</button>
                     </form>

@@ -8,6 +8,7 @@ use Illuminate\Support\Facades\Auth;
 use App\Models\User;
 use App\Notifications\PracticePitchStatusNotification;
 use Illuminate\Support\Facades\Notification;
+use Illuminate\Support\Facades\Storage;
 
 class PracticePitchController extends Controller
 {
@@ -21,29 +22,63 @@ class PracticePitchController extends Controller
     // Entrepreneur: Submit a new pitch
     public function store(Request $request)
     {
-        $request->validate([
-            'title' => 'required|string|max:255',
-            'description' => 'nullable|string',
-            'file' => 'required|file|mimes:mp4,mp3,pdf|max:51200',
-            'feedback_requested' => 'nullable|boolean',
-        ]);
-        $file = $request->file('file');
-        $filePath = $file->store('practice_pitches', 'public');
-        $pitch = PracticePitch::create([
-            'user_id' => Auth::id(),
-            'title' => $request->title,
-            'description' => $request->description,
-            'file_path' => $filePath,
-            'file_type' => $file->getClientOriginalExtension(),
-            'feedback_requested' => $request->boolean('feedback_requested'),
-            'status' => 'pending',
-        ]);
+        try {
+            \Log::info('Practice pitch upload started', [
+                'user_id' => Auth::id(),
+                'file_size' => $request->file('file') ? $request->file('file')->getSize() : 'no file',
+                'upload_max_filesize' => ini_get('upload_max_filesize'),
+                'post_max_size' => ini_get('post_max_size'),
+            ]);
 
-        // Notify all admins/staff
-        $admins = User::whereIn('role', ['admin', 'staff'])->get();
-        Notification::send($admins, new PracticePitchStatusNotification($pitch, 'admin_new'));
+            $request->validate([
+                'title' => 'required|string|max:255',
+                'description' => 'nullable|string',
+                'file' => 'required|file|mimes:mp4,mp3,pdf|max:51200',
+                'feedback_requested' => 'nullable|boolean',
+            ]);
 
-        return redirect()->back()->with('success', 'Pitch submitted and pending admin approval.');
+            $file = $request->file('file');
+            
+            // Check if storage is working
+            if (!Storage::disk('public')->exists('practice_pitches')) {
+                Storage::disk('public')->makeDirectory('practice_pitches');
+            }
+            
+            $filePath = $file->store('practice_pitches', 'public');
+            
+            \Log::info('File stored successfully', ['path' => $filePath]);
+            
+            $pitch = PracticePitch::create([
+                'user_id' => Auth::id(),
+                'title' => $request->title,
+                'description' => $request->description,
+                'file_path' => $filePath,
+                'file_type' => $file->getClientOriginalExtension(),
+                'feedback_requested' => $request->boolean('feedback_requested'),
+                'status' => 'pending',
+            ]);
+
+            \Log::info('Practice pitch created', ['pitch_id' => $pitch->id]);
+
+            // Notify all admins/staff
+            $admins = User::whereIn('role', ['admin', 'staff'])->get();
+            Notification::send($admins, new PracticePitchStatusNotification($pitch, 'admin_new'));
+
+            return redirect()->back()->with('success', 'Pitch submitted and pending admin approval.');
+            
+        } catch (\Illuminate\Validation\ValidationException $e) {
+            \Log::error('Practice pitch validation failed', ['errors' => $e->errors()]);
+            throw $e;
+        } catch (\Exception $e) {
+            \Log::error('Practice pitch upload failed', [
+                'error' => $e->getMessage(),
+                'trace' => $e->getTraceAsString()
+            ]);
+            
+            return redirect()->back()
+                ->withInput()
+                ->withErrors(['file' => 'Upload failed: ' . $e->getMessage()]);
+        }
     }
 
     // Admin: List all pitches grouped by status
