@@ -427,6 +427,7 @@ Route::get('/register/mentee', [\App\Http\Controllers\MenteeRegisterController::
 Route::post('/register/mentee', [\App\Http\Controllers\MenteeRegisterController::class, 'register']);
 Route::get('/dashboard/mentee', [\App\Http\Controllers\AuthController::class, 'menteeDashboard'])->middleware(['auth'])->name('dashboard.mentee');
 
+
 // Mentorship Session Booking & Management
 Route::middleware(['auth'])->group(function () {
     Route::post('mentorship-sessions', [\App\Http\Controllers\MentorshipSessionController::class, 'adminStore'])->name('mentorship-sessions.store');
