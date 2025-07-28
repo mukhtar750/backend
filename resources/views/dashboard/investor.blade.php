@@ -18,11 +18,11 @@
             </div>
             <div class="bg-white/10 border border-white/30 rounded-xl p-5 flex flex-col items-center text-center hover:bg-white/20 transition">
                 <div class="text-sm mb-1">Upcoming Pitches</div>
-                <div class="text-2xl font-bold text-white">{{ $pitchesCount ?? 3 }} <span class="font-normal text-base">events</span></div>
+                <div class="text-2xl font-bold text-white"><!--real data-->{{ $pitchesCount ?? 3 }} <span class="font-normal text-base">events</span></div>
             </div>
             <div class="bg-white/10 border border-white/30 rounded-xl p-5 flex flex-col items-center text-center hover:bg-white/20 transition">
                 <div class="text-sm mb-1">Portfolio Value</div>
-                <div class="text-2xl font-bold text-white">{{ $portfolioValue ?? '$2.5M' }}</div>
+                <div class="text-2xl font-bold text-white">Coming Soon!</div>
             </div>
             <div class="bg-white/10 border border-white/30 rounded-xl p-5 flex flex-col items-center text-center hover:bg-white/20 transition">
                 <div class="text-sm mb-1">Success Rate</div>

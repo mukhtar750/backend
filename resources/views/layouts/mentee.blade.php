@@ -15,8 +15,9 @@
     <div class="flex h-screen bg-gray-100">
         <!-- Sidebar -->
         <div class="w-64 bg-[#b81d8f] text-white flex flex-col">
-            <div class="p-4 text-2xl font-bold border-b border-[#a01a7d]">
-                <i class="bi bi-person-badge-fill mr-2"></i> VR Portal
+            <div class="flex items-center justify-center mb-8 p-4">
+                <img src="{{ asset('images/logo.jpg') }}" alt="VR Portal Logo" class="h-10 w-10 rounded-full">
+                <h1 class="text-xl font-bold ml-3 text-white">VR Portal</h1>
             </div>
             <div class="p-4 text-sm border-b border-[#a01a7d] tracking-wide">
                 Mentee Panel
@@ -25,11 +26,11 @@
                 <a href="{{ route('dashboard.mentee') }}" class="flex items-center px-4 py-2 text-white hover:bg-[#a01a7d] rounded-lg font-medium"><i class="bi bi-grid-fill mr-3"></i> Dashboard</a>
                 <a href="{{ route('mentorship.forms.index') }}" class="flex items-center px-4 py-2 text-white hover:bg-[#a01a7d] rounded-lg font-medium"><i class="bi bi-ui-checks-grid mr-3"></i> Mentorship Forms</a>
                 <a href="{{ route('dashboard.mentee') }}" class="flex items-center px-4 py-2 text-white hover:bg-[#a01a7d] rounded-lg font-medium"><i class="bi bi-calendar-check mr-3"></i> My Sessions</a>
-                <a href="{{ route('entrepreneur.pitch') }}" class="flex items-center px-4 py-2 text-white hover:bg-[#a01a7d] rounded-lg font-medium"><i class="bi bi-folder2-open mr-3"></i> Resources</a>
+                <a href="{{ route('dashboard.mentee.resources') }}" class="flex items-center px-4 py-2 text-white hover:bg-[#a01a7d] rounded-lg font-medium"><i class="bi bi-folder2-open mr-3"></i> Resources</a>
                 <a href="{{ route('messages.index') }}" class="flex items-center gap-3 px-4 py-2 rounded-lg hover:bg-purple-700 {{ $route == 'messages.index' ? 'bg-white text-purple-800 font-semibold shadow-sm' : '' }}">
                     <i class="bi bi-chat-dots"></i> Messages
                 </a>
-                <a href="{{ route('entrepreneur.feedback') }}" class="flex items-center px-4 py-2 text-white hover:bg-[#a01a7d] rounded-lg font-medium"><i class="bi bi-chat-dots-fill mr-3"></i> Feedback</a>
+                <a href="{{ route('dashboard.mentee.feedback') }}" class="flex items-center px-4 py-2 text-white hover:bg-[#a01a7d] rounded-lg font-medium"><i class="bi bi-chat-dots-fill mr-3"></i> Feedback</a>
                 <a href="{{ route('ideas.index') }}" class="flex items-center px-4 py-2 text-white hover:bg-yellow-400 hover:text-[#b81d8f] rounded-lg font-medium {{ request()->routeIs('ideas.*') ? 'bg-white text-[#b81d8f] font-semibold shadow-sm' : '' }}">
                     <i class="bi bi-lightbulb mr-3"></i> Ideas Bank
                 </a>

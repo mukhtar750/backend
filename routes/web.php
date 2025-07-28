@@ -222,7 +222,13 @@ Route::get('/dashboard/investor', function () {
         ->with('founder')
         ->orderBy('created_at', 'desc')
         ->get();
-    return view('dashboard.investor', compact('approvedStartups'));
+    $startupsCount = \App\Models\Startup::where('status', 'approved')->count();
+    $pitchEvents = \App\Models\PitchEvent::where('status', 'published')->count();
+    $pitchEventsUpcoming = \App\Models\PitchEvent::where('status', 'published')
+        ->where('event_date', '>=', now())
+        ->count();
+    $pitchesCount = $pitchEventsUpcoming;
+    return view('dashboard.investor', compact('approvedStartups', 'startupsCount', 'pitchesCount', 'pitchEvents', 'pitchEventsUpcoming'));
 })->middleware('auth')->name('dashboard.investor');
 Route::get('/dashboard/bdsp', [\App\Http\Controllers\BDSPController::class, 'dashboard'])->middleware('auth')->name('dashboard.bdsp');
 Route::get('/dashboard/entrepreneur', function () {
@@ -690,3 +696,59 @@ Route::post('/ideas/{idea}/interests', [\App\Http\Controllers\IdeaInterestContro
 Route::delete('/ideas/{idea}/interests', [\App\Http\Controllers\IdeaInterestController::class, 'destroy'])->name('ideas.interests.destroy');
 Route::patch('/idea-interests/{interest}/accept', [\App\Http\Controllers\IdeaInterestController::class, 'accept'])->name('idea-interests.accept');
 Route::patch('/idea-interests/{interest}/decline', [\App\Http\Controllers\IdeaInterestController::class, 'decline'])->name('idea-interests.decline');
+
+// Mentee Resources Page
+Route::get('/dashboard/mentee/resources', function () {
+    $mentee = auth()->user();
+    // Find mentor pairing
+    $mentorPairing = \App\Models\Pairing::where('pairing_type', 'mentor_mentee')
+        ->where(function ($q) use ($mentee) {
+            $q->where('user_one_id', $mentee->id)->orWhere('user_two_id', $mentee->id);
+        })
+        ->with(['userOne', 'userTwo'])
+        ->first();
+    $mentor = null;
+    if ($mentorPairing) {
+        $mentor = $mentorPairing->user_one_id == $mentee->id ? $mentorPairing->userTwo : $mentorPairing->userOne;
+    }
+    // Get resources uploaded by the mentee and their mentor
+    $uploaderIds = [$mentee->id];
+    if ($mentor) {
+        $uploaderIds[] = $mentor->id;
+    }
+    $learningResources = \App\Models\Resource::whereIn('bdsp_id', $uploaderIds)
+        ->orderByDesc('created_at')
+        ->get();
+    return view('dashboard.mentee-resources', compact('learningResources'));
+})->middleware('auth')->name('dashboard.mentee.resources');
+
+// Mentee Feedback Page
+Route::get('/dashboard/mentee/feedback', function () {
+    $user = auth()->user();
+    
+    // Get paired users (mentors, bdsp, etc.)
+    $pairings = \App\Models\Pairing::where(function($q) use ($user) {
+        $q->where('user_one_id', $user->id)->orWhere('user_two_id', $user->id);
+    })->get();
+    $pairedUsers = $pairings->map(function($pairing) use ($user) {
+        return $pairing->user_one_id == $user->id ? $pairing->userTwo : $pairing->userOne;
+    });
+    
+    // Feedback given by the mentee
+    $feedbackGiven = \App\Models\Feedback::where('user_id', $user->id)->latest()->get();
+    
+    // Feedback received (if mentee has received feedback)
+    $feedbackReceived = \App\Models\Feedback::where('target_type', $user->role)
+        ->where('target_id', $user->id)
+        ->latest()->get();
+    
+    // Stats
+    $stats = [
+        'given_count' => $feedbackGiven->count(),
+        'received_count' => $feedbackReceived->count(),
+        'avg_rating_given' => $feedbackGiven->avg('rating'),
+        'avg_rating_received' => $feedbackReceived->avg('rating'),
+    ];
+    
+    return view('dashboard.mentee-feedback', compact('pairedUsers', 'feedbackGiven', 'feedbackReceived', 'stats'));
+})->middleware('auth')->name('dashboard.mentee.feedback');

@@ -74,8 +74,9 @@
                     <i class="bi bi-person text-gray-600"></i>
                 </div>
                 <div>
-                    <div class="font-semibold">Sarah Admin</div>
-                    <div class="text-sm text-gray-300">admin@awn.org</div>
+                    <!--get user name from session -->
+                    <div class="font-semibold">{{ Auth::user()->name }}</div>
+                    <div class="text-sm text-gray-300">{{ Auth::user()->email }}</div>
                 </div>
             </div>
             <a href="{{ route('admin.settings') }}" class="flex items-center gap-3 px-4 py-2 text-gray-200 hover:bg-purple-700 rounded-md">
@@ -112,8 +113,8 @@
                         <i class="bi bi-person text-gray-600 text-sm"></i>
                     </div>
                     <div>
-                        <div class="font-semibold text-gray-800 text-sm">Sarah Admin</div>
-                        <div class="text-xs text-gray-500">Admin</div>
+                        <div class="font-semibold text-gray-800 text-sm">{{ Auth::user()->name }}</div>
+                        
                     </div>
                 </div>
             </div>

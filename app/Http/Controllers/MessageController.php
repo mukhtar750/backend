@@ -49,6 +49,7 @@ class MessageController extends Controller
             'entrepreneur' => 'layouts.entrepreneur',
             'bdsp' => 'layouts.bdsp',
             'mentor' => 'layouts.mentor',
+            'mentee' => 'layouts.mentee',
             'admin' => 'admin.layouts.admin',
             default => 'layouts.app',
         };

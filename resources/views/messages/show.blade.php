@@ -39,7 +39,7 @@
                             @if($message->isImage())
                                 <img src="{{ asset('storage/'.$message->file_path) }}" alt="Image" class="rounded mb-2 max-h-40">
                             @elseif($message->isFile())
-                                <a href="{{ route('messages.downloadFile', $message->id) }}" class="text-blue-600 underline" target="_blank">
+                                <a href="{{ route('messages.download', $message->id) }}" class="text-blue-600 underline" target="_blank">
                                     {{ $message->file_name }} ({{ $message->getFileSizeFormatted() }})
                                 </a>
                             @endif

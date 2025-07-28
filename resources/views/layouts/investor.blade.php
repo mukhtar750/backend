@@ -86,7 +86,7 @@
                     <div class="flex items-center">
                         <img class="h-8 w-8 rounded-full mr-2" src="https://i.pravatar.cc/32" alt="Grace Investor">
                         <div>
-                            <div class="font-semibold text-gray-800">Grace Investor</div>
+                            <div class="font-semibold text-gray-800">{{ Auth::user()->name }}</div>
                             <div class="text-sm text-gray-500">Investor</div>
                         </div>
                     </div>

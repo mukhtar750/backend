@@ -14,6 +14,7 @@ return new class extends Migration
         Schema::table('users', function (Blueprint $table) {
             $table->string('role')->nullable()->after('email');
             $table->boolean('is_approved')->default(false)->after('role');
+            $table->string('status')->default('active')->after('is_approved');
             // Investor fields
             $table->string('phone')->nullable()->after('is_approved');
             $table->string('type_of_investor')->nullable()->after('phone');
@@ -43,7 +44,7 @@ return new class extends Migration
     public function down(): void
     {
         Schema::table('users', function (Blueprint $table) {
-            $table->dropColumn(['role', 'is_approved', 'phone', 'type_of_investor', 'interest_areas', 'company', 'investor_linkedin', 'services_provided', 'years_of_experience', 'organization', 'certifications', 'bdsp_linkedin', 'business_name', 'sector', 'cac_number', 'funding_stage', 'website', 'entrepreneur_phone', 'entrepreneur_linkedin']);
+            $table->dropColumn(['role', 'is_approved', 'status', 'phone', 'type_of_investor', 'interest_areas', 'company', 'investor_linkedin', 'services_provided', 'years_of_experience', 'organization', 'certifications', 'bdsp_linkedin', 'business_name', 'sector', 'cac_number', 'funding_stage', 'website', 'entrepreneur_phone', 'entrepreneur_linkedin']);
         });
     }
 };

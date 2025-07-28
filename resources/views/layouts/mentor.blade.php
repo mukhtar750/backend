@@ -7,6 +7,9 @@
     <meta name="csrf-token" content="{{ csrf_token() }}">
     <script src="https://cdn.tailwindcss.com"></script>
     <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"></script>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css">
+    <!-- FontAwesome CDN -->
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css" rel="stylesheet" type="text/css">
     @stack('styles')
 </head>
 <body class="min-h-screen flex">
@@ -22,8 +25,8 @@
     <aside id="sidebar" class="sidebar relative w-64 min-h-screen h-auto bg-[#6c3483] text-white shadow-md z-20 flex flex-col flex-shrink-0">
         <div class="p-6 flex-1 flex flex-col">
             <div class="flex items-center justify-center mb-8">
-                <img src="{{ asset('images/avatar-placeholder.png') }}" alt="Aryaas Logo" class="h-10 w-10">
-                <h1 class="text-xl font-bold ml-3 text-white">Aryaas</h1>
+                <img src="{{ asset('images/logo.jpg') }}" alt="VR Portal Logo" class="h-10 w-10 rounded-full">
+                <h1 class="text-xl font-bold ml-3 text-white">VR Portal</h1>
             </div>
             <nav class="mt-8 space-y-1 flex-1">
                 <a href="{{ route('mentor.dashboard') }}" class="sidebar-link flex items-center px-4 py-3 rounded-lg transition-all duration-300 {{ request()->routeIs('mentor.dashboard') ? 'bg-white text-[#6c3483] font-semibold shadow-sm' : 'hover:bg-purple-700' }}">
@@ -77,7 +80,7 @@
                 <img class="h-10 w-10 rounded-full mr-3 border border-white" src="{{ Auth::user()->profile_photo_url ?? asset('images/avatar-placeholder.png') }}" alt="{{ Auth::user()->name }}">
                 <div>
                     <div class="font-semibold">{{ Auth::user()->name }}</div>
-                    <div class="text-sm text-purple-100">{{ Auth::user()->email }}</div>
+                    <div class="text-sm text-purple-100 truncate max-w-[140px]" title="{{ Auth::user()->email }}">{{ Auth::user()->email }}</div>
                 </div>
             </div>
             <a href="{{ route('mentor.settings') }}" class="flex items-center px-4 py-2 text-white hover:bg-[#512e5f] rounded-lg transition-all font-medium">

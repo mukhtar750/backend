@@ -9,7 +9,7 @@
         </div>
         <a href="{{ route('investor.proposals.create') }}" 
            class="bg-blue-600 hover:bg-blue-700 text-white px-6 py-3 rounded-lg font-semibold transition duration-200">
-            <i class="fas fa-plus mr-2"></i>New Proposal
+            <i class="bi bi-plus-lg mr-2"></i>New Proposal
         </a>
     </div>
 
@@ -123,7 +123,7 @@
     @else
         <div class="text-center py-12">
             <div class="mx-auto h-12 w-12 text-gray-400">
-                <i class="fas fa-lightbulb text-4xl"></i>
+                <i class="bi bi-lightbulb text-4xl"></i>
             </div>
             <h3 class="mt-2 text-sm font-medium text-gray-900">No proposals yet</h3>
             <p class="mt-1 text-sm text-gray-500">
@@ -132,7 +132,7 @@
             <div class="mt-6">
                 <a href="{{ route('investor.proposals.create') }}" 
                    class="inline-flex items-center px-4 py-2 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-blue-600 hover:bg-blue-700">
-                    <i class="fas fa-plus mr-2"></i>
+                    <i class="bi bi-plus-lg mr-2"></i>
                     Create Your First Proposal
                 </a>
             </div>
@@ -146,7 +146,7 @@
                 <div class="flex items-center">
                     <div class="flex-shrink-0">
                         <div class="w-8 h-8 bg-yellow-100 rounded-full flex items-center justify-center">
-                            <i class="fas fa-clock text-yellow-600"></i>
+                            <i class="bi bi-clock text-yellow-600"></i>
                         </div>
                     </div>
                     <div class="ml-4">
@@ -162,7 +162,7 @@
                 <div class="flex items-center">
                     <div class="flex-shrink-0">
                         <div class="w-8 h-8 bg-green-100 rounded-full flex items-center justify-center">
-                            <i class="fas fa-check text-green-600"></i>
+                            <i class="bi bi-check-circle text-green-600"></i>
                         </div>
                     </div>
                     <div class="ml-4">
@@ -178,7 +178,7 @@
                 <div class="flex items-center">
                     <div class="flex-shrink-0">
                         <div class="w-8 h-8 bg-blue-100 rounded-full flex items-center justify-center">
-                            <i class="fas fa-edit text-blue-600"></i>
+                            <i class="bi bi-pencil-square text-blue-600"></i>
                         </div>
                     </div>
                     <div class="ml-4">
@@ -194,7 +194,7 @@
                 <div class="flex items-center">
                     <div class="flex-shrink-0">
                         <div class="w-8 h-8 bg-red-100 rounded-full flex items-center justify-center">
-                            <i class="fas fa-times text-red-600"></i>
+                            <i class="bi bi-x-circle text-red-600"></i>
                         </div>
                     </div>
                     <div class="ml-4">

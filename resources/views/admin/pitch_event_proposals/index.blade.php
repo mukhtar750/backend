@@ -27,7 +27,7 @@
             <div class="flex items-center">
                 <div class="flex-shrink-0">
                     <div class="w-8 h-8 bg-yellow-100 rounded-full flex items-center justify-center">
-                        <i class="fas fa-clock text-yellow-600"></i>
+                        <i class="bi bi-clock text-yellow-600"></i>
                     </div>
                 </div>
                 <div class="ml-4">
@@ -41,7 +41,7 @@
             <div class="flex items-center">
                 <div class="flex-shrink-0">
                     <div class="w-8 h-8 bg-green-100 rounded-full flex items-center justify-center">
-                        <i class="fas fa-check text-green-600"></i>
+                        <i class="bi bi-check-circle text-green-600"></i>
                     </div>
                 </div>
                 <div class="ml-4">
@@ -55,7 +55,7 @@
             <div class="flex items-center">
                 <div class="flex-shrink-0">
                     <div class="w-8 h-8 bg-blue-100 rounded-full flex items-center justify-center">
-                        <i class="fas fa-edit text-blue-600"></i>
+                        <i class="bi bi-pencil-square text-blue-600"></i>
                     </div>
                 </div>
                 <div class="ml-4">
@@ -69,7 +69,7 @@
             <div class="flex items-center">
                 <div class="flex-shrink-0">
                     <div class="w-8 h-8 bg-red-100 rounded-full flex items-center justify-center">
-                        <i class="fas fa-times text-red-600"></i>
+                        <i class="bi bi-x-circle text-red-600"></i>
                     </div>
                 </div>
                 <div class="ml-4">
