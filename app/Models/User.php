@@ -205,6 +205,11 @@ class User extends Authenticatable
         return $this->hasMany(Vote::class);
     }
 
+    public function ideaInterests()
+    {
+        return $this->hasMany(IdeaInterest::class);
+    }
+
     public function taskSubmissions()
     {
         return $this->hasMany(TaskSubmission::class, 'user_id');
@@ -228,5 +233,16 @@ class User extends Authenticatable
     public function approvedStartupInfoRequests()
     {
         return $this->hasMany(StartupInfoRequest::class, 'investor_id')->where('status', 'approved');
+    }
+
+    // Pitch Event Proposals relationships
+    public function pitchEventProposals()
+    {
+        return $this->hasMany(PitchEventProposal::class, 'investor_id');
+    }
+
+    public function reviewedProposals()
+    {
+        return $this->hasMany(PitchEventProposal::class, 'reviewed_by');
     }
 }

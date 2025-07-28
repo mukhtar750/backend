@@ -10,7 +10,27 @@ class Idea extends Model
     use SoftDeletes;
 
     protected $fillable = [
-        'title', 'description', 'user_id', 'status', 'upvotes', 'downvotes'
+        'title', 
+        'description',
+        'problem_statement',
+        'proposed_solution',
+        'sector',
+        'target_beneficiaries',
+        'urgency_level',
+        'related_sdgs',
+        'tags',
+        'user_id', 
+        'status', 
+        'upvotes', 
+        'downvotes',
+        'interest_count',
+        'assigned_stakeholders',
+        'admin_notes'
+    ];
+
+    protected $casts = [
+        'related_sdgs' => 'array',
+        'assigned_stakeholders' => 'array',
     ];
 
     public function user()
@@ -32,4 +52,16 @@ class Idea extends Model
     {
         return $this->hasMany(Vote::class);
     }
+
+    public function interests()
+    {
+        return $this->hasMany(IdeaInterest::class);
+    }
+
+    // Helper methods for status
+    public function isUnderReview() { return $this->status === 'under_review'; }
+    public function isSelectedForIncubation() { return $this->status === 'selected_for_incubation'; }
+    public function isInDevelopment() { return $this->status === 'in_development'; }
+    public function isPiloted() { return $this->status === 'piloted'; }
+    public function isArchived() { return $this->status === 'archived'; }
 }

@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\User;
+use App\Models\PitchEventProposal;
 use App\Notifications\AccountApprovedNotification;
 use App\Notifications\AccountRejectedNotification;
 use Illuminate\Http\Request;
@@ -43,8 +44,16 @@ class AdminController extends Controller
             'resources' => \App\Models\Resource::where('is_approved', false)->count(),
             'content' => \App\Models\Content::where('status', 'pending')->count(),
             'feedback' => \App\Models\Feedback::where('status', 'pending')->count(),
+            'proposals' => \App\Models\PitchEventProposal::where('status', 'pending')->count(),
         ];
         $totalPending = array_sum($approvalCounts);
+
+        // Get pending proposals for dashboard
+        $pendingProposals = \App\Models\PitchEventProposal::with('investor')
+            ->where('status', 'pending')
+            ->orderBy('created_at', 'desc')
+            ->take(3)
+            ->get();
 
         // Combine all pending items for the dashboard
         $pendingApprovals = collect();
@@ -113,14 +122,31 @@ class AdminController extends Controller
             ]);
         }
 
+        // Add proposals
+        foreach ($pendingProposals as $proposal) {
+            $pendingApprovals->push([
+                'type' => 'proposal',
+                'item' => $proposal,
+                'title' => $proposal->title,
+                'subtitle' => $proposal->investor ? $proposal->investor->name : 'Unknown Investor',
+                'description' => Str::limit($proposal->description, 60),
+                'time' => $proposal->created_at->diffForHumans(),
+                'approve_route' => route('admin.proposals.show', $proposal->id),
+                'review_route' => route('admin.proposals.index'),
+                'approve_method' => 'GET',
+                'approve_text' => 'Review Proposal'
+            ]);
+        }
+
         // Sort by priority and creation time (newest first)
         $pendingApprovals = $pendingApprovals->sortBy(function ($item) {
-            // Priority: 1=users (highest), 2=resources, 3=content, 4=feedback (lowest)
+            // Priority: 1=users (highest), 2=resources, 3=content, 4=feedback, 5=proposals (lowest)
             $priority = [
                 'user' => 1,
                 'resource' => 2,
                 'content' => 3,
-                'feedback' => 4
+                'feedback' => 4,
+                'proposal' => 5
             ];
             return $priority[$item['type']] . '-' . $item['time'];
         })->take(5);
@@ -550,8 +576,175 @@ class AdminController extends Controller
     public function rejectContent($id)
     {
         $content = Content::findOrFail($id);
-        $content->status = 'rejected';
-        $content->save();
+        $content->update(['status' => 'rejected']);
         return back()->with('success', 'Content rejected successfully.');
+    }
+
+    // Pitch Event Proposals Management
+    public function proposals(Request $request)
+    {
+        $query = \App\Models\PitchEventProposal::with(['investor', 'reviewer'])
+            ->orderBy('created_at', 'desc');
+
+        // Filter by status
+        if ($request->has('status') && $request->status !== '') {
+            $query->where('status', $request->status);
+        }
+
+        // Filter by event type
+        if ($request->has('event_type') && $request->event_type !== '') {
+            $query->where('event_type', $request->event_type);
+        }
+
+        // Filter by target sector
+        if ($request->has('target_sector') && $request->target_sector !== '') {
+            $query->where('target_sector', $request->target_sector);
+        }
+
+        $proposals = $query->paginate(15);
+
+        // Get counts for different statuses
+        $counts = [
+            'pending' => \App\Models\PitchEventProposal::where('status', 'pending')->count(),
+            'approved' => \App\Models\PitchEventProposal::where('status', 'approved')->count(),
+            'rejected' => \App\Models\PitchEventProposal::where('status', 'rejected')->count(),
+            'requested_changes' => \App\Models\PitchEventProposal::where('status', 'requested_changes')->count(),
+        ];
+
+        return view('admin.pitch_event_proposals.index', compact('proposals', 'counts'));
+    }
+
+    public function showProposal(\App\Models\PitchEventProposal $proposal)
+    {
+        $proposal->load(['investor', 'reviewer', 'approvedEvent']);
+        
+        return view('admin.pitch_event_proposals.show', compact('proposal'));
+    }
+
+    public function approveProposal(Request $request, \App\Models\PitchEventProposal $proposal)
+    {
+        $request->validate([
+            'admin_feedback' => 'nullable|string|max:1000',
+        ]);
+
+        try {
+            // Create the pitch event from the proposal
+            $event = PitchEvent::create([
+                'title' => $proposal->title,
+                'description' => $proposal->description,
+                'date_time' => $proposal->proposed_date ? 
+                    $proposal->proposed_date->setTimeFrom($proposal->proposed_time ?? now()) : 
+                    now()->addDays(30),
+                'location' => $proposal->proposed_location ?? 'TBD',
+                'max_participants' => $proposal->max_participants,
+                'status' => 'published',
+                'event_type' => $proposal->event_type,
+                'target_sector' => $proposal->target_sector,
+                'target_stage' => $proposal->target_stage,
+                'is_virtual' => $proposal->is_virtual,
+                'virtual_platform' => $proposal->virtual_platform,
+                'additional_info' => $proposal->additional_requirements,
+                'created_by' => auth()->id(),
+            ]);
+
+            // Update the proposal
+            $proposal->update([
+                'status' => 'approved',
+                'admin_feedback' => $request->admin_feedback,
+                'reviewed_by' => auth()->id(),
+                'reviewed_at' => now(),
+                'approved_event_id' => $event->id,
+            ]);
+
+            // Notify the investor
+            $proposal->investor->notify(new \App\Notifications\ProposalApprovedNotification($proposal));
+
+            \Log::info('Pitch event proposal approved', [
+                'proposal_id' => $proposal->id,
+                'event_id' => $event->id,
+                'admin_id' => auth()->id(),
+            ]);
+
+            return redirect()->route('admin.proposals.index')
+                ->with('success', 'Proposal approved and event created successfully.');
+
+        } catch (\Exception $e) {
+            \Log::error('Failed to approve proposal', [
+                'proposal_id' => $proposal->id,
+                'error' => $e->getMessage(),
+            ]);
+
+            return back()->with('error', 'Failed to approve proposal. Please try again.');
+        }
+    }
+
+    public function rejectProposal(Request $request, \App\Models\PitchEventProposal $proposal)
+    {
+        $request->validate([
+            'admin_feedback' => 'required|string|max:1000',
+        ]);
+
+        try {
+            $proposal->update([
+                'status' => 'rejected',
+                'admin_feedback' => $request->admin_feedback,
+                'reviewed_by' => auth()->id(),
+                'reviewed_at' => now(),
+            ]);
+
+            // Notify the investor
+            $proposal->investor->notify(new \App\Notifications\ProposalRejectedNotification($proposal));
+
+            \Log::info('Pitch event proposal rejected', [
+                'proposal_id' => $proposal->id,
+                'admin_id' => auth()->id(),
+            ]);
+
+            return redirect()->route('admin.proposals.index')
+                ->with('success', 'Proposal rejected successfully.');
+
+        } catch (\Exception $e) {
+            \Log::error('Failed to reject proposal', [
+                'proposal_id' => $proposal->id,
+                'error' => $e->getMessage(),
+            ]);
+
+            return back()->with('error', 'Failed to reject proposal. Please try again.');
+        }
+    }
+
+    public function requestChanges(Request $request, \App\Models\PitchEventProposal $proposal)
+    {
+        $request->validate([
+            'admin_feedback' => 'required|string|max:1000',
+        ]);
+
+        try {
+            $proposal->update([
+                'status' => 'requested_changes',
+                'admin_feedback' => $request->admin_feedback,
+                'reviewed_by' => auth()->id(),
+                'reviewed_at' => now(),
+            ]);
+
+            // Notify the investor
+            $proposal->investor->notify(new \App\Notifications\ProposalChangesRequestedNotification($proposal));
+
+            \Log::info('Pitch event proposal changes requested', [
+                'proposal_id' => $proposal->id,
+                'admin_id' => auth()->id(),
+            ]);
+
+            return redirect()->route('admin.proposals.index')
+                ->with('success', 'Changes requested for proposal successfully.');
+
+        } catch (\Exception $e) {
+            \Log::error('Failed to request changes for proposal', [
+                'proposal_id' => $proposal->id,
+                'error' => $e->getMessage(),
+            ]);
+
+            return back()->with('error', 'Failed to request changes. Please try again.');
+        }
     }
 }

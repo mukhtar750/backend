@@ -311,6 +311,17 @@
                 <button @click="tab = 'upcoming'" :class="tab === 'upcoming' ? 'border-[#b81d8f] text-[#b81d8f] border-b-2' : 'text-gray-500 border-transparent'" class="whitespace-nowrap py-4 px-1 font-medium text-sm focus:outline-none">Upcoming ({{ $events->where('status', 'published')->where('event_date', '>', now())->count() }})</button>
                 <button @click="tab = 'live'" :class="tab === 'live' ? 'border-[#b81d8f] text-[#b81d8f] border-b-2' : 'text-gray-500 border-transparent'" class="whitespace-nowrap py-4 px-1 font-medium text-sm focus:outline-none">Live ({{ $events->where('status', 'live')->count() }})</button>
                 <button @click="tab = 'completed'" :class="tab === 'completed' ? 'border-[#b81d8f] text-[#b81d8f] border-b-2' : 'text-gray-500 border-transparent'" class="whitespace-nowrap py-4 px-1 font-medium text-sm focus:outline-none">Completed ({{ $events->where('status', 'completed')->count() }})</button>
+                <a href="{{ route('admin.proposals.index') }}" class="whitespace-nowrap py-4 px-1 font-medium text-sm text-gray-500 hover:text-[#b81d8f] border-transparent border-b-2 hover:border-[#b81d8f] focus:outline-none">
+                    Proposals 
+                    @php
+                        $pendingProposals = \App\Models\PitchEventProposal::where('status', 'pending')->count();
+                    @endphp
+                    @if($pendingProposals > 0)
+                        <span class="ml-1 inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium bg-yellow-100 text-yellow-800">
+                            {{ $pendingProposals }}
+                        </span>
+                    @endif
+                </a>
             </nav>
         </div>
 

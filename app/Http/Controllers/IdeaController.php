@@ -36,11 +36,29 @@ class IdeaController extends Controller
     {
         $data = $request->validate([
             'title' => 'required|string|max:255',
-            'description' => 'required|string',
+            'problem_statement' => 'required|string',
+            'proposed_solution' => 'nullable|string',
+            'sector' => 'nullable|string|max:255',
+            'target_beneficiaries' => 'nullable|string',
+            'urgency_level' => 'required|in:low,medium,high',
+            'related_sdgs' => 'nullable|array',
+            'related_sdgs.*' => 'integer|min:1|max:17',
+            'tags' => 'nullable|string|max:500',
         ]);
+        
         $data['user_id'] = Auth::id();
+        $data['status'] = 'open'; // Default status for new ideas
+        
+        // Handle description field (required by original table structure)
+        $data['description'] = $data['problem_statement']; // Use problem_statement as description
+        
+        // Convert SDGs array to JSON if provided
+        if (isset($data['related_sdgs'])) {
+            $data['related_sdgs'] = json_encode($data['related_sdgs']);
+        }
+        
         $idea = Idea::create($data);
-        return redirect()->route('ideas.show', $idea)->with('success', 'Idea posted!');
+        return redirect()->route('ideas.show', $idea)->with('success', 'Idea submitted successfully! It will be reviewed by our team.');
     }
 
     /**

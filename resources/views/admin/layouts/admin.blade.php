@@ -38,9 +38,22 @@
             <a href="{{ route('admin.mentorship') }}" class="flex items-center gap-3 px-4 py-2 rounded-lg hover:bg-purple-700 {{ $route == 'admin.mentorship' ? 'active' : '' }}">
                 <i class="bi bi-person-check-fill"></i> Mentorship
             </a>
-            <a href="{{ route('admin.pitch-events.index') }}" class="flex items-center gap-3 px-4 py-2 rounded-lg hover:bg-purple-700 {{ $route == 'admin.pitch-events.index' ? 'active' : '' }}">
-                <i class="bi bi-megaphone-fill"></i> Pitch Events
-            </a>
+            <div x-data="{ open: {{ in_array($route, ['admin.pitch-events.index', 'admin.proposals.index']) ? 'true' : 'false' }} }">
+                <button @click="open = !open" class="flex items-center justify-between w-full px-4 py-2 rounded-lg hover:bg-purple-700 {{ in_array($route, ['admin.pitch-events.index', 'admin.proposals.index']) ? 'active' : '' }}">
+                    <div class="flex items-center gap-3">
+                        <i class="bi bi-megaphone-fill"></i> Pitch Events
+                    </div>
+                    <i class="bi bi-chevron-down text-sm transition-transform" :class="{ 'rotate-180': open }"></i>
+                </button>
+                <div x-show="open" x-transition class="ml-6 mt-2 space-y-1">
+                    <a href="{{ route('admin.pitch-events.index') }}" class="flex items-center gap-3 px-4 py-2 rounded-lg hover:bg-purple-700 {{ $route == 'admin.pitch-events.index' ? 'active' : '' }}">
+                        <i class="bi bi-calendar-event"></i> All Events
+                    </a>
+                    <a href="{{ route('admin.proposals.index') }}" class="flex items-center gap-3 px-4 py-2 rounded-lg hover:bg-purple-700 {{ $route == 'admin.proposals.index' ? 'active' : '' }}">
+                        <i class="bi bi-file-earmark-text-fill"></i> Event Proposals
+                    </a>
+                </div>
+            </div>
             <a href="{{ route('admin.analytics') }}" class="flex items-center gap-3 px-4 py-2 rounded-lg hover:bg-purple-700 {{ $route == 'admin.analytics' ? 'active' : '' }}">
                 <i class="bi bi-graph-up"></i> Analytics
             </a>

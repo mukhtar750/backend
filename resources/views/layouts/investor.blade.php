@@ -38,6 +38,9 @@
                     <a href="{{ route('investor.pitch_events') }}" class="flex items-center gap-3 px-4 py-3 rounded-lg font-medium {{ request()->routeIs('investor.pitch_events') ? 'bg-[#a01a7d] shadow-sm' : 'hover:bg-[#a01a7d] transition' }}">
                         <i class="bi bi-calendar-event text-lg"></i> Pitch Events
                     </a>
+                    <a href="{{ route('investor.proposals.index') }}" class="flex items-center gap-3 px-4 py-3 rounded-lg font-medium {{ request()->routeIs('investor.proposals.*') ? 'bg-[#a01a7d] shadow-sm' : 'hover:bg-[#a01a7d] transition' }}">
+                        <i class="bi bi-lightbulb text-lg"></i> My Proposals
+                    </a>
                     <a href="{{ route('investor.success_stories') }}" class="flex items-center gap-3 px-4 py-3 rounded-lg font-medium {{ request()->routeIs('investor.success_stories') ? 'bg-[#a01a7d] shadow-sm' : 'hover:bg-[#a01a7d] transition' }}">
                         <i class="bi bi-award text-lg"></i> Success Stories
                     </a>

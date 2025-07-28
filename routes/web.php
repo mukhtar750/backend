@@ -127,7 +127,14 @@ Route::middleware(['auth', 'role:admin,staff'])->prefix('admin')->name('admin.')
         Route::get('/submissions/{submission}/download', [App\Http\Controllers\MentorshipFormController::class, 'downloadSubmission'])->name('download_submission');
     });
 
-    // Pitch Events Management
+    // Pitch Event Proposals Management (MOVED UP)
+    Route::get('/pitch-events/proposals', [AdminController::class, 'proposals'])->name('proposals.index');
+    Route::get('/pitch-events/proposals/{proposal}', [AdminController::class, 'showProposal'])->name('proposals.show');
+    Route::patch('/pitch-events/proposals/{proposal}/approve', [AdminController::class, 'approveProposal'])->name('proposals.approve');
+    Route::patch('/pitch-events/proposals/{proposal}/reject', [AdminController::class, 'rejectProposal'])->name('proposals.reject');
+    Route::patch('/pitch-events/proposals/{proposal}/request-changes', [AdminController::class, 'requestChanges'])->name('proposals.request-changes');
+
+    // Pitch Events Management (RESOURCE ROUTE - KEEP THIS BELOW)
     Route::resource('pitch-events', \App\Http\Controllers\PitchEventController::class);
 
     Route::get('/analytics', function () {
@@ -181,6 +188,11 @@ Route::middleware(['auth', 'role:admin,staff'])->prefix('admin')->name('admin.')
     Route::patch('/contents/{id}/reject', [AdminController::class, 'rejectContent'])->name('contents.reject');
 
     Route::post('/contents', [\App\Http\Controllers\ContentController::class, 'store'])->name('contents.store');
+
+    // Test route to verify admin access
+    Route::get('/test-admin', function() {
+        return 'Admin access working!';
+    })->name('test-admin');
 });
 
 Route::get('/dashboard', function () {
@@ -386,6 +398,17 @@ Route::middleware(['auth'])->group(function () {
     Route::view('/dashboard/investor-pitch-events', 'dashboard.investor-pitch-events')->name('investor.pitch_events');
     Route::view('/dashboard/investor-success-stories', 'dashboard.investor-success-stories')->name('investor.success_stories');
     Route::view('/dashboard/investor-messages', 'dashboard.investor-messages')->name('investor.messages');
+    
+    // Investor Pitch Event Proposals
+    Route::resource('investor/proposals', \App\Http\Controllers\PitchEventProposalController::class)->names([
+        'index' => 'investor.proposals.index',
+        'create' => 'investor.proposals.create',
+        'store' => 'investor.proposals.store',
+        'show' => 'investor.proposals.show',
+        'edit' => 'investor.proposals.edit',
+        'update' => 'investor.proposals.update',
+        'destroy' => 'investor.proposals.destroy',
+    ]);
 });
 
 // Mentor Registration & Dashboard
@@ -660,3 +683,10 @@ Route::post('/test-upload', function (Request $request) {
     
     return response()->json(['success' => false, 'error' => 'No file provided'], 400);
 })->name('test.upload.store');
+
+// Ideas routes
+Route::resource('ideas', \App\Http\Controllers\IdeaController::class);
+Route::post('/ideas/{idea}/interests', [\App\Http\Controllers\IdeaInterestController::class, 'store'])->name('ideas.interests.store');
+Route::delete('/ideas/{idea}/interests', [\App\Http\Controllers\IdeaInterestController::class, 'destroy'])->name('ideas.interests.destroy');
+Route::patch('/idea-interests/{interest}/accept', [\App\Http\Controllers\IdeaInterestController::class, 'accept'])->name('idea-interests.accept');
+Route::patch('/idea-interests/{interest}/decline', [\App\Http\Controllers\IdeaInterestController::class, 'decline'])->name('idea-interests.decline');

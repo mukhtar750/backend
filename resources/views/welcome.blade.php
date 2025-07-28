@@ -143,9 +143,9 @@
                     <p class="text-lg text-gray-600 mb-8 delay-2 fade-in">
                         Empowering female-led ventures through capacity building and investor access
                     </p>
-                    <button class="btn-primary text-white font-semibold px-8 py-3 rounded-full delay-3 fade-in">
+                    <a href="{{ route('register.role') }}" class="btn-primary text-white font-semibold px-8 py-3 rounded-full delay-3 fade-in">
                         Get Started
-                    </button>
+                    </a>
                 </div>
                 <div class="md:w-1/2 fade-in delay-3">
                     <!-- AWN Team Photo -->
@@ -327,9 +327,9 @@
             <p class="text-xl mb-8 max-w-2xl mx-auto">
                 Join hundreds of women entrepreneurs who are transforming their businesses through the AWN Venture Readiness Portal.
             </p>
-            <button class="bg-white text-[#b81d8f] font-semibold px-8 py-3 rounded-full hover:bg-gray-100 hover:shadow-lg transition-all duration-300">
+            <a href="{{ route('register.role') }}" class="bg-white text-[#b81d8f] font-semibold px-8 py-3 rounded-full hover:bg-gray-100 hover:shadow-lg transition-all duration-300">
                 Join Now
-            </button>
+            </a>
             
             <div class="mt-12 flex justify-center space-x-6">
                 <a href="#" class="text-white hover:text-gray-200 text-2xl">

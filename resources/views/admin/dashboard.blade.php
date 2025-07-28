@@ -83,6 +83,18 @@
             <i class="bi bi-megaphone-fill text-red-600 text-2xl mb-2 block"></i>
             <p class="font-semibold text-sm text-gray-700">Pitch Events</p>
         </a>
+        <a href="{{ route('admin.proposals.index') }}" class="bg-pink-50 p-4 rounded-lg text-center shadow-sm hover:shadow-md transition">
+            <i class="bi bi-lightbulb-fill text-pink-600 text-2xl mb-2 block"></i>
+            <p class="font-semibold text-sm text-gray-700">Proposals</p>
+            @php
+                $pendingProposals = \App\Models\PitchEventProposal::where('status', 'pending')->count();
+            @endphp
+            @if($pendingProposals > 0)
+                <p class="text-xs text-pink-600 font-semibold">{{ $pendingProposals }} pending</p>
+            @else
+                <p class="text-xs text-gray-500">No pending</p>
+            @endif
+        </a>
         <a href="{{ route('admin.messages') }}" class="bg-gray-50 p-4 rounded-lg text-center shadow-sm hover:shadow-md transition">
             <i class="bi bi-chat-dots-fill text-gray-600 text-2xl mb-2 block"></i>
             <p class="font-semibold text-sm text-gray-700">Messages</p>
