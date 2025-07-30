@@ -11,12 +11,12 @@
     <link rel="shortcut icon" type="image/jpeg" href="{{ asset('images/logo.jpg') }}">
     <link rel="apple-touch-icon" href="{{ asset('images/logo.jpg') }}">
 
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
     <!-- Bootstrap Icons CDN -->
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css">
     <!-- Alpine.js CDN -->
     <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"></script>
-    <!-- Styles -->
-    @vite('resources/css/app.css')
 </head>
 <body class="bg-gray-100 font-sans antialiased">
     <!-- Navigation -->
