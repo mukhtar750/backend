@@ -122,12 +122,11 @@
                                 <select id="funding_stage" name="funding_stage" required
                                     class="form-input w-full px-4 py-2 rounded-lg focus:outline-none appearance-none">
                                     <option value="" disabled selected>Select funding stage</option>
-                                    <option value="Idea">Idea Stage</option>
-                                    <option value="Pre-Seed">Pre-Seed</option>
-                                    <option value="Seed">Seed</option>
-                                    <option value="Series A">Series A</option>
-                                    <option value="Series B">Series B</option>
-                                    <option value="Series C+">Series C+</option>
+                                    <option value="idea" {{ old('funding_stage') == 'idea' ? 'selected' : '' }}>Idea Stage</option>
+                                    <option value="startup" {{ old('funding_stage') == 'startup' ? 'selected' : '' }}>Startup</option>
+                                    <option value="growth" {{ old('funding_stage') == 'growth' ? 'selected' : '' }}>Growth</option>
+                                    <option value="scale" {{ old('funding_stage') == 'scale' ? 'selected' : '' }}>Scale</option>
+                                    <option value="mature" {{ old('funding_stage') == 'mature' ? 'selected' : '' }}>Mature</option>
                                 </select>
                                 <div class="absolute inset-y-0 right-0 flex items-center pr-3 pointer-events-none">
                                     <i class="fas fa-chart-line text-gray-400"></i>
@@ -177,14 +176,14 @@
                         <div class="col-span-2 md:col-span-1">
                             <label for="password" class="block text-sm font-medium text-gray-700 mb-1">Password *</label>
                             <div class="relative">
-                                <input type="password" id="password" name="password" required
+                                <input type="password" id="password" name="password" required minlength="6"
                                     class="form-input w-full px-4 py-2 rounded-lg focus:outline-none"
                                     placeholder="Create a password">
                                 <div class="absolute inset-y-0 right-0 flex items-center pr-3">
                                     <i id="togglePassword" class="fas fa-eye text-gray-400 cursor-pointer"></i>
                                 </div>
                             </div>
-                            <p class="text-xs text-gray-500 mt-1">Minimum 8 characters with at least one number</p>
+                            <p class="text-xs text-gray-500 mt-1">Password must be at least 6 characters</p>
                         </div>
                         <!-- Confirm Password -->
                         <div class="col-span-2 md:col-span-1">
