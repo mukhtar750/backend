@@ -69,8 +69,9 @@
                     </div>
                     <div>
                         <label for="password" class="block text-sm font-medium text-gray-700 mb-1">Password *</label>
-                        <input type="password" id="password" name="password" required
+                        <input type="password" id="password" name="password" required minlength="6"
                                class="input-field w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none">
+                        <p class="mt-1 text-xs text-gray-500">Password must be at least 6 characters</p>
                         @error('password') <div class="text-red-500 text-xs mt-1">{{ $message }}</div> @enderror
                     </div>
                     <div>

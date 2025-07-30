@@ -16,7 +16,7 @@ class MentorRegisterRequest extends FormRequest
         return [
             'name' => 'required|string|max:255',
             'email' => 'required|string|email|max:255|unique:users',
-            'password' => 'required|string|min:8|confirmed',
+            'password' => 'required|string|min:6|confirmed',
             'bio' => 'required|string|max:1000',
             'expertise' => 'required|string|max:255',
             'years_of_experience' => 'required|integer|min:0',
