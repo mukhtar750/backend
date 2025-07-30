@@ -59,16 +59,20 @@
                         <select id="type_of_investor" name="type_of_investor" required
                             class="mt-1 form-input block w-full rounded-md border-gray-300 shadow-sm focus:border-[#b81d8f] focus:ring-[#b81d8f] py-2 px-3 border">
                             <option value="" disabled selected>Select investor type</option>
-                            <option value="Angel">Angel</option>
-                            <option value="VC">VC</option>
-                            <option value="Corporate">Corporate</option>
+                            <option value="angel" {{ old('type_of_investor') == 'angel' ? 'selected' : '' }}>Angel</option>
+                            <option value="venture_capital" {{ old('type_of_investor') == 'venture_capital' ? 'selected' : '' }}>Venture Capital</option>
+                            <option value="private_equity" {{ old('type_of_investor') == 'private_equity' ? 'selected' : '' }}>Private Equity</option>
+                            <option value="corporate" {{ old('type_of_investor') == 'corporate' ? 'selected' : '' }}>Corporate</option>
+                            <option value="government" {{ old('type_of_investor') == 'government' ? 'selected' : '' }}>Government</option>
+                            <option value="other" {{ old('type_of_investor') == 'other' ? 'selected' : '' }}>Other</option>
                         </select>
                         @error('type_of_investor') <div class="text-red-500 text-xs mt-1">{{ $message }}</div> @enderror
                     </div>
                     <div>
-                        <label for="interest_areas" class="block text-sm font-medium text-gray-700">Interest Areas</label>
-                        <input type="text" id="interest_areas" name="interest_areas" placeholder="Fintech, Healthcare, Edtech" value="{{ old('interest_areas') }}"
+                        <label for="interest_areas" class="block text-sm font-medium text-gray-700">Interest Areas *</label>
+                        <input type="text" id="interest_areas" name="interest_areas" required placeholder="Fintech, Healthcare, Edtech" value="{{ old('interest_areas') }}"
                             class="mt-1 form-input block w-full rounded-md border-gray-300 shadow-sm focus:border-[#b81d8f] focus:ring-[#b81d8f] py-2 px-3 border">
+                        @error('interest_areas') <div class="text-red-500 text-xs mt-1">{{ $message }}</div> @enderror
                     </div>
                     <div>
                         <label for="company" class="block text-sm font-medium text-gray-700">Company (optional)</label>
@@ -82,9 +86,9 @@
                     </div>
                     <div>
                         <label for="password" class="block text-sm font-medium text-gray-700">Password *</label>
-                        <input type="password" id="password" name="password" required minlength="8"
+                        <input type="password" id="password" name="password" required minlength="6"
                             class="mt-1 form-input block w-full rounded-md border-gray-300 shadow-sm focus:border-[#b81d8f] focus:ring-[#b81d8f] py-2 px-3 border">
-                        <p class="mt-1 text-xs text-gray-500">Password must be at least 8 characters</p>
+                        <p class="mt-1 text-xs text-gray-500">Password must be at least 6 characters</p>
                     </div>
                     <div>
                         <label for="password_confirmation" class="block text-sm font-medium text-gray-700">Confirm Password *</label>
