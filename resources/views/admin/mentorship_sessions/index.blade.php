@@ -3,6 +3,12 @@
 @section('content')
 <div class="flex justify-between items-center mb-6">
     <h1 class="text-3xl font-bold text-gray-800">Mentorship Sessions</h1>
+    <form action="{{ route('admin.mentorship_sessions.clear_all') }}" method="POST" onsubmit="return confirm('Are you sure you want to clear all orphaned mentorship sessions? This action cannot be undone.');">
+        @csrf
+        <button type="submit" class="bg-red-500 hover:bg-red-700 text-white font-bold py-2 px-4 rounded">
+            Clear All Orphaned Sessions
+        </button>
+    </form>
 </div>
 <div class="overflow-x-auto">
     <table class="min-w-full divide-y divide-gray-200">

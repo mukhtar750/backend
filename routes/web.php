@@ -666,6 +666,7 @@ Route::middleware(['auth'])->group(function () {
 Route::middleware(['auth', 'admin'])->group(function () {
     Route::post('/admin/startup-info-requests/{infoRequest}/approve', [\App\Http\Controllers\StartupInfoRequestController::class, 'approve'])->name('admin.startup-info-requests.approve');
     Route::post('/admin/startup-info-requests/{infoRequest}/reject', [\App\Http\Controllers\StartupInfoRequestController::class, 'reject'])->name('admin.startup-info-requests.reject');
+    Route::post('/admin/mentorship-sessions/clear-all', [\App\Http\Controllers\AdminController::class, 'clearAllSessions'])->name('admin.mentorship_sessions.clear_all');
 });
 
 // Debug route for testing file uploads (remove in production)

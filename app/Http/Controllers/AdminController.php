@@ -200,7 +200,7 @@ class AdminController extends Controller
         return view('admin.edit-user', compact('user', 'roles'));
     }
 
-    public function destroyMentorshipSession(MentorshipSession $session)
+public function deleteMentorshipSession(MentorshipSession $session)
     {
         $session->delete();
         return redirect()->back()->with('success', 'Mentorship session deleted successfully.');
@@ -332,8 +332,8 @@ class AdminController extends Controller
 
     public function storePairing(Request $request)
     {
-        \Log::info('Pairing: Received request', $request->all());
-        $validator = \Validator::make($request->all(), [
+\Illuminate\Support\Facades\Log::info('Pairing: Received request', $request->all());
+        $validator = \Illuminate\Support\Facades\Validator::make($request->all(), [
             'pairing_type' => 'required|in:mentor_mentee,bdsp_entrepreneur,investor_entrepreneur,mentor_entrepreneur',
             'user_one_id' => 'required|exists:users,id|different:user_two_id',
             'user_two_id' => 'required|exists:users,id',
@@ -341,7 +341,7 @@ class AdminController extends Controller
             'user_one_id.different' => 'You cannot pair a user with themselves.',
         ]);
         if ($validator->fails()) {
-            \Log::warning('Pairing: Validation failed', $validator->errors()->toArray());
+\Illuminate\Support\Facades\Log::warning('Pairing: Validation failed', $validator->errors()->toArray());
             if ($request->expectsJson()) {
                 return response()->json(['errors' => $validator->errors()], 422);
             }
@@ -484,9 +484,27 @@ class AdminController extends Controller
     public function mentorshipSessions()
     {
         $sessions = \App\Models\MentorshipSession::with(['pairing.userOne', 'pairing.userTwo', 'scheduledBy', 'scheduledFor'])
+            ->whereHas('pairing.userOne')
+            ->whereHas('pairing.userTwo')
             ->orderBy('date_time', 'desc')
             ->get();
         return view('admin.mentorship_sessions.index', compact('sessions'));
+    }
+    
+    public function clearAllSessions()
+    {
+        \App\Models\MentorshipSession::whereDoesntHave('pairing.userOne')
+            ->orWhereDoesntHave('pairing.userTwo')
+            ->delete();
+            
+        return back()->with('success', 'All orphaned mentorship sessions have been cleared.');
+    }
+
+    public function destroyMentorshipSession($id)
+    {
+        $session = \App\Models\MentorshipSession::findOrFail($id);
+        $session->delete();
+        return back()->with('success', 'Mentorship session deleted successfully.');
     }
 
     public function mentorship()

@@ -251,12 +251,13 @@ class User extends Authenticatable
                 $user->pairingsAsTwo()->delete();
 
                 // Delete mentorship sessions where user is scheduled_by or scheduled_for
-                \App\Models\MentorshipSession::where('scheduled_by', $user->id)
+                $deletedMentorshipSessionsCount = \App\Models\MentorshipSession::where('scheduled_by', $user->id)
                     ->orWhere('scheduled_for', $user->id)
                     ->delete();
+                Log::info("Deleted {$deletedMentorshipSessionsCount} mentorship sessions for user: {$user->id}");
 
                 // Delete training session participants
-                \App\Models\TrainingSessionParticipant::where('user_id', $user->id)->delete();
+                TrainingSessionParticipant::where('user_id', $user->id)->delete();
 
                 // Delete tasks and task submissions
                 $user->tasks()->delete();
