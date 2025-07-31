@@ -98,7 +98,7 @@ Route::middleware(['auth', 'role:admin,staff'])->prefix('admin')->name('admin.')
     // Startup Profile Management
     Route::patch('/startups/{startup}/approve', [\App\Http\Controllers\StartupController::class, 'approve'])->name('startups.approve');
     Route::patch('/startups/{startup}/reject', [\App\Http\Controllers\StartupController::class, 'reject'])->name('startups.reject');
-    Route::delete('/startups/{startup}', [\App\Http\Controllers\StartupController::class, 'destroy'])->name('startups.destroy');
+    Route::delete('/startups/{startup}', [\App\Http\Controllers\AdminStartupController::class, 'destroy'])->name('startups.destroy');
     
     // Task Management
     Route::post('/tasks', [\App\Http\Controllers\TaskController::class, 'store'])->name('tasks.store');

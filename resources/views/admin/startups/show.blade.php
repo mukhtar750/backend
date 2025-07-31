@@ -2,7 +2,16 @@
 
 @section('content')
 <div class="max-w-3xl mx-auto bg-white rounded-lg shadow p-8 mt-8">
-    <a href="{{ route('admin.user-management', ['tab' => 'startup-profiles']) }}" class="text-purple-600 hover:underline mb-4 inline-block"><i class="bi bi-arrow-left"></i> Back to Startup Profiles</a>
+    <div class="flex justify-between items-center mb-4">
+        <a href="{{ route('admin.user-management', ['tab' => 'startup-profiles']) }}" class="text-purple-600 hover:underline inline-block"><i class="bi bi-arrow-left"></i> Back to Startup Profiles</a>
+        <form action="{{ route('admin.startups.destroy', $startup->id) }}" method="POST" onsubmit="return confirm('Are you sure you want to delete this startup profile?');">
+            @csrf
+            @method('DELETE')
+            <button type="submit" class="bg-red-500 hover:bg-red-700 text-white font-bold py-2 px-4 rounded">
+                Delete Startup
+            </button>
+        </form>
+    </div>
     <h1 class="text-2xl font-bold mb-2">{{ $startup->name }}</h1>
     <div class="mb-4 flex items-center gap-4">
         @if($startup->logo)
@@ -71,4 +80,4 @@
         <div class="mb-1"><span class="font-medium">Funding Use:</span> {{ $startup->funding_use ?? 'N/A' }}</div>
     </div>
 </div>
-@endsection 
+@endsection

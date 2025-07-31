@@ -41,4 +41,11 @@ class AdminStartupController extends Controller
         }
         return redirect()->back()->with('success', 'Startup profile rejected.');
     }
+
+    // Delete startup profile
+    public function destroy(Startup $startup)
+    {
+        $startup->delete();
+        return redirect()->back()->with('success', 'Startup profile deleted successfully.');
+    }
 }
