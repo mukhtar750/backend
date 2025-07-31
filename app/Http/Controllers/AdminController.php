@@ -2,6 +2,9 @@
 
 namespace App\Http\Controllers;
 
+use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\Auth;
+
 use App\Models\User;
 use App\Models\PitchEventProposal;
 use App\Notifications\AccountApprovedNotification;
@@ -677,7 +680,7 @@ public function deleteMentorshipSession(MentorshipSession $session)
             $proposal->update([
                 'status' => 'approved',
                 'admin_feedback' => $request->admin_feedback,
-                'reviewed_by' => auth()->id(),
+                'reviewed_by' => (auth()->user() instanceof \App\Models\User) ? auth()->id() : null,
                 'reviewed_at' => now(),
                 'approved_event_id' => $event->id,
             ]);
@@ -688,7 +691,7 @@ public function deleteMentorshipSession(MentorshipSession $session)
             \Log::info('Pitch event proposal approved', [
                 'proposal_id' => $proposal->id,
                 'event_id' => $event->id,
-                'admin_id' => auth()->id(),
+                'admin_id' => (auth()->user() instanceof \App\Models\User) ? auth()->id() : null,
             ]);
 
             return redirect()->route('admin.proposals.index')
@@ -714,7 +717,7 @@ public function deleteMentorshipSession(MentorshipSession $session)
             $proposal->update([
                 'status' => 'rejected',
                 'admin_feedback' => $request->admin_feedback,
-                'reviewed_by' => auth()->id(),
+                'reviewed_by' => (auth()->user() instanceof \App\Models\User) ? auth()->id() : null,
                 'reviewed_at' => now(),
             ]);
 
@@ -723,7 +726,7 @@ public function deleteMentorshipSession(MentorshipSession $session)
 
             \Log::info('Pitch event proposal rejected', [
                 'proposal_id' => $proposal->id,
-                'admin_id' => auth()->id(),
+                'admin_id' => (auth()->user() instanceof \App\Models\User) ? auth()->id() : null,
             ]);
 
             return redirect()->route('admin.proposals.index')
@@ -749,7 +752,7 @@ public function deleteMentorshipSession(MentorshipSession $session)
             $proposal->update([
                 'status' => 'requested_changes',
                 'admin_feedback' => $request->admin_feedback,
-                'reviewed_by' => auth()->id(),
+                'reviewed_by' => (auth()->user() instanceof \App\Models\User) ? auth()->id() : null,
                 'reviewed_at' => now(),
             ]);
 
@@ -758,7 +761,7 @@ public function deleteMentorshipSession(MentorshipSession $session)
 
             \Log::info('Pitch event proposal changes requested', [
                 'proposal_id' => $proposal->id,
-                'admin_id' => auth()->id(),
+                'admin_id' => (auth()->user() instanceof \App\Models\User) ? auth()->id() : null,
             ]);
 
             return redirect()->route('admin.proposals.index')

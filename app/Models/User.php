@@ -6,6 +6,8 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
+use App\Models\TrainingSessionParticipant;
+use App\Models\GroupParticipant;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 
