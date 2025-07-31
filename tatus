@@ -1,0 +1,5 @@
+[33meacbe8a[m[33m ([m[1;36mHEAD[m[33m -> [m[1;32mmaster[m[33m)[m manifest
+[33m8877f0d[m[33m ([m[1;31morigin/master[m[33m, [m[1;31morigin/HEAD[m[33m)[m Simplify mentor and mentee registration - consistent password requirements
+[33m1e1f757[m Simplify BDSP and Entrepreneur registration validation - improve user experience
+[33mfa04151[m Fix investor registration form - simplify validation and improve user experience
+[33m235c282[m Enhance registration security with stronger validation rules and input sanitization

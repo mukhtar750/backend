@@ -670,7 +670,7 @@ public function deleteMentorshipSession(MentorshipSession $session)
                 'is_virtual' => $proposal->is_virtual,
                 'virtual_platform' => $proposal->virtual_platform,
                 'additional_info' => $proposal->additional_requirements,
-                'created_by' => auth()->id(),
+                'created_by' => auth()->user()->id,
             ]);
 
             // Update the proposal

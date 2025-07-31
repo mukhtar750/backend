@@ -75,8 +75,13 @@
                 </div>
                 <div>
                     <!--get user name from session -->
-                    <div class="font-semibold">{{ Auth::user()->name }}</div>
-                    <div class="text-sm text-gray-300">{{ Auth::user()->email }}</div>
+                    @if(Auth::check())
+                        <div class="font-semibold">{{ Auth::user()->name }}</div>
+                        <div class="text-sm text-gray-300">{{ Auth::user()->email }}</div>
+                    @else
+                        <div class="font-semibold">Guest</div>
+                        <div class="text-sm text-gray-300">guest@example.com</div>
+                    @endif
                 </div>
             </div>
             <a href="{{ route('admin.settings') }}" class="flex items-center gap-3 px-4 py-2 text-gray-200 hover:bg-purple-700 rounded-md">
