@@ -555,8 +555,7 @@ public function deleteMentorshipSession(MentorshipSession $session)
 
         // Ensure all required variables are passed
         $contents = collect(); // Empty collection for now
-tho
-$pendingPitches = collect();
+        $pendingPitches = collect();
 
         $approvedPitches = collect();
         $rejectedPitches = collect();
