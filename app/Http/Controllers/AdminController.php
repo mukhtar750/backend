@@ -564,7 +564,7 @@ public function deleteMentorshipSession(MentorshipSession $session)
         $rejectedPitches = collect();
         $reviewedPitches = collect();
 
-        $categories = \App\Models\Category::all(); // Fetch all categories
+        $categories = \DB::table('categories')->get(); // Fetch all categories
 
         return view('admin.content_management', compact(
             'resources', 'status', 'contents', 'categories',
