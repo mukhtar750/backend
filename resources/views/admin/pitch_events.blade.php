@@ -78,7 +78,8 @@
             Object.keys(this.createForm).forEach(key => {
                 if (this.createForm[key] !== null && this.createForm[key] !== '') {
                     if (key === 'event_date' && this.createForm.event_time) {
-                        formData.append('event_date', this.createForm.event_date + ' ' + this.createForm.event_time);
+                        const dateTime = `${this.createForm.event_date} ${this.createForm.event_time}:00`;
+                        formData.append('event_date', dateTime);
                     } else if (['agenda','requirements','prizes'].includes(key)) {
                         formData.append(key, JSON.stringify(this.createForm[key]));
                     } else if (key !== 'event_time') {
@@ -311,6 +312,7 @@
                 <button @click="tab = 'upcoming'" :class="tab === 'upcoming' ? 'border-[#b81d8f] text-[#b81d8f] border-b-2' : 'text-gray-500 border-transparent'" class="whitespace-nowrap py-4 px-1 font-medium text-sm focus:outline-none">Upcoming ({{ $events->where('status', 'published')->where('event_date', '>', now())->count() }})</button>
                 <button @click="tab = 'live'" :class="tab === 'live' ? 'border-[#b81d8f] text-[#b81d8f] border-b-2' : 'text-gray-500 border-transparent'" class="whitespace-nowrap py-4 px-1 font-medium text-sm focus:outline-none">Live ({{ $events->where('status', 'live')->count() }})</button>
                 <button @click="tab = 'completed'" :class="tab === 'completed' ? 'border-[#b81d8f] text-[#b81d8f] border-b-2' : 'text-gray-500 border-transparent'" class="whitespace-nowrap py-4 px-1 font-medium text-sm focus:outline-none">Completed ({{ $events->where('status', 'completed')->count() }})</button>
+                <button @click="tab = 'draft'" :class="tab === 'draft' ? 'border-[#b81d8f] text-[#b81d8f] border-b-2' : 'text-gray-500 border-transparent'" class="whitespace-nowrap py-4 px-1 font-medium text-sm focus:outline-none">Draft ({{ $events->where('status', 'draft')->count() }})</button>
                 <a href="{{ route('admin.proposals.index') }}" class="whitespace-nowrap py-4 px-1 font-medium text-sm text-gray-500 hover:text-[#b81d8f] border-transparent border-b-2 hover:border-[#b81d8f] focus:outline-none">
                     Proposals 
                     @php
@@ -357,10 +359,19 @@
                     @endforelse
                 </div>
             </template>
+            <!-- Draft Events -->
+            <template x-if="tab === 'draft'">
+                <div>
+                    @forelse ($events->where('status', 'draft') as $event)
+                        @include('admin.partials.pitch_event_card', ['event' => $event])
+                    @empty
+                        <div class="bg-white p-6 rounded-lg shadow text-center text-gray-500">No draft events found.</div>
+                    @endforelse
+                </div>
+            </template>
         </div>
     </div>
 @endsection
-
 <script>
     window.editPitchEvent = (event) => {
         const root = document.querySelector('[x-data]');

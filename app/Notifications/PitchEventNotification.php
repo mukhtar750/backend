@@ -32,7 +32,7 @@ use RoleBasedUrlTrait;
             'event_title' => $this->event->title,
             'date_time' => $this->event->event_date,
             'type' => 'pitch_event',
-            'action_url' => $this->generateActionUrl($notifiable, 'pitch-events.index'),
+            'action_url' => $this->generateActionUrl($notifiable, 'pitch_events'),
         ];
     }
 }

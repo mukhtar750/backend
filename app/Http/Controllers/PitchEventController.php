@@ -46,7 +46,7 @@ class PitchEventController extends Controller
         $validated = $request->validate([
             'title' => 'required|string|max:255',
             'description' => 'required|string',
-            'event_date' => 'required|date|after:now',
+            'event_date' => 'required|date',
             'location' => 'required|string|max:255',
             'event_type' => 'required|in:virtual,in-person,hybrid',
             'capacity' => 'nullable|integer|min:1',
