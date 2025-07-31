@@ -61,5 +61,8 @@ class DatabaseSeeder extends Seeder
         
         // Seed mentorship forms
         $this->call(MentorshipFormsSeeder::class);
+
+        // Seed categories
+        $this->call(CategorySeeder::class);
     }
 }
