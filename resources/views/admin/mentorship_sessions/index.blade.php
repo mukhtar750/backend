@@ -43,7 +43,11 @@
                 <td class="px-6 py-4 whitespace-nowrap">{{ $session->scheduledBy->name ?? '-' }}</td>
                 <td class="px-6 py-4 whitespace-nowrap">{{ $session->scheduledFor->name ?? '-' }}</td>
                 <td class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium space-x-2">
-                    {{-- Future: Admin actions (cancel, complete, view details) --}}
+                    <form action="{{ route('admin.mentorship_sessions.destroy', $session->id) }}" method="POST" onsubmit="return confirm('Are you sure you want to delete this mentorship session?');" class="inline-block">
+                        @csrf
+                        @method('DELETE')
+                        <button type="submit" class="text-red-600 hover:text-red-900 text-sm font-medium">Delete</button>
+                    </form>
                 </td>
             </tr>
             @empty
@@ -54,4 +58,4 @@
         </tbody>
     </table>
 </div>
-@endsection 
+@endsection

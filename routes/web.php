@@ -117,6 +117,7 @@ Route::middleware(['auth', 'role:admin,staff'])->prefix('admin')->name('admin.')
     Route::get('/mentorship', [AdminController::class, 'mentorship'])->name('mentorship');
 
     Route::get('/mentorship-sessions', [AdminController::class, 'mentorshipSessions'])->name('mentorship_sessions');
+    Route::delete('/mentorship-sessions/{session}', [AdminController::class, 'destroyMentorshipSession'])->name('mentorship_sessions.destroy');
 
     // Mentorship Forms Management
     Route::prefix('mentorship/forms')->name('mentorship.forms.')->group(function () {

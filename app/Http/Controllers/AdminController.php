@@ -200,6 +200,12 @@ class AdminController extends Controller
         return view('admin.edit-user', compact('user', 'roles'));
     }
 
+    public function destroyMentorshipSession(MentorshipSession $session)
+    {
+        $session->delete();
+        return redirect()->back()->with('success', 'Mentorship session deleted successfully.');
+    }
+
     public function updateUser(Request $request, $id)
     {
         $user = User::findOrFail($id);
