@@ -36,7 +36,7 @@
                 let formData = new FormData();
                 formData.append('title', this.uploadForm.title);
                 formData.append('type', this.uploadForm.type);
-                formData.append('category_id', this.uploadForm.category_id);
+                if (this.uploadForm.category_id) formData.append('category_id', this.uploadForm.category_id);
                 formData.append('visibility', this.uploadForm.visibility);
                 formData.append('description', this.uploadForm.description);
                 formData.append('tags', this.uploadForm.tags);
