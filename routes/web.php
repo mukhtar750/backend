@@ -83,6 +83,7 @@ Route::middleware(['auth', 'role:bdsp,mentor'])->group(function () {
     Route::get('/mentor/dashboard', [\App\Http\Controllers\MentorDashboardController::class, 'index'])->middleware(['auth'])->name('mentor.dashboard');
     Route::get('/mentor/practice-pitches', [PracticePitchController::class, 'mentorIndex'])->name('mentor.practice-pitches.index');
     Route::post('/mentor/practice-pitches/{id}/feedback', [PracticePitchController::class, 'feedback'])->name('mentor.practice-pitches.feedback');
+    Route::get('/training-sessions', [\App\Http\Controllers\TrainingSessionController::class, 'index'])->name('bdsp.training-sessions.index');
 });
 
 // Admin specific routes
