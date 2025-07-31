@@ -376,7 +376,7 @@ Route::middleware(['auth'])->group(function () {
             ->orderByDesc('created_at')->get();
 
         // Get pitching resources from the content management system
-        $pitchDeckCategory = \DB::table('categories')->where('name', 'Pitch Deck')->first();
+        $pitchDeckCategory = \Illuminate\Support\Facades\DB::table('categories')->where('name', 'Pitch Deck')->first();
         $pitchResources = collect();
         if ($pitchDeckCategory) {
             $pitchResources = \App\Models\Content::where('status', 'published')

@@ -257,7 +257,7 @@ class User extends Authenticatable
                 Log::info("Deleted {$deletedMentorshipSessionsCount} mentorship sessions for user: {$user->id}");
 
                 // Delete training session participants
-                TrainingSessionParticipant::where('user_id', $user->id)->delete();
+                \App\Models\TrainingSessionParticipant::where('user_id', $user->id)->delete();
 
                 // Delete tasks and task submissions
                 $user->tasks()->delete();

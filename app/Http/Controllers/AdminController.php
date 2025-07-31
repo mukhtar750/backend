@@ -28,6 +28,8 @@ class AdminController extends Controller
 
         // Get recent mentorship sessions
         $recentSessions = \App\Models\MentorshipSession::with(['pairing.userOne', 'pairing.userTwo', 'scheduledBy', 'scheduledFor'])
+            ->whereHas('pairing.userOne')
+            ->whereHas('pairing.userTwo')
             ->orderBy('created_at', 'desc')
             ->limit(5)
             ->get();
@@ -349,7 +351,7 @@ public function deleteMentorshipSession(MentorshipSession $session)
         }
         if (Pairing::isPaired($request->user_one_id, $request->user_two_id, $request->pairing_type)) {
             $msg = 'These users are already paired for this type.';
-            \Log::info('Pairing: Already paired', [
+            \Illuminate\Support\Facades\Log::info('Pairing: Already paired', [
                 'user_one_id' => $request->user_one_id,
                 'user_two_id' => $request->user_two_id,
                 'pairing_type' => $request->pairing_type
@@ -365,7 +367,7 @@ public function deleteMentorshipSession(MentorshipSession $session)
                 'user_two_id' => $request->user_two_id,
                 'pairing_type' => $request->pairing_type,
             ]);
-            \Log::info('Pairing: Created successfully', ['pairing_id' => $pairing->id]);
+\Illuminate\Support\Facades\Log::info('Pairing: Created successfully', ['pairing_id' => $pairing->id]);
             // Notify both users (except admin users)
             $userOne = \App\Models\User::find($request->user_one_id);
             $userTwo = \App\Models\User::find($request->user_two_id);
@@ -377,9 +379,9 @@ public function deleteMentorshipSession(MentorshipSession $session)
             if ($userTwo->role !== 'admin') {
                 $userTwo->notify(new \App\Notifications\UserPairedNotification($userOne, $request->pairing_type));
             }
-            \Log::info('Pairing: Notifications sent');
+\Illuminate\Support\Facades\Log::info('Pairing: Notifications sent');
         } catch (\Exception $e) {
-            \Log::error('Pairing: Exception occurred', ['error' => $e->getMessage(), 'trace' => $e->getTraceAsString()]);
+\Illuminate\Support\Facades\Log::error('Pairing: Exception occurred', ['error' => $e->getMessage(), 'trace' => $e->getTraceAsString()]);
             if ($request->expectsJson()) {
                 return response()->json(['errors' => ['exception' => [$e->getMessage()]]], 500);
             }
@@ -553,8 +555,9 @@ public function deleteMentorshipSession(MentorshipSession $session)
 
         // Ensure all required variables are passed
         $contents = collect(); // Empty collection for now
-        $categories = \DB::table('categories')->get();
-        $pendingPitches = collect();
+tho
+$pendingPitches = collect();
+
         $approvedPitches = collect();
         $rejectedPitches = collect();
         $reviewedPitches = collect();
