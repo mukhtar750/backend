@@ -55,8 +55,8 @@
                                 </div>
                                 <div class="flex-1">
                                     <div class="flex items-center space-x-2">
-                                        <h3 class="font-semibold text-gray-800">{{ $otherUser->name }}</h3>
-                                        <span class="text-xs text-gray-500">{{ ucfirst($otherUser->role) }}</span>
+                                        <h3 class="font-semibold text-gray-800">{{ $otherUser->name ?? 'N/A' }}</h3>
+                                        <span class="text-xs text-gray-500">{{ $otherUser ? ucfirst($otherUser->role) : 'N/A' }}</span>
                                         @if($latestMessage)
                                             <span class="text-xs text-gray-500">{{ $latestMessage->created_at->diffForHumans() }}</span>
                                         @endif
@@ -246,4 +246,4 @@ document.getElementById('composeModal').addEventListener('click', function(e) {
     }
 });
 </script>
-@endsection 
+@endsection

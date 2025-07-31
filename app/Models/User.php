@@ -6,6 +6,8 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Log;
 
 class User extends Authenticatable
 {
@@ -198,6 +200,102 @@ class User extends Authenticatable
     public function pitches()
     {
         return $this->hasMany(Pitch::class);
+    }
+
+    public function startup()
+    {
+        return $this->hasOne(Startup::class, 'entrepreneur_id');
+    }
+
+    public function tasks()
+    {
+        return $this->hasMany(Task::class, 'assigned_to');
+    }
+
+    public function practicePitches()
+    {
+        return $this->hasMany(PracticePitch::class);
+    }
+
+    public function feedback()
+    {
+        return $this->hasMany(Feedback::class);
+    }
+
+    public function resources()
+    {
+        return $this->hasMany(Resource::class);
+    }
+
+    protected static function boot()
+    {
+        parent::boot();
+
+        static::deleting(function ($user) {
+            DB::transaction(function () use ($user) {
+                Log::info("Attempting to delete user and related data: {$user->id}");
+
+                // Delete conversations and messages
+                $user->conversationsAsUserOne->each(function ($conversation) {
+                    $conversation->messages()->delete();
+                    $conversation->delete();
+                });
+                $user->conversationsAsUserTwo->each(function ($conversation) {
+                    $conversation->messages()->delete();
+                    $conversation->delete();
+                });
+                $user->sentMessages()->delete();
+
+                // Delete pairings
+                $user->pairingsAsOne()->delete();
+                $user->pairingsAsTwo()->delete();
+
+                // Delete mentorship sessions where user is scheduled_by or scheduled_for
+                \App\Models\MentorshipSession::where('scheduled_by', $user->id)
+                    ->orWhere('scheduled_for', $user->id)
+                    ->delete();
+
+                // Delete training session participants
+                \App\Models\TrainingSessionParticipant::where('user_id', $user->id)->delete();
+
+                // Delete tasks and task submissions
+                $user->tasks()->delete();
+                \App\Models\TaskSubmission::where('user_id', $user->id)->delete();
+
+                // Delete startups and related requests if the user is an entrepreneur
+                if ($user->isEntrepreneur()) {
+                    $user->startup->each(function ($startup) {
+                        $startup->accessRequests()->delete();
+                        $startup->infoRequests()->delete();
+                        $startup->delete();
+                    });
+                }
+
+                // Delete ideas, comments, pitches, votes, practice pitches, feedback, resources
+                $user->ideas()->delete();
+                $user->comments()->delete();
+                $user->pitches()->delete();
+                $user->votes()->delete();
+                $user->practicePitches()->delete();
+                $user->feedback()->delete();
+                $user->resources()->delete();
+
+                // Delete group messages and participants
+                \App\Models\GroupMessage::where('sender_id', $user->id)->delete();
+                \App\Models\GroupParticipant::where('user_id', $user->id)->delete();
+
+                // Delete pitch event related data
+                \App\Models\PitchEventParticipant::where('user_id', $user->id)->delete();
+                \App\Models\PitchEventInvestor::where('investor_id', $user->id)->delete();
+                \App\Models\PitchEventStartup::where('startup_id', $user->id)->delete();
+                \App\Models\PitchEventProposal::where('user_id', $user->id)->delete();
+
+                // Delete idea interests
+                \App\Models\IdeaInterest::where('user_id', $user->id)->delete();
+
+                Log::info("Successfully deleted user and related data: {$user->id}");
+            });
+        });
     }
 
     public function votes()

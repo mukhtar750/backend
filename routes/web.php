@@ -15,6 +15,9 @@ use App\Http\Controllers\CommentController;
 use App\Http\Controllers\PitchController;
 use App\Http\Controllers\VoteController;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\Auth;
 
 /*
 |--------------------------------------------------------------------------
@@ -234,7 +237,7 @@ Route::get('/dashboard/investor', function () {
 })->middleware('auth')->name('dashboard.investor');
 Route::get('/dashboard/bdsp', [\App\Http\Controllers\BDSPController::class, 'dashboard'])->middleware('auth')->name('dashboard.bdsp');
 Route::get('/dashboard/entrepreneur', function () {
-    $user = auth()->user();
+    $user = Auth::user();
     $pairings = \App\Models\Pairing::with(['userOne', 'userTwo'])
         ->where('user_one_id', $user->id)
         ->orWhere('user_two_id', $user->id)
@@ -281,7 +284,7 @@ Route::get('/dashboard/entrepreneur-hub', function () {
 Route::middleware(['auth'])->group(function () {
     Route::view('/dashboard/entrepreneur-progress', 'dashboard.entrepreneur-progress')->name('entrepreneur.progress');
     Route::get('/dashboard/entrepreneur-calendar', function () {
-        $user = auth()->user();
+        $user = Auth::user();
         $sessions = \App\Models\TrainingSession::orderBy('date_time', 'asc')->get();
         $registrations = \DB::table('training_session_participants')
             ->where('user_id', $user->id)
@@ -302,7 +305,7 @@ Route::middleware(['auth'])->group(function () {
     Route::post('/dashboard/entrepreneur-tasks/{task}/complete', [\App\Http\Controllers\TaskController::class, 'markAsCompleted'])->name('entrepreneur.tasks.complete');
     Route::post('/dashboard/entrepreneur-tasks/{task}/in-progress', [\App\Http\Controllers\TaskController::class, 'markAsInProgress'])->name('entrepreneur.tasks.in-progress');
     Route::get('/dashboard/entrepreneur-mentorship', function () {
-        $user = auth()->user();
+        $user = Auth::user();
         
         // Get paired mentors
         $mentorPairings = \App\Models\Pairing::where('pairing_type', 'mentor_entrepreneur')
@@ -350,7 +353,7 @@ Route::middleware(['auth'])->group(function () {
         return view('dashboard.entrepreneur-mentorship', compact('professionals', 'professionalsArray', 'sessions'));
     })->name('entrepreneur.mentorship');
     Route::get('/dashboard/entrepreneur-pitch', function () {
-        $user = auth()->user();
+        $user = Auth::user();
         // Get paired BDSPs
         $bdspPairings = \App\Models\Pairing::where('pairing_type', 'bdsp_entrepreneur')
             ->where(function($q) use ($user) {
@@ -533,7 +536,7 @@ Route::middleware(['auth', 'role:bdsp'])->group(function () {
 });
 
 Route::get('/mentor/sessions', function () {
-    $mentor = auth()->user();
+    $mentor = Auth::user();
     $sessions = \App\Models\MentorshipSession::where(function ($q) use ($mentor) {
         $q->where('scheduled_by', $mentor->id)
           ->orWhere('scheduled_for', $mentor->id);
@@ -549,7 +552,7 @@ Route::post('/mentor/sessions/create', [\App\Http\Controllers\MentorshipSessionC
 Route::get('/mentor/messages', [\App\Http\Controllers\MessageController::class, 'index'])->middleware(['auth'])->name('mentor.messages.index');
 Route::get('/mentor/messages/{conversation}', [\App\Http\Controllers\MessageController::class, 'show'])->middleware(['auth'])->name('mentor.messages.show');
 Route::get('/mentor/mentees', function () {
-    $mentor = auth()->user();
+    $mentor = Auth::user();
     $pairings = \App\Models\Pairing::whereIn('pairing_type', ['mentor_mentee', 'mentor_entrepreneur'])
         ->where(function ($q) use ($mentor) {
             $q->where('user_one_id', $mentor->id)->orWhere('user_two_id', $mentor->id);
@@ -567,7 +570,7 @@ Route::get('/mentor/mentees/{id}', function ($id) {
 })->middleware(['auth'])->name('mentor.mentees.show');
 
 Route::get('/mentor/calendar', function () {
-    $mentor = auth()->user();
+    $mentor = Auth::user();
     $sessions = \App\Models\MentorshipSession::where(function ($q) use ($mentor) {
         $q->where('scheduled_by', $mentor->id)
           ->orWhere('scheduled_for', $mentor->id);
@@ -702,7 +705,7 @@ Route::patch('/idea-interests/{interest}/decline', [\App\Http\Controllers\IdeaIn
 
 // Mentee Resources Page
 Route::get('/dashboard/mentee/resources', function () {
-    $mentee = auth()->user();
+    $mentee = Auth::user();
     // Find mentor pairing
     $mentorPairing = \App\Models\Pairing::where('pairing_type', 'mentor_mentee')
         ->where(function ($q) use ($mentee) {
@@ -727,7 +730,7 @@ Route::get('/dashboard/mentee/resources', function () {
 
 // Mentee Feedback Page
 Route::get('/dashboard/mentee/feedback', function () {
-    $user = auth()->user();
+    $user = Auth::user();
     
     // Get paired users (mentors, bdsp, etc.)
     $pairings = \App\Models\Pairing::where(function($q) use ($user) {
