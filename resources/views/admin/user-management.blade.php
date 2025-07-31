@@ -143,8 +143,8 @@
                                         </div>
                                     </div>
                                     <div class="ml-4">
-                                        <div class="text-sm font-medium text-gray-900">{{ $pairing->userOne->name }}</div>
-                                        <div class="text-sm text-gray-500">{{ ucfirst($pairing->userOne->role) }}</div>
+                                        <div class="text-sm font-medium text-gray-900">{{ $pairing->userOne->name ?? 'N/A' }}</div>
+                                        <div class="text-sm text-gray-500">{{ $pairing->userOne ? ucfirst($pairing->userOne->role) : 'N/A' }}</div>
                                     </div>
                                 </div>
                             </td>
