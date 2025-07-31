@@ -158,7 +158,11 @@
                         </span>
                     </div>
                     <div class="text-xs text-gray-500 mb-1">
-                        <strong>{{ $bdsp->name }}</strong> → <strong>{{ $mentee->name }}</strong>
+                        @if($session->pairing && $session->pairing->userOne && $session->pairing->userTwo)
+                            <strong>{{ $session->pairing->userOne->name }}</strong> → <strong>{{ $session->pairing->userTwo->name }}</strong>
+                        @else
+                            <strong>N/A</strong> → <strong>N/A</strong>
+                        @endif
                     </div>
                     <div class="text-xs text-gray-500 mb-2">
                         {{ $session->date_time->format('M j, Y g:i A') }} • {{ $session->duration }} min
