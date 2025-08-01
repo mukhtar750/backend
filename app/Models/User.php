@@ -289,9 +289,12 @@ class User extends Authenticatable
 
                 // Delete pitch event related data
                 \App\Models\PitchEventParticipant::where('user_id', $user->id)->delete();
-                \App\Models\PitchEventInvestor::where('investor_id', $user->id)->delete();
-                \App\Models\PitchEventStartup::where('startup_id', $user->id)->delete();
-                \App\Models\PitchEventProposal::where('user_id', $user->id)->delete();
+                \App\Models\PitchEventInvestor::where('user_id', $user->id)->delete();
+                // Delete pitch event startups through user's startup
+                if ($user->startup) {
+                    \App\Models\PitchEventStartup::where('startup_id', $user->startup->id)->delete();
+                }
+                \App\Models\PitchEventProposal::where('investor_id', $user->id)->delete();
 
                 // Delete idea interests
                 \App\Models\IdeaInterest::where('user_id', $user->id)->delete();
