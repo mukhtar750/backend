@@ -273,7 +273,10 @@ public function deleteMentorshipSession(MentorshipSession $session)
                 $changes[$field] = ['old' => $oldValue, 'new' => $newValue];
             }
         }
-        if (!empty($changes)) {
+        
+        // Only send UserUpdatedNotification if user is already approved
+        // This prevents duplicate notifications when approving a user after updating their profile
+        if (!empty($changes) && $user->is_approved) {
             $user->notify(new \App\Notifications\UserUpdatedNotification($changes));
         }
         return redirect()->route('admin.user-management')->with('success', 'User updated successfully.');
