@@ -118,7 +118,7 @@
                         <i class="bi bi-person text-gray-600 text-sm"></i>
                     </div>
                     <div>
-                        <div class="font-semibold text-gray-800 text-sm">{{ Auth::user()->name }}</div>
+                        <div class="font-semibold text-gray-800 text-sm">{{ Auth::user()?->name ?? 'Guest' }}</div>
                         
                     </div>
                 </div>

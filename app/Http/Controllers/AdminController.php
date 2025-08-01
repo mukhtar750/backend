@@ -295,7 +295,7 @@ public function deleteMentorshipSession(MentorshipSession $session)
         return redirect()->back()->with('success', 'User approved successfully.');
     }
 
-    public function reject($id)
+    public function reject(Request $request, $id)
     {
         $user = User::find($id);
         if (!$user) {
@@ -305,8 +305,11 @@ public function deleteMentorshipSession(MentorshipSession $session)
         $user->is_approved = false;
         $user->save();
 
-        // Send rejection notification to user
-        $user->notify(new AccountRejectedNotification());
+        // Get rejection reason from request (optional)
+        $reason = $request->input('reason');
+
+        // Send rejection notification to user with reason
+        $user->notify(new AccountRejectedNotification($reason));
 
         return redirect()->back()->with('success', 'User rejected successfully.');
     }
