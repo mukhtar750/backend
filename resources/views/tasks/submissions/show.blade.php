@@ -29,7 +29,7 @@
             <div class="bg-gray-50 rounded p-3 mt-1">{{ $submission->feedback ?? 'No feedback.' }}</div>
         </div>
     @endif
-    @if(auth()->id() === $submission->task->assigner_id && $submission->status !== 'reviewed')
+    @if((int)auth()->id() === (int)$submission->task->assigner_id && $submission->status !== 'reviewed')
         <form action="{{ route('submissions.review', $submission) }}" method="POST" class="mt-6 bg-gray-50 p-4 rounded">
             @csrf
             <h2 class="text-lg font-semibold mb-2">Review & Grade</h2>
