@@ -61,7 +61,7 @@ class TaskController extends Controller
     public function markAsCompleted(Task $task)
     {
         // Check if the authenticated user is the assignee of this task
-        if (Auth::id() !== $task->assignee_id) {
+        if ((int)Auth::id() !== (int)$task->assignee_id) {
             return redirect()->back()->with('error', 'You are not authorized to update this task.');
         }
         
@@ -78,7 +78,7 @@ class TaskController extends Controller
     public function markAsInProgress(Task $task)
     {
         // Check if the authenticated user is the assignee of this task
-        if (Auth::id() !== $task->assignee_id) {
+        if ((int)Auth::id() !== (int)$task->assignee_id) {
             return redirect()->back()->with('error', 'You are not authorized to update this task.');
         }
         

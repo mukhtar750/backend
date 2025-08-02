@@ -32,7 +32,7 @@ class TaskSubmissionController extends Controller
             'file' => 'nullable|file|max:10240',
             'notes' => 'nullable|string|max:2000',
         ]);
-        if (Auth::id() !== $task->assignee_id) {
+        if ((int)Auth::id() !== (int)$task->assignee_id) {
             abort(403);
         }
         $filePath = null;
@@ -58,7 +58,7 @@ class TaskSubmissionController extends Controller
     public function show(TaskSubmission $submission)
     {
         $user = Auth::user();
-        if ($user->id !== $submission->user_id && $user->id !== $submission->task->assigner_id) {
+        if ((int)$user->id !== (int)$submission->user_id && (int)$user->id !== (int)$submission->task->assigner_id) {
             abort(403);
         }
         return view('tasks.submissions.show', compact('submission'));
@@ -88,7 +88,7 @@ class TaskSubmissionController extends Controller
             'grade' => 'nullable|string|max:20',
         ]);
         $user = Auth::user();
-        if ($user->id !== $submission->task->assigner_id) {
+        if ((int)$user->id !== (int)$submission->task->assigner_id) {
             abort(403);
         }
         $submission->feedback = $request->feedback;
