@@ -524,10 +524,7 @@ Route::middleware(['auth', 'isAdmin'])->group(function () {
 });
 });
 
-// Minimal test route for role middleware
-Route::get('/test-role', function () {
-    return 'Role middleware works!';
-})->middleware('role:admin');
+
 
 // BDSP specific routes for practice pitches
 Route::middleware(['auth', 'role:bdsp'])->group(function () {
@@ -673,6 +670,22 @@ Route::middleware(['auth', 'admin'])->group(function () {
 Route::get('/test-upload', function () {
     return view('test-upload');
 })->name('test.upload');
+
+// Debug route for task submission issue
+Route::get('/debug-task-submission/{task}', function ($taskId) {
+    $task = \App\Models\Task::find($taskId);
+    $user = Auth::user();
+    
+    return response()->json([
+        'authenticated_user_id' => $user ? $user->id : null,
+        'authenticated_user_role' => $user ? $user->role : null,
+        'task_exists' => $task ? true : false,
+        'task_assignee_id' => $task ? $task->assignee_id : null,
+        'task_title' => $task ? $task->title : null,
+        'ids_match' => $user && $task ? ($user->id === $task->assignee_id) : false,
+        'can_submit' => $user && $task ? ($user->id === $task->assignee_id) : false
+    ]);
+})->middleware('auth');
 
 Route::post('/test-upload', function (Request $request) {
     \Log::info('Test upload started', [
