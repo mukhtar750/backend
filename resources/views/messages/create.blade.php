@@ -1,4 +1,15 @@
-@extends('layouts.' . auth()->user()->role)
+@php
+    $layout = match (auth()->user()->role) {
+        'entrepreneur' => 'layouts.entrepreneur',
+        'bdsp' => 'layouts.bdsp',
+        'mentor' => 'layouts.mentor',
+        'mentee' => 'layouts.mentee',
+        'investor' => 'layouts.investor',
+        'admin' => 'admin.layouts.admin',
+        default => 'layouts.app',
+    };
+@endphp
+@extends($layout)
 
 @section('content')
 <div class="max-w-lg mx-auto mt-10 bg-white p-8 rounded shadow">
@@ -27,4 +38,4 @@
         <button type="submit" class="bg-purple-600 text-white px-6 py-2 rounded hover:bg-purple-700">Send</button>
     </form>
 </div>
-@endsection 
+@endsection
