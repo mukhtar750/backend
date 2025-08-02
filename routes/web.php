@@ -730,3 +730,23 @@ Route::get('/dashboard/mentee/feedback', function () {
     
     return view('dashboard.mentee-feedback', compact('pairedUsers', 'feedbackGiven', 'feedbackReceived', 'stats'));
 })->middleware('auth')->name('dashboard.mentee.feedback');
+
+// Debug route for task submission authorization
+Route::get('/debug/submission/{submission}', function (\App\Models\TaskSubmission $submission) {
+    $authId = auth()->id();
+    $assignerId = $submission->task->assigner_id;
+    $status = $submission->status;
+    
+    return response()->json([
+        'auth_id' => $authId,
+        'auth_id_type' => gettype($authId),
+        'assigner_id' => $assignerId,
+        'assigner_id_type' => gettype($assignerId),
+        'are_equal' => $authId === $assignerId,
+        'are_equal_loose' => $authId == $assignerId,
+        'status' => $status,
+        'can_review' => $authId === $assignerId && $status !== 'reviewed',
+        'task_title' => $submission->task->title,
+        'user_role' => auth()->user()->role
+    ]);
+})->middleware('auth');
