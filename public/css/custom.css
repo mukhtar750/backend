@@ -1,0 +1,145 @@
+/* Custom CSS for VR Portal */
+
+/* Modal and overlay styles */
+.modal-overlay {
+    display: none;
+}
+
+.modal-overlay.show {
+    display: flex;
+}
+
+/* Progress bar styles */
+.progress-bar-68 {
+    width: 68%;
+}
+
+.progress-bar-72 {
+    width: 72%;
+}
+
+.progress-bar-73 {
+    width: 73%;
+}
+
+.progress-bar-75 {
+    width: 75%;
+}
+
+.progress-bar-80 {
+    width: 80%;
+}
+
+.progress-bar-85 {
+    width: 85%;
+}
+
+.progress-bar-90 {
+    width: 90%;
+}
+
+.progress-bar-95 {
+    width: 95%;
+}
+
+.progress-bar-100 {
+    width: 100%;
+}
+
+/* Form styles */
+.form-inline {
+    display: inline;
+}
+
+.form-inline-block {
+    display: inline-block;
+}
+
+/* Logo styles */
+.logo-small {
+    width: 40px;
+    height: 40px;
+}
+
+.logo-medium {
+    width: 60px;
+    height: 60px;
+    object-fit: contain;
+}
+
+.logo-large {
+    max-height: 150px;
+    max-width: 100%;
+}
+
+/* Icon styles */
+.icon-large {
+    font-size: 2rem;
+}
+
+/* Animation styles */
+.animate-fade-in {
+    animation: fadeIn 0.5s ease-in;
+}
+
+.animate-delay-1 {
+    animation-delay: 0.1s;
+}
+
+.animate-delay-2 {
+    animation-delay: 0.2s;
+}
+
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(20px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+/* Layout styles */
+.min-height-300 {
+    min-height: 300px;
+}
+
+.min-width-160 {
+    min-width: 160px;
+    justify-content: center;
+}
+
+.height-150 {
+    height: 150px;
+}
+
+/* Background styles */
+.bg-chat {
+    background-color: #f8f5ff;
+}
+
+/* Letter spacing */
+.letter-spacing-2 {
+    letter-spacing: 2px;
+}
+
+/* Hidden elements */
+.hidden-form {
+    display: none;
+}
+
+/* Error text */
+.error-text {
+    color: red;
+}
+
+/* Selector visibility */
+.selector-hidden {
+    display: none;
+}
+
+.selector-visible {
+    display: block;
+}

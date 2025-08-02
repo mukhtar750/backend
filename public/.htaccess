@@ -5,6 +5,31 @@
 
     RewriteEngine On
 
+    # Security Headers
+    <IfModule mod_headers.c>
+        # Remove X-Powered-By header
+        Header unset X-Powered-By
+        
+        # Add X-Content-Type-Options header
+        Header always set X-Content-Type-Options nosniff
+        
+        # Set proper charset for content-type
+        Header always set Content-Type "text/html; charset=utf-8"
+        
+        # Remove deprecated headers
+        Header unset Pragma
+        Header unset Expires
+        
+        # Set proper Cache-Control
+        <FilesMatch "\.(css|js|png|jpg|jpeg|gif|ico|svg)$">
+            Header set Cache-Control "public, max-age=31536000"
+        </FilesMatch>
+        
+        <FilesMatch "\.(html|htm|php)$">
+            Header set Cache-Control "no-cache, no-store, must-revalidate"
+        </FilesMatch>
+    </IfModule>
+
     # Handle Authorization Header
     RewriteCond %{HTTP:Authorization} .
     RewriteRule .* - [E=HTTP_AUTHORIZATION:%{HTTP:Authorization}]

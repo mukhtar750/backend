@@ -35,7 +35,7 @@
             <h2 class="text-lg font-semibold mb-2">Review & Grade</h2>
             <div class="mb-3">
                 <label class="block font-semibold mb-1">Grade</label>
-                <input type="text" name="grade" class="form-input w-full rounded" value="{{ old('grade', $submission->grade) }}" placeholder="e.g. A, B+, 90%">
+                <input type="text" name="grade" id="grade" class="form-input w-full rounded" value="{{ old('grade', $submission->grade) }}" placeholder="e.g. A, B+, 90%">
             </div>
             <div class="mb-3">
                 <label class="block font-semibold mb-1">Feedback</label>
@@ -45,4 +45,4 @@
         </form>
     @endif
 </div>
-@endsection 
+@endsection
