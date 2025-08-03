@@ -147,25 +147,36 @@
                             <span class="flex items-center gap-1"><i class="bi bi-clock"></i> <span x-text="session.duration"></span> minutes</span>
                         </div>
                         <hr class="my-3">
-                        <div class="flex justify-end items-center gap-6">
-                            <div class="flex gap-2 bg-gray-50 rounded-xl shadow-sm px-3 py-3 items-center h-full">
-                                <button @click="openEditModal(session)" class="flex items-center gap-1 px-4 py-2 rounded text-sm font-medium text-gray-700 bg-white hover:bg-gray-100 transition h-full">
-                                    <i class="bi bi-pencil"></i> Edit
+                        <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 pt-4 border-t border-gray-100">
+                            <div class="flex flex-wrap gap-3">
+                                <!-- Edit Button -->
+                                <button @click="openEditModal(session)" class="flex items-center justify-center gap-2 px-5 py-3 h-12 min-w-[120px] bg-gradient-to-r from-gray-50 to-gray-100 text-gray-700 rounded-lg border border-gray-200 hover:from-gray-100 hover:to-gray-200 hover:border-gray-300 shadow-md hover:shadow-lg transform hover:scale-105 transition-all duration-300 ease-out focus:outline-none focus:ring-3 focus:ring-gray-300 focus:ring-opacity-50">
+                                    <i class="bi bi-pencil-square text-lg hover:scale-110 transition-transform duration-200"></i>
+                                    <span class="font-semibold">Edit</span>
                                 </button>
-                                <form :action="`/mentorship-sessions/${session.id}/complete`" method="POST" style="display:inline" @submit.prevent="if(confirm('Mark as completed?')) $event.target.submit()">
+
+                                <!-- Complete Button -->
+                                <form class="inline-block" :action="`/mentorship-sessions/${session.id}/complete`" method="POST" @submit.prevent="if(confirm('Mark as completed?')) $event.target.submit()">
                                     <input type="hidden" name="_token" value="{{ csrf_token() }}">
-                                    <button type="submit" class="flex items-center gap-1 px-4 py-2 rounded text-sm font-medium text-green-700 bg-green-50 hover:bg-green-100 transition h-full">
-                                        <i class="bi bi-check-circle"></i> Complete
+                                    <button type="submit" class="flex items-center justify-center gap-2 px-5 py-3 h-12 min-w-[130px] bg-gradient-to-r from-emerald-500 to-green-600 text-white rounded-lg border border-emerald-400 hover:from-emerald-600 hover:to-green-700 hover:border-emerald-500 shadow-md hover:shadow-lg transform hover:scale-105 transition-all duration-300 ease-out focus:outline-none focus:ring-3 focus:ring-emerald-300 focus:ring-opacity-50">
+                                        <i class="bi bi-check-circle text-lg hover:scale-110 transition-transform duration-200"></i>
+                                        <span class="font-semibold">Complete</span>
                                     </button>
                                 </form>
-                                <form :action="`/mentorship-sessions/${session.id}/cancel`" method="POST" style="display:inline" @submit.prevent="if(confirm('Cancel this session?')) $event.target.submit()">
+
+                                <!-- Cancel Button -->
+                                <form class="inline-block" :action="`/mentorship-sessions/${session.id}/cancel`" method="POST" @submit.prevent="if(confirm('Cancel this session?')) $event.target.submit()">
                                     <input type="hidden" name="_token" value="{{ csrf_token() }}">
-                                    <button type="submit" class="flex items-center gap-1 px-4 py-2 rounded text-sm font-medium text-red-700 bg-red-50 hover:bg-red-100 transition h-full">
-                                        <i class="bi bi-x-circle"></i> Cancel
+                                    <button type="submit" class="flex items-center justify-center gap-2 px-5 py-3 h-12 min-w-[120px] bg-gradient-to-r from-red-500 to-red-600 text-white rounded-lg border border-red-400 hover:from-red-600 hover:to-red-700 hover:border-red-500 shadow-md hover:shadow-lg transform hover:scale-105 transition-all duration-300 ease-out focus:outline-none focus:ring-3 focus:ring-red-300 focus:ring-opacity-50">
+                                        <i class="bi bi-x-circle text-lg hover:scale-110 transition-transform duration-200"></i>
+                                        <span class="font-semibold">Cancel</span>
                                     </button>
                                 </form>
-                                <a href="#" class="flex items-center gap-1 px-4 py-2 rounded text-sm font-medium text-blue-700 bg-blue-50 hover:bg-blue-100 transition h-full">
-                                    <i class="bi bi-arrow-repeat"></i> Reschedule
+
+                                <!-- Reschedule Button -->
+                                <a href="#" class="flex items-center justify-center gap-2 px-5 py-3 h-12 min-w-[130px] bg-gradient-to-r from-blue-500 to-blue-600 text-white rounded-lg border border-blue-400 hover:from-blue-600 hover:to-blue-700 hover:border-blue-500 shadow-md hover:shadow-lg transform hover:scale-105 transition-all duration-300 ease-out focus:outline-none focus:ring-3 focus:ring-blue-300 focus:ring-opacity-50">
+                                    <i class="bi bi-arrow-clockwise text-lg hover:scale-110 transition-transform duration-200"></i>
+                                    <span class="font-semibold">Reschedule</span>
                                 </a>
                             </div>
                             <template x-if="session.meeting_link">
