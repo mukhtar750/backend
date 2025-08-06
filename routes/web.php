@@ -299,6 +299,7 @@ Route::middleware(['auth'])->group(function () {
     Route::post('/dashboard/entrepreneur-startup-profile', [\App\Http\Controllers\StartupController::class, 'store'])->name('entrepreneur.startup-profile.store');
     Route::put('/dashboard/entrepreneur-startup-profile/{startup}', [\App\Http\Controllers\StartupController::class, 'update'])->name('entrepreneur.startup-profile.update');
     Route::delete('/dashboard/entrepreneur-startup-profile/{startup}', [\App\Http\Controllers\StartupController::class, 'destroy'])->name('entrepreneur.startup-profile.destroy');
+
     
     // Tasks Routes
     Route::get('/dashboard/entrepreneur-tasks', [\App\Http\Controllers\TaskController::class, 'index'])->name('entrepreneur.tasks');
@@ -649,8 +650,9 @@ Route::middleware(['auth'])->group(function () {
 // Admin Startup Profile Management
 Route::middleware(['auth', 'admin'])->group(function () {
     Route::get('/admin/startups/{startup}', [\App\Http\Controllers\AdminStartupController::class, 'show'])->name('admin.startups.show');
-    Route::post('/admin/startups/{startup}/approve', [\App\Http\Controllers\AdminStartupController::class, 'approve'])->name('admin.startups.approve');
-    Route::post('/admin/startups/{startup}/reject', [\App\Http\Controllers\AdminStartupController::class, 'reject'])->name('admin.startups.reject');
+Route::post('/admin/startups/{startup}/approve', [\App\Http\Controllers\AdminStartupController::class, 'approve'])->name('admin.startups.approve');
+Route::post('/admin/startups/{startup}/reject', [\App\Http\Controllers\AdminStartupController::class, 'reject'])->name('admin.startups.reject');
+Route::patch('/admin/startups/{startup}/toggle-anonymous', [\App\Http\Controllers\AdminStartupController::class, 'toggleAnonymousTeaser'])->name('admin.startups.toggle_anonymous_teaser');
 });
 
 // Startup Info Request Routes
@@ -664,6 +666,13 @@ Route::middleware(['auth', 'admin'])->group(function () {
     Route::post('/admin/startup-info-requests/{infoRequest}/approve', [\App\Http\Controllers\StartupInfoRequestController::class, 'approve'])->name('admin.startup-info-requests.approve');
     Route::post('/admin/startup-info-requests/{infoRequest}/reject', [\App\Http\Controllers\StartupInfoRequestController::class, 'reject'])->name('admin.startup-info-requests.reject');
     Route::post('/admin/mentorship-sessions/clear-all', [\App\Http\Controllers\AdminController::class, 'clearAllSessions'])->name('admin.mentorship_sessions.clear_all');
+});
+
+// Admin Access Request Management
+Route::middleware(['auth', 'admin'])->group(function () {
+    Route::get('/admin/access-requests', [\App\Http\Controllers\AdminController::class, 'accessRequests'])->name('admin.access_requests');
+    Route::post('/admin/access-requests/{accessRequest}/approve', [\App\Http\Controllers\AdminController::class, 'approveAccessRequest'])->name('admin.access_requests.approve');
+    Route::post('/admin/access-requests/{accessRequest}/reject', [\App\Http\Controllers\AdminController::class, 'rejectAccessRequest'])->name('admin.access_requests.reject');
 });
 
 

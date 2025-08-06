@@ -1,4 +1,15 @@
-@extends('layouts.entrepreneur')
+@php
+    $role = auth()->check() ? auth()->user()->role : null;
+    $layout = match($role) {
+        'mentor' => 'layouts.mentor',
+        'entrepreneur' => 'layouts.entrepreneur',
+        'mentee' => 'layouts.mentee',
+        'investor' => 'layouts.investor',
+        'bdsp' => 'layouts.bdsp',
+        default => 'layouts.app',
+    };
+@endphp
+@extends($layout)
 
 @section('content')
 <div class="container mx-auto px-4 py-8 max-w-2xl">

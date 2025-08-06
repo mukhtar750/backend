@@ -38,7 +38,11 @@
                                     <div class="card h-100">
                                         <div class="card-body">
                                             <div class="d-flex align-items-center mb-3">
-                                                @if ($startup->logo)
+                                                @if ($startup->anonymous_teaser && $startup->logo)
+                                                    <div class="mr-3 bg-light d-flex align-items-center justify-content-center" style="width: 60px; height: 60px;">
+                                                        <i class="fas fa-building fa-2x text-secondary"></i>
+                                                    </div>
+                                                @elseif (!$startup->anonymous_teaser && $startup->logo)
                                                     <img src="{{ asset('storage/' . $startup->logo) }}" alt="{{ $startup->name }} Logo" class="mr-3" style="width: 60px; height: 60px; object-fit: contain;">
                                                 @else
                                                     <div class="mr-3 bg-light d-flex align-items-center justify-content-center" style="width: 60px; height: 60px;">
@@ -46,7 +50,13 @@
                                                     </div>
                                                 @endif
                                                 <div>
-                                                    <h5 class="card-title mb-0">{{ $startup->name }}</h5>
+                                                    <h5 class="card-title mb-0">
+                                                        @if ($startup->anonymous_teaser)
+                                                            Anonymous Startup
+                                                        @else
+                                                            {{ $startup->name }}
+                                                        @endif
+                                                    </h5>
                                                     @if ($startup->tagline)
                                                         <p class="text-muted mb-0">{{ $startup->tagline }}</p>
                                                     @endif
@@ -54,24 +64,24 @@
                                             </div>
                                             
                                             <div class="mb-3">
-                                                <span class="badge badge-primary">{{ $startup->sector }}</span>
-                                                @if ($startup->business_model)
-                                                    <span class="badge badge-info">{{ $startup->business_model }}</span>
-                                                @endif
-                                                <span class="badge badge-secondary">{{ $startup->funding_stage }}</span>
-                                            </div>
-                                            
-                                            @if ($startup->headquarters_location)
-                                                <p class="mb-2"><i class="fas fa-map-marker-alt mr-2"></i>{{ $startup->headquarters_location }}</p>
-                                            @endif
-                                            
-                                            @if ($startup->year_founded)
-                                                <p class="mb-2"><i class="fas fa-calendar-alt mr-2"></i>Founded: {{ $startup->year_founded }}</p>
-                                            @endif
-                                            
-                                            @if ($startup->description)
-                                                <p class="card-text mb-3">{{ Str::limit($startup->description, 150) }}</p>
-                                            @endif
+                                <span class="badge badge-primary">{{ $startup->sector }}</span>
+                                @if ($startup->business_model)
+                                    <span class="badge badge-info">{{ $startup->business_model }}</span>
+                                @endif
+                                <span class="badge badge-secondary">{{ $startup->funding_stage }}</span>
+                            </div>
+                            
+                            @if ($startup->headquarters_location)
+                                <p class="mb-2"><i class="fas fa-map-marker-alt mr-2"></i>{{ $startup->headquarters_location }}</p>
+                            @endif
+                            
+                            @if ($startup->year_founded)
+                                <p class="mb-2"><i class="fas fa-calendar-alt mr-2"></i>Founded: {{ $startup->year_founded }}</p>
+                            @endif
+                            
+                            @if ($startup->description)
+                                <p class="card-text mb-3">{{ Str::limit($startup->description, 150) }}</p>
+                            @endif
                                             
                                             <div class="d-flex justify-content-between align-items-center mt-3">
                                                 <a href="{{ route('investor.view_startup', $startup->id) }}" class="btn btn-primary">View Profile</a>

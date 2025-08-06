@@ -133,7 +133,7 @@ class InvestorController extends Controller
         $startupsData = $startups->map(function($startup) use ($accessRequests) {
             return [
                 'id' => $startup->id,
-                'name' => $startup->name,
+                'name' => $startup->anonymous_teaser ? 'Anonymous Startup' : $startup->name,
                 'sector' => $startup->sector,
                 'tagline' => $startup->tagline,
                 'logo' => $startup->logo ? asset('storage/' . $startup->logo) : 'https://logo.clearbit.com/placeholder.com',
@@ -141,6 +141,7 @@ class InvestorController extends Controller
                 'location' => $startup->headquarters_location,
                 'stats' => $this->getStartupStats($startup),
                 'teaser' => true,
+                'anonymous_teaser' => $startup->anonymous_teaser,
                 'description' => $startup->description,
                 'team' => [
                     [

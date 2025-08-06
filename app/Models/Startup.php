@@ -45,7 +45,8 @@ class Startup extends Model
         'current_challenges',
         'support_needed',
         'future_vision',
-        'status'
+        'status',
+        'anonymous_teaser'
     ];
     
     /**

@@ -142,7 +142,13 @@
                     </div>
                 @endif
                 <div>
-                    <div class="font-bold text-lg text-gray-900">{{ $startup->name }}</div>
+                    <div class="font-bold text-lg text-gray-900">
+                        @if($startup->anonymous_teaser)
+                            Anonymous Startup
+                        @else
+                            {{ $startup->name }}
+                        @endif
+                    </div>
                     <div class="text-xs text-gray-500">by {{ $startup->founder->name ?? 'Unknown' }} &middot; Updated {{ $startup->updated_at->diffForHumans() }}</div>
                 </div>
             </div>

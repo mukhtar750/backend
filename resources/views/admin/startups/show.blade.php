@@ -33,6 +33,52 @@
             {{ ucfirst($startup->status) }}
         </span>
     </div>
+    
+    <!-- Admin Controls -->
+    <div class="bg-gray-50 border border-gray-200 rounded-lg p-4 mb-6">
+        <h3 class="text-lg font-semibold text-gray-800 mb-4">Admin Controls</h3>
+        
+        <!-- Anonymous Teaser Toggle -->
+        <div class="flex items-center justify-between mb-4">
+            <div>
+                <h4 class="font-medium text-gray-700">Anonymous Teaser Mode</h4>
+                <p class="text-sm text-gray-600">
+                    {{ $startup->anonymous_teaser 
+                        ? 'Startup name is hidden from investors. They see "Anonymous Startup" instead.'
+                        : 'Startup name is visible to investors in teaser view.' }}
+                </p>
+            </div>
+            <form action="{{ route('admin.startups.toggle_anonymous_teaser', $startup->id) }}" method="POST" class="ml-4">
+                @csrf
+                @method('PATCH')
+                <button type="submit" class="px-4 py-2 rounded-md text-sm font-medium transition-colors
+                    {{ $startup->anonymous_teaser 
+                        ? 'bg-yellow-600 text-white hover:bg-yellow-700' 
+                        : 'bg-blue-600 text-white hover:bg-blue-700' }}">
+                    {{ $startup->anonymous_teaser ? 'Disable Anonymous Mode' : 'Enable Anonymous Mode' }}
+                </button>
+            </form>
+        </div>
+        
+        <!-- Approval Controls -->
+        @if($startup->status === 'pending')
+        <div class="flex items-center gap-3">
+            <form action="{{ route('admin.startups.approve', $startup->id) }}" method="POST" class="inline">
+                @csrf
+                <button type="submit" class="px-4 py-2 bg-green-600 text-white rounded-md hover:bg-green-700 transition-colors">
+                    Approve Startup
+                </button>
+            </form>
+            <form action="{{ route('admin.startups.reject', $startup->id) }}" method="POST" class="inline">
+                @csrf
+                <button type="submit" class="px-4 py-2 bg-red-600 text-white rounded-md hover:bg-red-700 transition-colors"
+                        onclick="return confirm('Are you sure you want to reject this startup profile?')">
+                    Reject Startup
+                </button>
+            </form>
+        </div>
+        @endif
+    </div>
     <div class="mb-6">
         <h2 class="font-semibold text-gray-700 mb-1">Founder</h2>
         <div class="flex items-center gap-3">

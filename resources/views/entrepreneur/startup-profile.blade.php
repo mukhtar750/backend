@@ -78,24 +78,34 @@
 
         <!-- Investor Teaser Section -->
         <div class="bg-gradient-to-r from-purple-50 to-pink-50 p-6 rounded-lg mb-6 border border-pink-100">
-            <h2 class="text-xl font-semibold text-gray-800 mb-4 flex items-center">
-                <i class="bi bi-eye-fill text-[#b81d8f] mr-2"></i> Investor Teaser View
-                <span class="ml-2 text-xs bg-blue-100 text-blue-800 px-2 py-1 rounded-full">What investors see</span>
-            </h2>
+            <div class="flex justify-between items-center mb-4">
+                <h2 class="text-xl font-semibold text-gray-800 flex items-center">
+                    <i class="bi bi-eye-fill text-[#b81d8f] mr-2"></i> Investor Teaser View
+                    <span class="ml-2 text-xs bg-blue-100 text-blue-800 px-2 py-1 rounded-full">What investors see</span>
+                </h2>
+                
+                <!-- Anonymous Teaser Status -->
+                <div class="flex items-center space-x-3">
+                    <span class="text-sm text-gray-600">Anonymous Teaser:</span>
+                    <span class="text-xs {{ $startup->anonymous_teaser ? 'bg-green-100 text-green-800' : 'bg-gray-100 text-gray-800' }} px-2 py-1 rounded-full">
+                        {{ $startup->anonymous_teaser ? 'ON' : 'OFF' }}
+                    </span>
+                </div>
+            </div>
             
             <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
                 <!-- Logo and Basic Info -->
                 <div class="md:col-span-1">
                     <div class="flex flex-col items-center">
                         @if($startup->logo)
-                            <img src="{{ asset($startup->logo) }}" alt="{{ $startup->name }}" class="w-24 h-24 object-cover rounded-full mb-3">
+                            <img src="{{ asset($startup->logo) }}" alt="{{ $startup->anonymous_teaser ? 'Anonymous Startup' : $startup->name }}" class="w-24 h-24 object-cover rounded-full mb-3">
                         @else
                             <div class="w-24 h-24 bg-gray-200 rounded-full flex items-center justify-center mb-3">
                                 <i class="bi bi-building text-gray-400 text-3xl"></i>
                             </div>
                         @endif
-                        <h3 class="text-lg font-bold text-center">{{ $startup->name }}</h3>
-                        @if($startup->tagline)
+                        <h3 class="text-lg font-bold text-center">{{ $startup->anonymous_teaser ? 'Anonymous Startup' : $startup->name }}</h3>
+                        @if($startup->tagline && !$startup->anonymous_teaser)
                             <p class="text-sm text-gray-600 text-center italic">"{{ $startup->tagline }}"</p>
                         @endif
                     </div>

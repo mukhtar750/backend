@@ -32,6 +32,12 @@
             <a href="{{ route('admin.user-management') }}" class="flex items-center gap-3 px-4 py-2 rounded-lg hover:bg-purple-700 {{ $route == 'admin.user-management' ? 'active' : '' }}">
                 <i class="bi bi-people-fill"></i> User Management
             </a>
+            <a href="{{ route('admin.access_requests') }}" class="flex items-center gap-3 px-4 py-2 rounded-lg hover:bg-purple-700 {{ $route == 'admin.access_requests' ? 'active' : '' }}">
+                <i class="bi bi-key-fill"></i> Access Requests
+            </a>
+            <a href="{{ route('admin.user-management', ['tab' => 'startup-profiles']) }}" class="flex items-center gap-3 px-4 py-2 rounded-lg hover:bg-purple-700 {{ $route == 'admin.user-management' && request('tab') == 'startup-profiles' ? 'active' : '' }}">
+                <i class="bi bi-building"></i> Startup Profiles
+            </a>
             <a href="{{ route('admin.training_programs') }}" class="flex items-center gap-3 px-4 py-2 rounded-lg hover:bg-purple-700 {{ $route == 'admin.training_programs' ? 'active' : '' }}">
                 <i class="bi bi-book-fill"></i> Training Programs
             </a>

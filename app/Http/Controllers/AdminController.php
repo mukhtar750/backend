@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\DB;
 
 use App\Models\User;
 use App\Models\PitchEventProposal;
@@ -570,7 +571,7 @@ public function deleteMentorshipSession(MentorshipSession $session)
         $rejectedPitches = collect();
         $reviewedPitches = collect();
 
-        $categories = \DB::table('categories')->get(); // Fetch all categories
+        $categories = DB::table('categories')->get(); // Fetch all categories
 
         return view('admin.content_management', compact(
             'resources', 'status', 'contents', 'categories',
@@ -696,7 +697,7 @@ public function deleteMentorshipSession(MentorshipSession $session)
             // Notify the investor
             $proposal->investor->notify(new \App\Notifications\ProposalApprovedNotification($proposal));
 
-            \Log::info('Pitch event proposal approved', [
+            Log::info('Pitch event proposal approved', [
                 'proposal_id' => $proposal->id,
                 'event_id' => $event->id,
                 'admin_id' => (auth()->user() instanceof \App\Models\User) ? auth()->id() : null,
@@ -706,7 +707,7 @@ public function deleteMentorshipSession(MentorshipSession $session)
                 ->with('success', 'Proposal approved and event created successfully.');
 
         } catch (\Exception $e) {
-            \Log::error('Failed to approve proposal', [
+            Log::error('Failed to approve proposal', [
                 'proposal_id' => $proposal->id,
                 'error' => $e->getMessage(),
             ]);
@@ -732,7 +733,7 @@ public function deleteMentorshipSession(MentorshipSession $session)
             // Notify the investor
             $proposal->investor->notify(new \App\Notifications\ProposalRejectedNotification($proposal));
 
-            \Log::info('Pitch event proposal rejected', [
+            Log::info('Pitch event proposal rejected', [
                 'proposal_id' => $proposal->id,
                 'admin_id' => (auth()->user() instanceof \App\Models\User) ? auth()->id() : null,
             ]);
@@ -741,7 +742,7 @@ public function deleteMentorshipSession(MentorshipSession $session)
                 ->with('success', 'Proposal rejected successfully.');
 
         } catch (\Exception $e) {
-            \Log::error('Failed to reject proposal', [
+            Log::error('Failed to reject proposal', [
                 'proposal_id' => $proposal->id,
                 'error' => $e->getMessage(),
             ]);
@@ -767,7 +768,7 @@ public function deleteMentorshipSession(MentorshipSession $session)
             // Notify the investor
             $proposal->investor->notify(new \App\Notifications\ProposalChangesRequestedNotification($proposal));
 
-            \Log::info('Pitch event proposal changes requested', [
+            Log::info('Pitch event proposal changes requested', [
                 'proposal_id' => $proposal->id,
                 'admin_id' => (auth()->user() instanceof \App\Models\User) ? auth()->id() : null,
             ]);
@@ -776,12 +777,53 @@ public function deleteMentorshipSession(MentorshipSession $session)
                 ->with('success', 'Changes requested for proposal successfully.');
 
         } catch (\Exception $e) {
-            \Log::error('Failed to request changes for proposal', [
+            Log::error('Failed to request changes for proposal', [
                 'proposal_id' => $proposal->id,
                 'error' => $e->getMessage(),
             ]);
 
             return back()->with('error', 'Failed to request changes. Please try again.');
         }
+    }
+
+    /**
+     * Display all access requests for admin management
+     */
+    public function accessRequests()
+    {
+        $accessRequests = \App\Models\StartupAccessRequest::with(['investor', 'startup'])
+            ->orderBy('created_at', 'desc')
+            ->paginate(20);
+        
+        return view('admin.access-requests', compact('accessRequests'));
+    }
+
+    /**
+     * Approve an access request
+     */
+    public function approveAccessRequest(\App\Models\StartupAccessRequest $accessRequest)
+    {
+        $accessRequest->status = 'approved';
+        $accessRequest->save();
+        
+        // Notify the investor
+        $accessRequest->investor->notify(new \App\Notifications\AccessRequestApproved($accessRequest));
+        
+        return redirect()->back()->with('success', 'Access request approved successfully.');
+    }
+
+    /**
+     * Reject an access request
+     */
+    public function rejectAccessRequest(Request $request, \App\Models\StartupAccessRequest $accessRequest)
+    {
+        $accessRequest->status = 'rejected';
+        $accessRequest->response_message = $request->response_message ?? 'Request rejected by admin.';
+        $accessRequest->save();
+        
+        // Notify the investor
+        $accessRequest->investor->notify(new \App\Notifications\AccessRequestRejected($accessRequest));
+        
+        return redirect()->back()->with('success', 'Access request rejected successfully.');
     }
 }

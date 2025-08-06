@@ -6,7 +6,7 @@
         <div class="col-md-10">
             <div class="card">
                 <div class="card-header bg-primary text-white d-flex justify-content-between align-items-center">
-                    <h4 class="mb-0">{{ $startup->name }}</h4>
+                    <h4 class="mb-0">{{ $startup->anonymous_teaser ? 'Anonymous Startup' : $startup->name }}</h4>
                     <a href="{{ route('investor.startup_profiles') }}" class="btn btn-sm btn-light">Back to Startups</a>
                 </div>
                 <div class="card-body">
@@ -33,7 +33,11 @@
                         <div class="investor-teaser-view">
                             <div class="row mb-4">
                                 <div class="col-md-3 text-center">
-                                    @if ($startup->logo)
+                                    @if ($startup->anonymous_teaser)
+                                        <div class="bg-light d-flex align-items-center justify-content-center" style="height: 150px;">
+                                            <i class="fas fa-building fa-4x text-secondary"></i>
+                                        </div>
+                                    @elseif ($startup->logo)
                                         <img src="{{ asset('storage/' . $startup->logo) }}" alt="{{ $startup->name }} Logo" class="img-fluid mb-3" style="max-height: 150px; max-width: 100%;">
                                     @else
                                         <div class="bg-light d-flex align-items-center justify-content-center" style="height: 150px;">
@@ -42,10 +46,10 @@
                                     @endif
                                 </div>
                                 <div class="col-md-9">
-                                    <h3 class="mb-1">{{ $startup->name }}</h3>
-                                    @if ($startup->tagline)
-                                        <p class="text-muted mb-3">{{ $startup->tagline }}</p>
-                                    @endif
+                                    <h3 class="mb-1">{{ $startup->anonymous_teaser ? 'Anonymous Startup' : $startup->name }}</h3>
+                    @if ($startup->tagline)
+                        <p class="text-muted mb-3">{{ $startup->tagline }}</p>
+                    @endif
                                     
                                     <div class="mb-3">
                                         <span class="badge badge-primary">{{ $startup->sector }}</span>
@@ -111,7 +115,11 @@
                             
                             <div class="row mb-4">
                                 <div class="col-md-3 text-center">
-                                    @if ($startup->logo)
+                                    @if ($startup->anonymous_teaser)
+                                        <div class="bg-light d-flex align-items-center justify-content-center" style="height: 150px;">
+                                            <i class="fas fa-building fa-4x text-secondary"></i>
+                                        </div>
+                                    @elseif ($startup->logo)
                                         <img src="{{ asset('storage/' . $startup->logo) }}" alt="{{ $startup->name }} Logo" class="img-fluid mb-3" style="max-height: 150px; max-width: 100%;">
                                     @else
                                         <div class="bg-light d-flex align-items-center justify-content-center" style="height: 150px;">
@@ -120,7 +128,7 @@
                                     @endif
                                 </div>
                                 <div class="col-md-9">
-                                    <h3 class="mb-1">{{ $startup->name }}</h3>
+                                    <h3 class="mb-1">{{ $startup->anonymous_teaser ? 'Anonymous Startup' : $startup->name }}</h3>
                                     @if ($startup->tagline)
                                         <p class="text-muted mb-3">{{ $startup->tagline }}</p>
                                     @endif

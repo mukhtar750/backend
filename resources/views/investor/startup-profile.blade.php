@@ -1,6 +1,6 @@
 @extends('layouts.investor')
 
-@section('title', $startup->name . ' - Startup Profile')
+@section('title', ($startup->anonymous_teaser ? 'Anonymous Startup' : $startup->name) . ' - Startup Profile')
 
 @section('content')
 <div class="max-w-4xl mx-auto mt-8">
@@ -9,7 +9,11 @@
     <!-- Startup Header -->
     <div class="bg-white rounded-xl border border-gray-200 p-8 mb-8 shadow-sm">
         <div class="flex items-start gap-6">
-            @if($startup->logo)
+            @if($startup->anonymous_teaser)
+                <div class="w-24 h-24 rounded-xl bg-gray-300 flex items-center justify-center">
+                    <i class="bi bi-building text-4xl text-gray-600"></i>
+                </div>
+            @elseif($startup->logo)
                 <img src="{{ asset('storage/' . $startup->logo) }}" alt="{{ $startup->name }}" class="w-24 h-24 rounded-xl object-cover">
             @else
                 <div class="w-24 h-24 rounded-xl bg-gray-300 flex items-center justify-center">
@@ -17,8 +21,16 @@
                 </div>
             @endif
             <div class="flex-1">
-                <h1 class="text-3xl font-bold text-gray-900 mb-2">{{ $startup->name }}</h1>
-                <p class="text-lg text-gray-600 mb-4">{{ $startup->tagline ?? 'No tagline available' }}</p>
+                <h1 class="text-3xl font-bold text-gray-900 mb-2">
+                    @if($startup->anonymous_teaser)
+                        Anonymous Startup
+                    @else
+                        {{ $startup->name }}
+                    @endif
+                </h1>
+                <p class="text-lg text-gray-600 mb-4">
+                    {{ $startup->tagline ?? 'No tagline available' }}
+                </p>
                 <div class="flex flex-wrap gap-4 text-sm text-gray-500">
                     <div><i class="bi bi-geo-alt"></i> {{ $startup->headquarters_location ?? 'Location not specified' }}</div>
                     <div><i class="bi bi-calendar"></i> Founded {{ $startup->year_founded ?? 'N/A' }}</div>
@@ -204,4 +216,4 @@
         </div>
     </div>
 </div>
-@endsection 
+@endsection

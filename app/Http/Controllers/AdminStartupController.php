@@ -48,4 +48,17 @@ class AdminStartupController extends Controller
         $startup->delete();
         return redirect()->back()->with('success', 'Startup profile deleted successfully.');
     }
+
+    // Toggle anonymous teaser setting
+    public function toggleAnonymousTeaser(Startup $startup)
+    {
+        $startup->anonymous_teaser = !$startup->anonymous_teaser;
+        $startup->save();
+        
+        $message = $startup->anonymous_teaser 
+            ? 'Anonymous teaser mode enabled for ' . $startup->name . '. Startup name will be hidden from investors.'
+            : 'Anonymous teaser mode disabled for ' . $startup->name . '. Startup name is now visible to investors.';
+        
+        return redirect()->back()->with('success', $message);
+    }
 }
