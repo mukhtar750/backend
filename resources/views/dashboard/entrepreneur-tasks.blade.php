@@ -82,7 +82,7 @@
             <div class="flex justify-between items-start">
                 <div>
                     <p class="text-sm text-blue-500 font-medium">Total Tasks</p>
-                    <p class="text-2xl font-bold text-gray-800">12</p>
+                    <p class="text-2xl font-bold text-gray-800">{{ $totalTasks ?? 0 }}</p>
                 </div>
                 <div class="bg-blue-100 p-2 rounded-full">
                     <i class="bi bi-list-check text-blue-500 text-xl"></i>
@@ -94,7 +94,7 @@
             <div class="flex justify-between items-start">
                 <div>
                     <p class="text-sm text-green-500 font-medium">Completed</p>
-                    <p class="text-2xl font-bold text-gray-800">5</p>
+                    <p class="text-2xl font-bold text-gray-800">{{ $completedTasks ?? 0 }}</p>
                 </div>
                 <div class="bg-green-100 p-2 rounded-full">
                     <i class="bi bi-check-circle text-green-500 text-xl"></i>
@@ -106,7 +106,7 @@
             <div class="flex justify-between items-start">
                 <div>
                     <p class="text-sm text-yellow-500 font-medium">In Progress</p>
-                    <p class="text-2xl font-bold text-gray-800">4</p>
+                    <p class="text-2xl font-bold text-gray-800">{{ $inProgressTasks ?? 0 }}</p>
                 </div>
                 <div class="bg-yellow-100 p-2 rounded-full">
                     <i class="bi bi-hourglass-split text-yellow-500 text-xl"></i>
@@ -118,7 +118,7 @@
             <div class="flex justify-between items-start">
                 <div>
                     <p class="text-sm text-red-500 font-medium">Overdue</p>
-                    <p class="text-2xl font-bold text-gray-800">3</p>
+                    <p class="text-2xl font-bold text-gray-800">{{ $overdueTasks ?? 0 }}</p>
                 </div>
                 <div class="bg-red-100 p-2 rounded-full">
                     <i class="bi bi-exclamation-circle text-red-500 text-xl"></i>
@@ -165,7 +165,7 @@
     
     <!-- Pagination -->
     <div class="mt-6 flex justify-between items-center">
-        <p class="text-sm text-gray-600">Showing 5 of 12 tasks</p>
+        <p class="text-sm text-gray-600">Showing {{ $tasks->count() }} of {{ $totalTasks ?? 0 }} tasks</p>
         <div class="flex space-x-1">
             <button class="px-3 py-1 border border-gray-300 rounded-md text-gray-600 hover:bg-gray-50 disabled:opacity-50" disabled>
                 <i class="bi bi-chevron-left"></i>

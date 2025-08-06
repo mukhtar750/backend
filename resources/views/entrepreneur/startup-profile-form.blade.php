@@ -64,7 +64,7 @@
                         <div class="flex items-center space-x-4">
                             @if(isset($startup) && $startup->logo)
                                 <div class="w-16 h-16 rounded-full overflow-hidden bg-gray-100">
-                                    <img src="{{ asset($startup->logo) }}" alt="{{ $startup->name }} logo" class="w-full h-full object-cover">
+                                    <img src="{{ asset('storage/' . $startup->logo) }}" alt="{{ $startup->name }} logo" class="w-full h-full object-cover">
                                 </div>
                             @endif
                             <input type="file" name="logo" id="logo" 
@@ -435,7 +435,7 @@
                                class="form-input w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50" 
                                accept=".pdf">
                         @if(isset($startup) && $startup->pitch_deck)
-                            <p class="text-sm text-gray-600 mt-1">Current file: <a href="{{ asset($startup->pitch_deck) }}" target="_blank" class="text-blue-500 hover:underline">View Pitch Deck</a></p>
+                            <p class="text-sm text-gray-600 mt-1">Current file: <a href="{{ asset('storage/' . $startup->pitch_deck) }}" target="_blank" class="text-blue-500 hover:underline">View Pitch Deck</a></p>
                         @endif
                         <p class="text-xs text-gray-500 mt-1">Upload a PDF file. Max 10MB.</p>
                         @error('pitch_deck')
@@ -461,7 +461,7 @@
                                class="form-input w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50" 
                                accept=".pdf,.jpg,.jpeg,.png">
                         @if(isset($startup) && $startup->company_registration)
-                            <p class="text-sm text-gray-600 mt-1">Current file: <a href="{{ asset($startup->company_registration) }}" target="_blank" class="text-blue-500 hover:underline">View Certificate</a></p>
+                            <p class="text-sm text-gray-600 mt-1">Current file: <a href="{{ asset('storage/' . $startup->company_registration) }}" target="_blank" class="text-blue-500 hover:underline">View Certificate</a></p>
                         @endif
                         <p class="text-xs text-gray-500 mt-1">Upload a PDF or image file. Max 5MB.</p>
                         @error('company_registration')

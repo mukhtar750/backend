@@ -239,6 +239,21 @@ class InvestorController extends Controller
             ->where('event_date', '>=', now())
             ->count();
         
+        // Get upcoming pitch events for display
+        $upcomingPitchEvents = \App\Models\PitchEvent::where('status', 'published')
+            ->where('event_date', '>=', now())
+            ->orderBy('event_date', 'asc')
+            ->take(5)
+            ->get();
+        
+        // Get sector statistics for opportunities by sector
+        $sectorStats = Startup::where('status', 'active')
+            ->selectRaw('sector, COUNT(*) as count')
+            ->groupBy('sector')
+            ->orderByDesc('count')
+            ->take(4)
+            ->get();
+        
         // Get investor's access requests
         $accessRequests = StartupInfoRequest::where('investor_id', Auth::id())->get();
         $approvedRequests = $accessRequests->where('status', 'approved')->count();
@@ -248,6 +263,8 @@ class InvestorController extends Controller
             'approvedStartups',
             'startupsCount',
             'pitchesCount',
+            'upcomingPitchEvents',
+            'sectorStats',
             'approvedRequests',
             'pendingRequests'
         ));

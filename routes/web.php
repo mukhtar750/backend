@@ -253,7 +253,34 @@ Route::get('/dashboard/entrepreneur', function () {
     $tasks = \App\Models\Task::where('assignee_id', $user->id)
         ->orderBy('due_date')
         ->get();
-    return view('dashboard.entrepreneur', compact('pairings', 'tasks'));
+    
+    // Get paired BDSPs
+    $bdspPairings = \App\Models\Pairing::where('pairing_type', 'bdsp_entrepreneur')
+        ->where(function($q) use ($user) {
+            $q->where('user_one_id', $user->id)->orWhere('user_two_id', $user->id);
+        })->get();
+    $bdspIds = $bdspPairings->map(function($pairing) use ($user) {
+        return $pairing->user_one_id == $user->id ? $pairing->user_two_id : $pairing->user_one_id;
+    });
+    
+    // Get paired mentors
+    $mentorPairings = \App\Models\Pairing::where('pairing_type', 'mentor_entrepreneur')
+        ->where(function($q) use ($user) {
+            $q->where('user_one_id', $user->id)->orWhere('user_two_id', $user->id);
+        })->get();
+    $mentorIds = $mentorPairings->map(function($pairing) use ($user) {
+        return $pairing->user_one_id == $user->id ? $pairing->user_two_id : $pairing->user_one_id;
+    });
+    
+    // Get all resources uploaded by the entrepreneur's paired BDSPs and mentors
+    $allUploaderIds = array_merge($bdspIds->all(), $mentorIds->all(), [$user->id]);
+    $learningResources = \App\Models\Resource::whereIn('bdsp_id', $allUploaderIds)
+        ->where('is_approved', true)
+        ->orderByDesc('created_at')
+        ->take(4)
+        ->get();
+    
+    return view('dashboard.entrepreneur', compact('pairings', 'tasks', 'learningResources'));
 })->middleware('auth')->name('dashboard.entrepreneur');
 
 // BDSP Dashboard and Management (protected)

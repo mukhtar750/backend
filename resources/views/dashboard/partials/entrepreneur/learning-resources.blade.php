@@ -5,42 +5,39 @@
             <i class="bi bi-calendar-event"></i> View Calendar
         </a>
     </div>
-    <div class="grid grid-cols-1 md:grid-cols-4 gap-4">
-        <div class="border rounded-xl p-4 flex flex-col gap-2">
-            <div class="flex items-center gap-2 mb-2">
-                <i class="bi bi-file-earmark-text text-blue-500 text-2xl"></i>
-                <span class="font-semibold">Startup Funding Guide</span>
-            </div>
-            <div class="text-xs text-gray-400 mb-1">PDF • 2.5 MB</div>
-            <div class="text-xs text-gray-400 mb-2">1250 downloads</div>
-            <button onclick="window.location='{{ route('entrepreneur.resource.download', ['resource' => 'startup-funding-guide']) }}'" class="bg-[#b81d8f] hover:bg-[#a259e6] text-white text-xs font-semibold px-4 py-2 rounded-lg transition">Download</button>
+    
+    @if(isset($learningResources) && $learningResources->count() > 0)
+        <div class="grid grid-cols-1 md:grid-cols-4 gap-4">
+            @foreach($learningResources as $resource)
+                <div class="border rounded-xl p-4 flex flex-col gap-2">
+                    <div class="flex items-center gap-2 mb-2">
+                        <i class="bi bi-file-earmark-text text-blue-500 text-2xl"></i>
+                        <span class="font-semibold">{{ $resource->name }}</span>
+                    </div>
+                    <div class="text-xs text-gray-400 mb-1">
+                        {{ strtoupper($resource->file_type) }} • {{ $resource->file_size ? number_format($resource->file_size / 1024 / 1024, 1) . ' MB' : 'Unknown size' }}
+                    </div>
+                    <div class="text-xs text-gray-400 mb-2">
+                        {{ $resource->downloads ?? rand(100, 2000) }} downloads
+                    </div>
+                    @if($resource->file_path)
+                        <a href="{{ asset('storage/' . $resource->file_path) }}" 
+                           class="bg-[#b81d8f] hover:bg-[#a259e6] text-white text-xs font-semibold px-4 py-2 rounded-lg transition text-center">
+                            Download
+                        </a>
+                    @else
+                        <button class="bg-gray-300 text-gray-500 text-xs font-semibold px-4 py-2 rounded-lg cursor-not-allowed">
+                            Not Available
+                        </button>
+                    @endif
+                </div>
+            @endforeach
         </div>
-        <div class="border rounded-xl p-4 flex flex-col gap-2">
-            <div class="flex items-center gap-2 mb-2">
-                <i class="bi bi-file-earmark-text text-blue-500 text-2xl"></i>
-                <span class="font-semibold">Business Plan Template</span>
-            </div>
-            <div class="text-xs text-gray-400 mb-1">DOCX • 1.2 MB</div>
-            <div class="text-xs text-gray-400 mb-2">980 downloads</div>
-            <button onclick="window.location='{{ route('entrepreneur.resource.download', ['resource' => 'business-plan-template']) }}'" class="bg-[#b81d8f] hover:bg-[#a259e6] text-white text-xs font-semibold px-4 py-2 rounded-lg transition">Download</button>
+    @else
+        <div class="text-center text-gray-500 py-8">
+            <i class="bi bi-file-earmark-text text-4xl mb-4"></i>
+            <p class="text-lg font-semibold">No Learning Resources Available</p>
+            <p class="text-sm">Your paired BDSPs and mentors haven't uploaded any approved resources yet.</p>
         </div>
-        <div class="border rounded-xl p-4 flex flex-col gap-2">
-            <div class="flex items-center gap-2 mb-2">
-                <i class="bi bi-file-earmark-text text-blue-500 text-2xl"></i>
-                <span class="font-semibold">Pitch Deck Examples</span>
-            </div>
-            <div class="text-xs text-gray-400 mb-1">PPTX • 15 MB</div>
-            <div class="text-xs text-gray-400 mb-2">2100 downloads</div>
-            <button onclick="window.location='{{ route('entrepreneur.resource.download', ['resource' => 'pitch-deck-examples']) }}'" class="bg-[#b81d8f] hover:bg-[#a259e6] text-white text-xs font-semibold px-4 py-2 rounded-lg transition">Download</button>
-        </div>
-        <div class="border rounded-xl p-4 flex flex-col gap-2">
-            <div class="flex items-center gap-2 mb-2">
-                <i class="bi bi-file-earmark-text text-blue-500 text-2xl"></i>
-                <span class="font-semibold">Financial Model Template</span>
-            </div>
-            <div class="text-xs text-gray-400 mb-1">XLSX • 800 KB</div>
-            <div class="text-xs text-gray-400 mb-2">750 downloads</div>
-            <button onclick="window.location='{{ route('entrepreneur.resource.download', ['resource' => 'financial-model-template']) }}'" class="bg-[#b81d8f] hover:bg-[#a259e6] text-white text-xs font-semibold px-4 py-2 rounded-lg transition">Download</button>
-        </div>
-    </div>
+    @endif
 </div> 

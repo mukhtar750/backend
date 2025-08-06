@@ -8,7 +8,7 @@
     <div class="rounded-xl p-8 bg-gradient-to-r from-[#b81d8f] to-[#6c3483] text-white shadow-lg">
         <div class="flex flex-col md:flex-row items-center justify-between gap-6">
             <div>
-                <h2 class="text-2xl font-bold mb-2">Good morning, {{ Auth::user()->name }}! 🌟</h2>
+                <h2 class="text-2xl font-bold mb-2">Welcome back, {{ Auth::user()->name }}! 🌟</h2>
                 <p class="text-base text-pink-100 max-w-xl">
                     You have {{ $upcomingSessions->count() }} session{{ $upcomingSessions->count() != 1 ? 's' : '' }} scheduled today and {{ $pairedMentees->count() }} mentee{{ $pairedMentees->count() != 1 ? 's' : '' }} under your guidance.
                 </p>

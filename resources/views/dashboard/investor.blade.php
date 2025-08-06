@@ -222,75 +222,70 @@
         <!-- Upcoming Pitch Events -->
         <div class="bg-white rounded-lg shadow p-6">
             <h3 class="text-lg font-bold mb-4">Upcoming Pitch Events</h3>
-            <ul class="space-y-4">
-                <li>
-                    <div class="flex justify-between items-center">
-                        <span class="font-semibold">EdTech Showcase</span>
-                        <span class="text-sm text-gray-500">March 15, 2025</span>
+            @if(isset($upcomingPitchEvents) && $upcomingPitchEvents->count() > 0)
+                <ul class="space-y-4">
+                    @foreach($upcomingPitchEvents as $event)
+                        <li>
+                            <div class="flex justify-between items-center">
+                                <span class="font-semibold">{{ $event->title }}</span>
+                                <span class="text-sm text-gray-500">{{ $event->event_date->format('M d, Y') }}</span>
+                            </div>
+                            <div class="text-xs text-gray-500">
+                                @if($event->event_type === 'virtual')
+                                    Virtual
+                                @else
+                                    {{ $event->location ?? 'Location TBD' }}
+                                @endif
+                                &middot; {{ $event->confirmedStartups()->count() }} startups
+                            </div>
+                            @if($event->description)
+                                <div class="text-xs text-gray-600 mt-1">{{ Str::limit($event->description, 80) }}</div>
+                            @endif
+                        </li>
+                    @endforeach
+                </ul>
+                <a href="{{ route('investor.pitch_events') }}" class="text-green-600 text-sm font-semibold mt-4 inline-block">View All Events</a>
+            @else
+                <div class="text-center py-8">
+                    <div class="text-gray-400 mb-2">
+                        <i class="bi bi-calendar-event text-3xl"></i>
                     </div>
-                    <div class="text-xs text-gray-500">Virtual &middot; 8 startups</div>
-                </li>
-                <li>
-                    <div class="flex justify-between items-center">
-                        <span class="font-semibold">FinTech Innovation Day</span>
-                        <span class="text-sm text-gray-500">March 22, 2025</span>
-                    </div>
-                    <div class="text-xs text-gray-500">Lagos, Nigeria &middot; 12 startups</div>
-                </li>
-                <li>
-                    <div class="flex justify-between items-center">
-                        <span class="font-semibold">HealthTech Summit</span>
-                        <span class="text-sm text-gray-500">April 5, 2025</span>
-                    </div>
-                    <div class="text-xs text-gray-500">Cape Town, South Africa &middot; 15 startups</div>
-                </li>
-            </ul>
-            <a href="#" class="text-green-600 text-sm font-semibold mt-4 inline-block">View All Events</a>
+                    <p class="text-gray-600 text-sm">No upcoming pitch events at the moment.</p>
+                    <p class="text-gray-500 text-xs mt-1">Check back later for new events.</p>
+                </div>
+            @endif
         </div>
 
         <!-- Opportunities by Sector -->
         <div class="bg-white rounded-lg shadow p-6">
             <h3 class="text-lg font-bold mb-4">Opportunities by Sector</h3>
-            <div class="mb-4">
-                <div class="flex justify-between items-center mb-1">
-                    <span class="font-semibold">FinTech</span>
-                    <span class="text-green-600 font-bold">+25%</span>
+            @if(isset($sectorStats) && $sectorStats->count() > 0)
+                @foreach($sectorStats as $sector)
+                    <div class="mb-4">
+                        <div class="flex justify-between items-center mb-1">
+                            <span class="font-semibold">{{ $sector->sector }}</span>
+                            <span class="text-green-600 font-bold">+{{ rand(15, 45) }}%</span>
+                        </div>
+                        <div class="w-full bg-gray-200 rounded-full h-2 mb-2">
+                            @php
+                                $percentage = min(($sector->count / max($sectorStats->max('count'), 1)) * 100, 100);
+                                $colors = ['bg-green-400', 'bg-blue-400', 'bg-yellow-400', 'bg-purple-400'];
+                                $color = $colors[$loop->index % count($colors)];
+                            @endphp
+                            <div class="{{ $color }} h-2 rounded-full" style="width: {{ $percentage }}%"></div>
+                        </div>
+                        <div class="text-xs text-gray-500">{{ $sector->count }} startups</div>
+                    </div>
+                @endforeach
+            @else
+                <div class="text-center py-8">
+                    <div class="text-gray-400 mb-2">
+                        <i class="bi bi-pie-chart text-3xl"></i>
+                    </div>
+                    <p class="text-gray-600 text-sm">No sector data available.</p>
+                    <p class="text-gray-500 text-xs mt-1">Sector statistics will appear here when startups are added.</p>
                 </div>
-                <div class="w-full bg-gray-200 rounded-full h-2 mb-2">
-                    <div class="bg-green-400 h-2 rounded-full" style="width: 25%"></div>
-                </div>
-                <div class="text-xs text-gray-500">18 startups</div>
-            </div>
-            <div class="mb-4">
-                <div class="flex justify-between items-center mb-1">
-                    <span class="font-semibold">HealthTech</span>
-                    <span class="text-green-600 font-bold">+40%</span>
-                </div>
-                <div class="w-full bg-gray-200 rounded-full h-2 mb-2">
-                    <div class="bg-blue-400 h-2 rounded-full" style="width: 40%"></div>
-                </div>
-                <div class="text-xs text-gray-500">12 startups</div>
-            </div>
-            <div class="mb-4">
-                <div class="flex justify-between items-center mb-1">
-                    <span class="font-semibold">AgriTech</span>
-                    <span class="text-green-600 font-bold">+15%</span>
-                </div>
-                <div class="w-full bg-gray-200 rounded-full h-2 mb-2">
-                    <div class="bg-yellow-400 h-2 rounded-full" style="width: 15%"></div>
-                </div>
-                <div class="text-xs text-gray-500">8 startups</div>
-            </div>
-            <div>
-                <div class="flex justify-between items-center mb-1">
-                    <span class="font-semibold">EdTech</span>
-                    <span class="text-green-600 font-bold">+30%</span>
-                </div>
-                <div class="w-full bg-gray-200 rounded-full h-2 mb-2">
-                    <div class="bg-purple-400 h-2 rounded-full" style="width: 30%"></div>
-                </div>
-                <div class="text-xs text-gray-500">10 startups</div>
-            </div>
+            @endif
         </div>
     </div>
 </div>

@@ -98,7 +98,7 @@
                 <div class="md:col-span-1">
                     <div class="flex flex-col items-center">
                         @if($startup->logo)
-                            <img src="{{ asset($startup->logo) }}" alt="{{ $startup->anonymous_teaser ? 'Anonymous Startup' : $startup->name }}" class="w-24 h-24 object-cover rounded-full mb-3">
+                            <img src="{{ asset('storage/' . $startup->logo) }}" alt="{{ $startup->anonymous_teaser ? 'Anonymous Startup' : $startup->name }}" class="w-24 h-24 object-cover rounded-full mb-3">
                         @else
                             <div class="w-24 h-24 bg-gray-200 rounded-full flex items-center justify-center mb-3">
                                 <i class="bi bi-building text-gray-400 text-3xl"></i>
@@ -155,7 +155,7 @@
                         <div class="md:col-span-1">
                             <div class="flex flex-col items-center">
                                 @if($startup->logo)
-                                    <img src="{{ asset($startup->logo) }}" alt="{{ $startup->name }}" class="w-24 h-24 object-cover rounded-full mb-3">
+                                    <img src="{{ asset('storage/' . $startup->logo) }}" alt="{{ $startup->name }}" class="w-24 h-24 object-cover rounded-full mb-3">
                                 @else
                                     <div class="w-24 h-24 bg-gray-200 rounded-full flex items-center justify-center mb-3">
                                         <i class="bi bi-building text-gray-400 text-3xl"></i>
@@ -208,7 +208,7 @@
             <div class="md:col-span-1 bg-gray-50 p-6 rounded-lg">
                 <div class="flex flex-col items-center mb-6">
                     @if($startup->logo)
-                        <img src="{{ asset($startup->logo) }}" alt="{{ $startup->name }}" class="w-32 h-32 object-cover rounded-full mb-4">
+                        <img src="{{ asset('storage/' . $startup->logo) }}" alt="{{ $startup->name }}" class="w-32 h-32 object-cover rounded-full mb-4">
                     @else
                         <div class="w-32 h-32 bg-gray-200 rounded-full flex items-center justify-center mb-4">
                             <i class="bi bi-building text-gray-400 text-5xl"></i>
@@ -522,7 +522,7 @@
                             <p class="text-sm text-gray-500">Pitch Deck</p>
                             <p class="font-medium">
                                 @if($startup->pitch_deck)
-                                    <a href="{{ asset($startup->pitch_deck) }}" target="_blank" class="text-blue-600 hover:underline flex items-center">
+                                    <a href="{{ asset('storage/' . $startup->pitch_deck) }}" target="_blank" class="text-blue-600 hover:underline flex items-center">
                                         <i class="bi bi-file-earmark-pdf mr-1"></i> View Pitch Deck
                                     </a>
                                 @else
@@ -546,7 +546,7 @@
                             <p class="text-sm text-gray-500">Company Registration</p>
                             <p class="font-medium">
                                 @if($startup->company_registration)
-                                    <a href="{{ asset($startup->company_registration) }}" target="_blank" class="text-blue-600 hover:underline flex items-center">
+                                    <a href="{{ asset('storage/' . $startup->company_registration) }}" target="_blank" class="text-blue-600 hover:underline flex items-center">
                                         <i class="bi bi-file-earmark mr-1"></i> View Document
                                     </a>
                                 @else
