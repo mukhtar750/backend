@@ -75,21 +75,26 @@
                 </a>
             </nav>
         </div>
-        <div class="p-6 border-t border-[#512e5f]">
+        <div class="p-4 border-t border-[#6c3483]">
             <div class="flex items-center mb-3">
-                <img class="h-10 w-10 rounded-full mr-3 border border-white" src="{{ Auth::user()->profile_photo_url ?? asset('images/avatar-placeholder.png') }}" alt="{{ Auth::user()->name }}">
+                <img class="h-10 w-10 rounded-full mr-3 border border-white object-cover" 
+                     src="{{ Auth::user()->getProfilePictureUrl() }}" 
+                     alt="{{ Auth::user()->name }}">
                 <div>
                     <div class="font-semibold">{{ Auth::user()->name }}</div>
-                    <div class="text-sm text-purple-100 truncate max-w-[140px]" title="{{ Auth::user()->email }}">{{ Auth::user()->email }}</div>
+                    <div class="text-sm text-purple-100">{{ Auth::user()->email }}</div>
                 </div>
             </div>
-            <a href="{{ route('mentor.settings') }}" class="flex items-center px-4 py-2 text-white hover:bg-[#512e5f] rounded-lg transition-all font-medium">
-                <i class="fas fa-cog mr-3"></i> Settings
+            <a href="{{ route('profile.show') }}" class="flex items-center px-4 py-2 text-white hover:bg-[#6c3483] rounded-lg transition-all font-medium">
+                <i class="bi bi-person-fill mr-3"></i> My Profile
+            </a>
+            <a href="#" class="flex items-center px-4 py-2 text-white hover:bg-[#6c3483] rounded-lg transition-all font-medium">
+                <i class="bi bi-gear-fill mr-3"></i> Settings
             </a>
             <form action="{{ route('logout') }}" method="POST" class="mt-1">
                 @csrf
-                <button type="submit" class="flex items-center w-full px-4 py-2 text-white hover:bg-[#512e5f] rounded-lg transition-all font-medium">
-                    <i class="fas fa-sign-out-alt mr-3"></i> Logout
+                <button type="submit" class="flex items-center w-full px-4 py-2 text-white hover:bg-[#6c3483] rounded-lg transition-all font-medium">
+                    <i class="bi bi-box-arrow-right mr-3"></i> Logout
                 </button>
             </form>
         </div>

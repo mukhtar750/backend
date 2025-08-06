@@ -18,6 +18,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Storage;
 
 /*
 |--------------------------------------------------------------------------
@@ -45,6 +46,13 @@ Route::post('/logout', [AuthController::class, 'logout'])->name('logout');
 // Protected Routes
 Route::middleware(['auth'])->group(function () {
     Route::get('/dashboard', [AuthController::class, 'dashboard'])->name('dashboard');
+    
+    // Profile routes
+    Route::get('/profile', [\App\Http\Controllers\ProfileController::class, 'show'])->name('profile.show');
+    Route::get('/profile/edit', [\App\Http\Controllers\ProfileController::class, 'edit'])->name('profile.edit');
+    Route::put('/profile', [\App\Http\Controllers\ProfileController::class, 'update'])->name('profile.update');
+    Route::delete('/profile/picture', [\App\Http\Controllers\ProfileController::class, 'removeProfilePicture'])->name('profile.remove-picture');
+    Route::get('/profile/picture', [\App\Http\Controllers\ProfileController::class, 'getProfilePicture'])->name('profile.get-picture');
 });
 
 // Notification Routes
@@ -740,3 +748,20 @@ Route::get('/dashboard/mentee/feedback', function () {
     
     return view('dashboard.mentee-feedback', compact('pairedUsers', 'feedbackGiven', 'feedbackReceived', 'stats'));
 })->middleware('auth')->name('dashboard.mentee.feedback');
+
+// Test route for debugging storage
+Route::get('/test-storage', function() {
+    $testFile = 'test.txt';
+    $content = 'Test content ' . time();
+    
+    $uploaded = Storage::disk('public')->put($testFile, $content);
+    $exists = Storage::disk('public')->exists($testFile);
+    $url = Storage::disk('public')->url($testFile);
+    
+    return response()->json([
+        'uploaded' => $uploaded,
+        'exists' => $exists,
+        'url' => $url,
+        'content' => Storage::disk('public')->get($testFile)
+    ]);
+})->middleware('auth');

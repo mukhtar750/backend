@@ -10,6 +10,7 @@ use App\Models\TrainingSessionParticipant;
 use App\Models\GroupParticipant;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\Storage;
 
 class User extends Authenticatable
 {
@@ -27,6 +28,7 @@ class User extends Authenticatable
         'password',
         'role',
         'is_approved',
+        'profile_picture',
         // Investor
         'phone', 'type_of_investor', 'interest_areas', 'company', 'investor_linkedin',
         // BDSP
@@ -348,5 +350,28 @@ class User extends Authenticatable
     public function reviewedProposals()
     {
         return $this->hasMany(PitchEventProposal::class, 'reviewed_by');
+    }
+
+    /**
+     * Get the user's profile picture URL
+     */
+    public function getProfilePictureUrl()
+    {
+        if ($this->profile_picture) {
+            // Use a more robust URL generation that works with any domain
+            $baseUrl = request()->getSchemeAndHttpHost();
+            return $baseUrl . '/storage/' . $this->profile_picture;
+        }
+        
+        // Use a default avatar from a reliable source
+        return 'https://ui-avatars.com/api/?name=' . urlencode($this->name) . '&color=7C3AED&background=EDE9FE&size=200';
+    }
+
+    /**
+     * Check if user has a profile picture
+     */
+    public function hasProfilePicture()
+    {
+        return !empty($this->profile_picture);
     }
 }

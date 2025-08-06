@@ -48,21 +48,26 @@
                 </nav>
             </div>
             <!-- User Profile Section -->
-            <div class="px-6 pt-6 pb-2 border-t border-[#a01a7d] mt-8">
-                <div class="flex items-center gap-3 mb-3">
-                    <img class="h-10 w-10 rounded-full border-2 border-white" src="https://i.pravatar.cc/40" alt="Grace Investor">
+            <div class="p-4 border-t border-[#6c3483]">
+                <div class="flex items-center mb-3">
+                    <img class="h-10 w-10 rounded-full mr-3 border border-white object-cover" 
+                         src="{{ Auth::user()->getProfilePictureUrl() }}" 
+                         alt="{{ Auth::user()->name }}">
                     <div>
-                        <div class="font-semibold leading-tight">{{ Auth::user()->name }}</div>
-                        <div class="text-xs text-pink-100">{{ Auth::user()->email }}</div>
+                        <div class="font-semibold">{{ Auth::user()->name }}</div>
+                        <div class="text-sm text-purple-100">{{ Auth::user()->email }}</div>
                     </div>
                 </div>
-                <a href="#" class="flex items-center gap-2 px-3 py-2 rounded-lg hover:bg-[#a01a7d] transition text-sm font-medium">
-                    <i class="bi bi-gear text-base"></i> Settings
+                <a href="{{ route('profile.show') }}" class="flex items-center px-4 py-2 text-white hover:bg-[#6c3483] rounded-lg transition-all font-medium">
+                    <i class="bi bi-person-fill mr-3"></i> My Profile
+                </a>
+                <a href="#" class="flex items-center px-4 py-2 text-white hover:bg-[#6c3483] rounded-lg transition-all font-medium">
+                    <i class="bi bi-gear-fill mr-3"></i> Settings
                 </a>
                 <form action="{{ route('logout') }}" method="POST" class="mt-1">
                     @csrf
-                    <button type="submit" class="flex items-center gap-2 w-full px-3 py-2 rounded-lg hover:bg-[#a01a7d] transition text-sm font-medium">
-                        <i class="bi bi-box-arrow-right text-base"></i> Logout
+                    <button type="submit" class="flex items-center w-full px-4 py-2 text-white hover:bg-[#6c3483] rounded-lg transition-all font-medium">
+                        <i class="bi bi-box-arrow-right mr-3"></i> Logout
                     </button>
                 </form>
             </div>
@@ -82,7 +87,9 @@
                     </div>
                     @include('components.notification-badge')
                     <div class="flex items-center">
-                        <img class="h-8 w-8 rounded-full mr-2" src="https://i.pravatar.cc/32" alt="Grace Investor">
+                        <img class="h-8 w-8 rounded-full mr-2 object-cover" 
+                             src="{{ Auth::user()->getProfilePictureUrl() }}" 
+                             alt="{{ Auth::user()->name }}">
                         <div>
                             <div class="font-semibold text-gray-800">{{ Auth::user()->name }}</div>
                             <div class="text-sm text-gray-500">Investor</div>
