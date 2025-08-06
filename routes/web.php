@@ -487,7 +487,7 @@ Route::get('/dashboard/investor-pitch-events', [\App\Http\Controllers\InvestorDa
     ->middleware('auth')
     ->name('investor.pitch_events');
 
-Route::get('/admin/dashboard', [AdminController::class, 'dashboard'])->name('admin.dashboard');
+Route::get('/admin/dashboard', [AdminController::class, 'dashboard'])->middleware(['auth', 'role:admin,staff'])->name('admin.dashboard');
 Route::get('/entrepreneur/module/{module}', function ($module) {
     return view('dashboard.entrepreneur-module', ['module' => $module]);
 })->name('entrepreneur.module');
@@ -677,12 +677,13 @@ Route::middleware(['auth', 'admin'])->group(function () {
 
 
 
-// Ideas routes
-Route::resource('ideas', \App\Http\Controllers\IdeaController::class);
-Route::post('/ideas/{idea}/interests', [\App\Http\Controllers\IdeaInterestController::class, 'store'])->name('ideas.interests.store');
-Route::delete('/ideas/{idea}/interests', [\App\Http\Controllers\IdeaInterestController::class, 'destroy'])->name('ideas.interests.destroy');
-Route::patch('/idea-interests/{interest}/accept', [\App\Http\Controllers\IdeaInterestController::class, 'accept'])->name('idea-interests.accept');
-Route::patch('/idea-interests/{interest}/decline', [\App\Http\Controllers\IdeaInterestController::class, 'decline'])->name('idea-interests.decline');
+// Ideas interests routes
+Route::middleware(['auth'])->group(function () {
+    Route::post('/ideas/{idea}/interests', [\App\Http\Controllers\IdeaInterestController::class, 'store'])->name('ideas.interests.store');
+    Route::delete('/ideas/{idea}/interests', [\App\Http\Controllers\IdeaInterestController::class, 'destroy'])->name('ideas.interests.destroy');
+    Route::patch('/idea-interests/{interest}/accept', [\App\Http\Controllers\IdeaInterestController::class, 'accept'])->name('idea-interests.accept');
+    Route::patch('/idea-interests/{interest}/decline', [\App\Http\Controllers\IdeaInterestController::class, 'decline'])->name('idea-interests.decline');
+});
 
 // Mentee Resources Page
 Route::get('/dashboard/mentee/resources', function () {
