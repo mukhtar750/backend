@@ -22,7 +22,7 @@
                     </div>
                     <div>
                         <h1 class="text-xl font-bold text-gray-900">{{ $otherUser->name }}</h1>
-                        <p class="text-sm text-gray-500">{{ ucfirst($otherUser->role) }}</p>
+                        <p class="text-sm text-gray-500">@displayRole($otherUser->role)</p>
                     </div>
                 </div>
             </div>

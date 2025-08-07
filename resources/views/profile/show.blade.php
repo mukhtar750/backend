@@ -70,7 +70,7 @@
 
                     <div>
                         <label class="block text-sm font-semibold text-gray-700 mb-1">Role</label>
-                        <p class="text-gray-900">{{ ucfirst($user->role) }}</p>
+                        <p class="text-gray-900">@displayRole($user->role)</p>
                     </div>
 
                     <div>

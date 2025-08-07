@@ -53,28 +53,55 @@
             document.getElementById('bookSessionModal').classList.add('hidden');
         };
     </script>
-    <ul class="space-y-4">
-        <li class="flex items-center justify-between p-3 rounded-xl border border-gray-100 cursor-pointer hover:bg-purple-50 transition" onclick="window.location='{{ route('entrepreneur.mentorship.session', ['id' => 1]) }}'">
-            <div class="flex items-center gap-3">
-                <img src="https://randomuser.me/api/portraits/women/65.jpg" class="h-10 w-10 rounded-full object-cover" alt="Dr. Kemi Adebayo">
-                <div>
-                    <div class="font-semibold">Dr. Kemi Adebayo</div>
-                    <div class="text-xs text-gray-400">Business Model Validation</div>
-                    <div class="text-xs text-gray-400 mt-1 flex items-center gap-1"><i class="bi bi-clock"></i> Tomorrow 2:00 PM</div>
-                </div>
+    
+    @if(isset($mentorshipSessions) && $mentorshipSessions->count() > 0)
+        <ul class="space-y-4">
+            @foreach($mentorshipSessions as $session)
+                <li class="flex items-center justify-between p-3 rounded-xl border border-gray-100 cursor-pointer hover:bg-purple-50 transition" onclick="window.location='{{ route('entrepreneur.mentorship.session', ['id' => $session->id]) }}'">
+                    <div class="flex items-center gap-3">
+                        @if($session->mentor && $session->mentor->profile_picture)
+                            <img src="{{ asset('storage/' . $session->mentor->profile_picture) }}" class="h-10 w-10 rounded-full object-cover" alt="{{ $session->mentor->name }}">
+                        @else
+                            <img src="https://ui-avatars.com/api/?name={{ urlencode($session->mentor->name ?? 'Mentor') }}&color=7C3AED&background=EDE9FE&size=200" class="h-10 w-10 rounded-full object-cover" alt="{{ $session->mentor->name ?? 'Mentor' }}">
+                        @endif
+                        <div>
+                            <div class="font-semibold">{{ $session->mentor->name ?? 'Your Mentor' }}</div>
+                            <div class="text-xs text-gray-400">{{ $session->topic ?? 'No topic specified' }}</div>
+                            <div class="text-xs text-gray-400 mt-1 flex items-center gap-1">
+                                <i class="bi bi-clock"></i> 
+                                @if($session->date_time)
+                                    @if($session->date_time->isToday())
+                                        Today {{ $session->date_time->format('g:i A') }}
+                                    @elseif($session->date_time->isTomorrow())
+                                        Tomorrow {{ $session->date_time->format('g:i A') }}
+                                    @elseif($session->date_time->isPast())
+                                        {{ $session->date_time->diffForHumans() }}
+                                    @else
+                                        {{ $session->date_time->format('M d, g:i A') }}
+                                    @endif
+                                @else
+                                    No date set
+                                @endif
+                            </div>
+                        </div>
+                    </div>
+                    <span class="px-3 py-1 rounded-full text-xs font-semibold
+                        @if($session->status === 'scheduled') bg-purple-100 text-purple-700
+                        @elseif($session->status === 'completed') bg-green-100 text-green-700
+                        @elseif($session->status === 'cancelled') bg-red-100 text-red-700
+                        @else bg-gray-100 text-gray-700 @endif">
+                        {{ ucfirst($session->status ?? 'scheduled') }}
+                    </span>
+                </li>
+            @endforeach
+        </ul>
+    @else
+        <div class="text-center py-8">
+            <div class="text-gray-400 mb-2">
+                <i class="bi bi-calendar-event text-3xl"></i>
             </div>
-            <span class="bg-purple-100 text-purple-700 text-xs px-3 py-1 rounded-full font-semibold">scheduled</span>
-        </li>
-        <li class="flex items-center justify-between p-3 rounded-xl border border-gray-100 cursor-pointer hover:bg-purple-50 transition" onclick="window.location='{{ route('entrepreneur.mentorship.session', ['id' => 2]) }}'">
-            <div class="flex items-center gap-3">
-                <img src="https://randomuser.me/api/portraits/women/66.jpg" class="h-10 w-10 rounded-full object-cover" alt="Grace Mwangi">
-                <div>
-                    <div class="font-semibold">Grace Mwangi</div>
-                    <div class="text-xs text-gray-400">Financial Planning Review</div>
-                    <div class="text-xs text-gray-400 mt-1 flex items-center gap-1"><i class="bi bi-clock"></i> Last session</div>
-                </div>
-            </div>
-            <span class="bg-green-100 text-green-700 text-xs px-3 py-1 rounded-full font-semibold">completed</span>
-        </li>
-    </ul>
+            <p class="text-gray-600 text-sm">No mentorship sessions scheduled.</p>
+            <p class="text-gray-500 text-xs mt-1">Book your first session to get started.</p>
+        </div>
+    @endif
 </div> 

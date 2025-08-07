@@ -22,7 +22,7 @@
                         @php $user = \App\Models\User::find($feedback->user_id); @endphp
                         {{ $user ? $user->name : 'User Deleted' }}
                         @if($user)
-                            <span class="ml-2 px-2 py-0.5 text-xs rounded bg-purple-100 text-purple-800">{{ ucfirst($user->role) }}</span>
+                            <span class="ml-2 px-2 py-0.5 text-xs rounded bg-purple-100 text-purple-800">@displayRole($user->role)</span>
                         @endif
                     </td>
                     <td class="py-2 px-3">
@@ -32,7 +32,7 @@
                             @php $targetUser = \App\Models\User::find($feedback->target_id); @endphp
                             {{ $targetUser ? $targetUser->name : 'User Deleted' }}
                             @if($targetUser)
-                                <span class="ml-2 px-2 py-0.5 text-xs rounded bg-blue-100 text-blue-800">{{ ucfirst($targetUser->role) }}</span>
+                                <span class="ml-2 px-2 py-0.5 text-xs rounded bg-blue-100 text-blue-800">@displayRole($targetUser->role)</span>
                             @endif
                         @else
                             {{ $feedback->target_type }}

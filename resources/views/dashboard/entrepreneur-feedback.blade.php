@@ -52,7 +52,7 @@
                     <img src="{{ $paired->profile_photo_url ?? asset('images/avatar-placeholder.png') }}" class="h-12 w-12 rounded-full object-cover" alt="{{ $paired->name }}">
                     <div>
                         <div class="font-semibold text-gray-900">{{ $paired->name }}</div>
-                        <div class="text-xs text-gray-500">{{ ucfirst($paired->role) }}</div>
+                        <div class="text-xs text-gray-500">@displayRole($paired->role)</div>
                     </div>
                 </div>
                 <div class="flex items-center gap-2 mt-2 md:mt-0">

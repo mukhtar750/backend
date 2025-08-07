@@ -63,7 +63,7 @@
                                     <div class="flex items-center justify-between">
                                         <div>
                                             <h3 class="text-sm font-semibold text-gray-900">{{ $otherUser->name }}</h3>
-                                            <div class="text-xs text-gray-500">{{ ucfirst($otherUser->role) }}</div>
+                                            <div class="text-xs text-gray-500">@displayRole($otherUser->role)</div>
                                         </div>
                                         @if($unreadCount > 0)
                                             <span class="bg-red-500 text-white text-xs px-2 py-1 rounded-full animate-pulse">{{ $unreadCount }}</span>

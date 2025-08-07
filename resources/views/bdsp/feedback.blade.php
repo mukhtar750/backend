@@ -14,7 +14,7 @@
                 <option value="platform" data-type="platform">AWN Platform</option>
                 @if(isset($pairedUsers))
                     @foreach($pairedUsers as $paired)
-                        <option value="{{ $paired->id }}" data-type="user">{{ $paired->name }} ({{ ucfirst($paired->role) }})</option>
+                        <option value="{{ $paired->id }}" data-type="user">{{ $paired->name }} (@displayRole($paired->role))</option>
                     @endforeach
                 @endif
             </select>

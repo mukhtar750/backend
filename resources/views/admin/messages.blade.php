@@ -56,7 +56,7 @@
                                 <div class="flex-1">
                                     <div class="flex items-center space-x-2">
                                         <h3 class="font-semibold text-gray-800">{{ $otherUser->name ?? 'N/A' }}</h3>
-                                        <span class="text-xs text-gray-500">{{ $otherUser ? ucfirst($otherUser->role) : 'N/A' }}</span>
+                                        <span class="text-xs text-gray-500">{{ $otherUser ? \App\Helpers\RoleHelper::displayRole($otherUser->role) : 'N/A' }}</span>
                                         @if($latestMessage)
                                             <span class="text-xs text-gray-500">{{ $latestMessage->created_at->diffForHumans() }}</span>
                                         @endif
@@ -114,7 +114,7 @@
                             $messageableUsers = auth()->user()->getMessageableUsers();
                         @endphp
                         @foreach($messageableUsers as $user)
-                            <option value="{{ $user->id }}">{{ $user->name }} ({{ ucfirst($user->role) }})</option>
+                            <option value="{{ $user->id }}">{{ $user->name }} (@displayRole($user->role))</option>
                         @endforeach
                     </select>
                 </div>

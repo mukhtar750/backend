@@ -4,7 +4,7 @@
         <img src="https://i.pravatar.cc/40?u={{ $otherUser->id }}" class="h-10 w-10 rounded-full object-cover" alt="{{ $otherUser->name }}">
         <div class="flex-1">
             <div class="font-semibold text-lg text-gray-900">{{ $otherUser->name }}</div>
-            <div class="text-xs text-gray-500">{{ ucfirst($otherUser->role) }}</div>
+            <div class="text-xs text-gray-500">@displayRole($otherUser->role)</div>
         </div>
         <div class="flex gap-2">
             <button class="p-2 rounded-full hover:bg-gray-100"><i class="bi bi-telephone text-lg"></i></button>

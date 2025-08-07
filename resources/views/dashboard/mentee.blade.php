@@ -42,7 +42,7 @@
                     <h3 class="text-lg font-semibold text-gray-800">Your Mentor</h3>
                     @if($mentor)
                         <p class="text-2xl font-bold text-[#b81d8f]">{{ $mentor->name }}</p>
-                        <p class="text-sm text-gray-500">{{ ucfirst($mentor->role) }}</p>
+                        <p class="text-sm text-gray-500">@displayRole($mentor->role)</p>
                     @else
                         <p class="text-2xl font-bold text-gray-400">Not assigned</p>
                     @endif

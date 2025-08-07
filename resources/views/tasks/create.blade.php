@@ -10,7 +10,7 @@
             <select name="assignee_id" class="form-input w-full rounded" required>
                 <option value="">Select user...</option>
                 @foreach($pairedUsers as $user)
-                    <option value="{{ $user->id }}">{{ $user->name }} ({{ ucfirst($user->role) }})</option>
+                    <option value="{{ $user->id }}">{{ $user->name }} (@displayRole($user->role))</option>
                 @endforeach
             </select>
         </div>

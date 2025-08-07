@@ -43,7 +43,7 @@
             <label class="block text-gray-700 font-semibold mb-2">Target Roles</label>
             <select name="target_roles[]" multiple class="w-full border-gray-300 rounded-md shadow-sm" required>
                 @foreach($roles as $role)
-                    <option value="{{ $role }}" {{ (collect(old('target_roles', json_decode($session->target_roles, true)))->contains($role)) ? 'selected' : '' }}>{{ ucfirst($role) }}</option>
+                    <option value="{{ $role }}" {{ (collect(old('target_roles', json_decode($session->target_roles, true)))->contains($role)) ? 'selected' : '' }}>@displayRole($role)</option>
                 @endforeach
             </select>
             <small class="text-gray-500">Hold Ctrl (Windows) or Cmd (Mac) to select multiple roles.</small>

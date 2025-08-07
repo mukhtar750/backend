@@ -33,7 +33,7 @@
                 <td class="px-6 py-4 whitespace-nowrap">{{ $session->trainer }}</td>
                 <td class="px-6 py-4 whitespace-nowrap">
                     @foreach(json_decode($session->target_roles, true) as $role)
-                        <span class="inline-block bg-purple-100 text-purple-800 text-xs px-2 py-1 rounded mr-1 mb-1">{{ $role === 'bdsp' ? 'BDSP' : ucfirst($role) }}</span>
+                        <span class="inline-block bg-purple-100 text-purple-800 text-xs px-2 py-1 rounded mr-1 mb-1">@displayRole($role)</span>
                     @endforeach
                 </td>
                 <td class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium space-x-2">

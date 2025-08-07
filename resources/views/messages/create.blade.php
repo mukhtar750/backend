@@ -22,7 +22,7 @@
                 <option value="">Select recipient...</option>
                 @foreach($messageableUsers as $user)
                     <option value="{{ $user->id }}" {{ (isset($recipient) && $recipient && $recipient->id == $user->id) ? 'selected' : '' }}>
-                        {{ $user->name }} ({{ ucfirst($user->role) }})
+                        {{ $user->name }} (@displayRole($user->role))
                     </option>
                 @endforeach
             </select>

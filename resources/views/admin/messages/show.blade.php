@@ -7,7 +7,7 @@
             <div class="flex items-center space-x-3">
                 <i class="bi bi-chat-dots-fill text-2xl text-purple-600"></i>
                 <h1 class="text-2xl font-bold text-gray-900">Conversation with {{ $otherUser->name }}</h1>
-                <span class="text-xs text-gray-500">({{ ucfirst($otherUser->role) }})</span>
+                <span class="text-xs text-gray-500">(@displayRole($otherUser->role))</span>
             </div>
             <a href="{{ route('admin.messages') }}" class="text-purple-600 hover:text-purple-800 font-medium">← Back to Messages</a>
         </div>

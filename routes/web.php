@@ -279,8 +279,17 @@ Route::get('/dashboard/entrepreneur', function () {
         ->orderByDesc('created_at')
         ->take(4)
         ->get();
+
+    // Get mentorship sessions for the entrepreneur
+    $mentorshipSessions = \App\Models\MentorshipSession::where(function($q) use ($user) {
+        $q->where('scheduled_for', $user->id)->orWhere('scheduled_by', $user->id);
+    })
+    ->with(['scheduledBy', 'scheduledFor'])
+    ->orderBy('date_time', 'desc')
+    ->take(5)
+    ->get();
     
-    return view('dashboard.entrepreneur', compact('pairings', 'tasks', 'learningResources'));
+    return view('dashboard.entrepreneur', compact('pairings', 'tasks', 'learningResources', 'mentorshipSessions'));
 })->middleware('auth')->name('dashboard.entrepreneur');
 
 // BDSP Dashboard and Management (protected)
@@ -532,8 +541,47 @@ Route::get('/entrepreneur/task/{task}', function ($task) {
 })->name('entrepreneur.task');
 
 Route::get('/entrepreneur/mentorship/session/{id}', function ($id) {
-    return view('dashboard.entrepreneur-mentorship-session', ['id' => $id]);
-})->name('entrepreneur.mentorship.session');
+    $user = Auth::user();
+    
+    // Ensure user is authenticated
+    if (!$user) {
+        abort(401, 'You must be logged in to view this session.');
+    }
+    
+    // Find the session with all necessary relationships
+    $session = \App\Models\MentorshipSession::with([
+        'pairing.userOne', 
+        'pairing.userTwo', 
+        'scheduledBy', 
+        'scheduledFor'
+    ])->findOrFail($id);
+    
+    // Enhanced authorization check
+    $isAuthorized = false;
+    
+    // Check if user is directly involved in the session
+    if ($session->scheduled_for === $user->id || $session->scheduled_by === $user->id) {
+        $isAuthorized = true;
+    }
+    
+    // Check if user is part of the pairing (for additional security)
+    if ($session->pairing) {
+        if ($session->pairing->user_one_id === $user->id || $session->pairing->user_two_id === $user->id) {
+            $isAuthorized = true;
+        }
+    }
+    
+    // Check if user is an admin (for support purposes)
+    if ($user->role === 'admin' || $user->role === 'staff') {
+        $isAuthorized = true;
+    }
+    
+    if (!$isAuthorized) {
+        abort(403, 'You are not authorized to view this session.');
+    }
+    
+    return view('dashboard.entrepreneur-mentorship-session', compact('session', 'id'));
+})->middleware(['auth'])->name('entrepreneur.mentorship.session');
 
 Route::get('/entrepreneur/achievements', function () {
     return view('dashboard.entrepreneur-achievements');

@@ -15,7 +15,7 @@
                 <div class="bg-white rounded-xl shadow p-5 flex flex-col items-center">
                     <img src="{{ $professional->getProfilePictureUrl() }}" class="h-16 w-16 rounded-full object-cover mb-2" alt="Professional">
                     <div class="font-semibold text-gray-900">{{ $professional->name }}</div>
-                    <div class="text-xs text-gray-500 mb-1">{{ $professional->specialty ?? ucfirst($professional->role) }}</div>
+                    <div class="text-xs text-gray-500 mb-1">{{ $professional->specialty ?? \App\Helpers\RoleHelper::displayRole($professional->role) }}</div>
                     <div class="text-xs text-gray-400 mb-2">{{ $professional->avg_rating ?? '4.8' }} <i class="bi bi-star-fill text-yellow-400"></i></div>
                     <button @click="showBooking = true; selectedProfessional = {{ $professional->id }}" class="bg-[#b81d8f] text-white px-4 py-2 rounded-lg font-medium hover:bg-[#a01a7d] transition">Book</button>
                 </div>

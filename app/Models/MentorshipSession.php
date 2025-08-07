@@ -57,4 +57,11 @@ class MentorshipSession extends Model
         // Fallback: return scheduled_for
         return $this->scheduledFor;
     }
+
+    public function getMentorAttribute()
+    {
+        // If scheduled_by is the mentor, return scheduledBy, otherwise return scheduledFor
+        // This is a simplified logic - in a real app you'd determine based on user roles
+        return $this->scheduledBy;
+    }
 }

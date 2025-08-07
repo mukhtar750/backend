@@ -22,7 +22,7 @@
             <label class="block text-gray-700 font-semibold mb-2">Role</label>
             <select name="role" class="form-select w-full rounded-lg border-gray-300" required>
                 @foreach($roles as $role)
-                    <option value="{{ $role }}" @if(old('role', $user->role) == $role) selected @endif>{{ ucfirst($role) }}</option>
+                    <option value="{{ $role }}" @if(old('role', $user->role) == $role) selected @endif>@displayRole($role)</option>
                 @endforeach
             </select>
         </div>

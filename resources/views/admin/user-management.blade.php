@@ -74,7 +74,7 @@
                             </div>
                         </td>
                         <td class="px-6 py-4 whitespace-nowrap">
-                            <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-purple-100 text-purple-800">{{ ucfirst($user->role) }}</span>
+                            <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-purple-100 text-purple-800">@displayRole($user->role)</span>
                             <div class="text-xs text-gray-500">{{ $user->company ?? 'N/A' }}</div>
                         </td>
                         <td class="px-6 py-4 whitespace-nowrap">
@@ -144,7 +144,7 @@
                                     </div>
                                                                         <div class="ml-4">
                                         <div class="text-sm font-medium text-gray-900">{{ $pairing->userOne->name ?? 'N/A' }}</div>
-                                        <div class="text-sm text-gray-500">{{ $pairing->userOne ? ucfirst($pairing->userOne->role) : 'N/A' }}</div>
+                                        <div class="text-sm text-gray-500">{{ $pairing->userOne ? \App\Helpers\RoleHelper::displayRole($pairing->userOne->role) : 'N/A' }}</div>
                                     </div>
                                 </div>
                             </td>
@@ -157,7 +157,7 @@
                                     </div>
                                     <div class="ml-4">
                                         <div class="text-sm font-medium text-gray-900">{{ $pairing->userTwo->name ?? 'N/A' }}</div>
-                                        <div class="text-sm text-gray-500">{{ $pairing->userTwo ? ucfirst($pairing->userTwo->role) : 'N/A' }}</div>
+                                        <div class="text-sm text-gray-500">{{ $pairing->userTwo ? \App\Helpers\RoleHelper::displayRole($pairing->userTwo->role) : 'N/A' }}</div>
                                     </div>
                                 </div>
                             </td>
