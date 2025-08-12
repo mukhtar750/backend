@@ -230,7 +230,8 @@ public function deleteMentorshipSession(MentorshipSession $session)
             'website' => 'nullable|string|max:255',
             'entrepreneur_linkedin' => 'nullable|string|max:255',
             // BDSP
-            'services_provided' => 'nullable|string|max:255',
+            'services_provided' => 'nullable|array',
+            'services_provided.*' => 'string|in:business_model_review,financial_forecasting,valuation_support,pitch_deck_development,investor_pitch_coaching,capital_raising_strategy,term_sheets,due_diligence_preparation,legal_regulatory_advice,market_sizing,investor_identification,esg_impact_readiness,governance_board_structuring,mentoring_experienced_founders,investor_networks_demo_days,exit_strategy_planning,ip_asset_protection,growth_strategy_post_investment,storytelling_vision_alignment,one_on_one_coaching',
             'years_of_experience' => 'nullable|string|max:255',
             'organization' => 'nullable|string|max:255',
             'certifications' => 'nullable|string|max:255',

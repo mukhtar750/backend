@@ -11,7 +11,7 @@ return new class extends Migration
         Schema::create('bdsp_profiles', function (Blueprint $table) {
             $table->id();
             $table->foreignId('user_id')->constrained()->onDelete('cascade');
-            $table->string('services_provided')->nullable();
+            $table->text('services_provided')->nullable();
             $table->integer('years_of_experience')->nullable();
             $table->string('organization')->nullable();
             $table->string('certifications')->nullable();

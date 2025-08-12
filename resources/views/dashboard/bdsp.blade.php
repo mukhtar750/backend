@@ -226,6 +226,25 @@
                                 <span class="text-xs text-gray-500">Scheduled by admin</span>
                             @endif
                         </div>
+                        <!-- Action Buttons -->
+                        <div class="flex items-center space-x-2 mt-2">
+                            @if($session->status === 'completed')
+                                <button class="text-gray-400 font-semibold cursor-not-allowed text-xs" disabled>Completed</button>
+                            @else
+                                <button onclick="completeSession({{ $session->id }})" 
+                                        class="bg-green-500 hover:bg-green-600 text-white px-3 py-1 rounded text-xs font-medium">
+                                    Complete
+                                </button>
+                                <button onclick="cancelSession({{ $session->id }})" 
+                                        class="text-red-500 hover:text-red-700 font-semibold text-xs">
+                                    Cancel
+                                </button>
+                                <button onclick="openRescheduleModal({{ $session->id }}, '{{ $session->date_time->format('Y-m-d\TH:i') }}', '{{ $session->notes ?? '' }}')" 
+                                        class="text-blue-500 hover:text-blue-700 font-semibold text-xs">
+                                    Reschedule
+                                </button>
+                            @endif
+                        </div>
                     </div>
                 @empty
                     <div class="text-center py-8">
@@ -433,5 +452,177 @@ function sessionModal() {
         }
     }
 }
+
+// Session Management Functions
+function completeSession(sessionId) {
+    if (confirm('Are you sure you want to mark this session as completed?')) {
+        fetch(`/bdsp/sessions/${sessionId}/complete`, {
+            method: 'PATCH',
+            headers: {
+                'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content'),
+                'Content-Type': 'application/json',
+            },
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                alert('Session marked as completed!');
+                window.location.reload();
+            } else {
+                alert(data.error || 'Failed to complete session.');
+            }
+        })
+        .catch(error => {
+            console.error('Error:', error);
+            alert('Failed to complete session. Please try again.');
+        });
+    }
+}
+
+function cancelSession(sessionId) {
+    if (confirm('Are you sure you want to cancel this session?')) {
+        fetch(`/bdsp/sessions/${sessionId}/cancel`, {
+            method: 'PATCH',
+            headers: {
+                'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content'),
+                'Content-Type': 'application/json',
+            },
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                alert('Session cancelled successfully!');
+                window.location.reload();
+            } else {
+                alert(data.error || 'Failed to cancel session.');
+            }
+        })
+        .catch(error => {
+            console.error('Error:', error);
+            alert('Failed to cancel session. Please try again.');
+        });
+    }
+}
+
+function openRescheduleModal(sessionId, currentDateTime, currentNotes) {
+    document.getElementById('sessionId').value = sessionId;
+    document.getElementById('newDateTime').value = currentDateTime;
+    document.getElementById('notes').value = currentNotes;
+    document.getElementById('rescheduleModal').classList.remove('hidden');
+}
+
+function closeRescheduleModal() {
+    document.getElementById('rescheduleModal').classList.add('hidden');
+}
+
+// Initialize reschedule form handler
+document.addEventListener('DOMContentLoaded', function() {
+    const rescheduleForm = document.getElementById('rescheduleForm');
+    if (rescheduleForm) {
+        rescheduleForm.addEventListener('submit', function(e) {
+            e.preventDefault();
+            
+            const sessionId = document.getElementById('sessionId').value;
+            const newDateTime = document.getElementById('newDateTime').value;
+            const notes = document.getElementById('notes').value;
+            
+            fetch(`/bdsp/sessions/${sessionId}/reschedule`, {
+                method: 'PATCH',
+                headers: {
+                    'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content'),
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({
+                    new_date_time: newDateTime,
+                    notes: notes
+                })
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    alert('Session rescheduled successfully!');
+                    closeRescheduleModal();
+                    window.location.reload();
+                } else {
+                    alert(data.error || 'Failed to reschedule session.');
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                alert('Failed to reschedule session. Please try again.');
+            });
+        });
+    }
+});
 </script>
+
+<!-- Quick Resource Sharing Section -->
+<div class="bg-white rounded-lg shadow p-6 mt-6">
+    <div class="flex items-center justify-between mb-4">
+        <h3 class="text-lg font-bold text-gray-900">Quick Resource Sharing</h3>
+        <a href="{{ route('bdsp.resources.index') }}" class="text-[#b81d8f] hover:text-[#6c3483] text-sm font-medium">Manage All Resources</a>
+    </div>
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+        @forelse($recentResources ?? [] as $resource)
+            <div class="border rounded-lg p-4 hover:shadow-md transition">
+                <div class="flex items-center gap-2 mb-2">
+                    <i class="bi bi-file-earmark-text text-blue-500"></i>
+                    <span class="font-medium text-sm">{{ Str::limit($resource->name, 30) }}</span>
+                </div>
+                <div class="text-xs text-gray-500 mb-3">{{ Str::limit($resource->description, 50) }}</div>
+                <a href="{{ route('bdsp.resources.sharing', $resource) }}" 
+                   class="inline-block bg-[#b81d8f] hover:bg-[#6c3483] text-white text-xs px-3 py-1 rounded transition">
+                    Share with Mentees
+                </a>
+            </div>
+        @empty
+            <div class="col-span-3 text-center text-gray-500 py-4">
+                <i class="bi bi-file-earmark-text text-2xl mb-2"></i>
+                <p class="text-sm">No resources uploaded yet.</p>
+                <a href="{{ route('bdsp.resources.index') }}" class="text-[#b81d8f] hover:underline text-sm">Upload your first resource</a>
+            </div>
+        @endforelse
+    </div>
+</div>
+
+<!-- Reschedule Modal -->
+<div id="rescheduleModal" class="fixed inset-0 bg-black bg-opacity-50 z-50 hidden">
+    <div class="flex items-center justify-center min-h-screen p-4">
+        <div class="bg-white rounded-lg max-w-md w-full p-6">
+            <div class="flex items-center justify-between mb-4">
+                <h3 class="text-lg font-semibold text-gray-900">Reschedule Session</h3>
+                <button onclick="closeRescheduleModal()" class="text-gray-400 hover:text-gray-600">
+                    <i class="bi bi-x text-xl"></i>
+                </button>
+            </div>
+            
+            <form id="rescheduleForm">
+                <input type="hidden" id="sessionId" name="session_id">
+                
+                <div class="mb-4">
+                    <label for="newDateTime" class="block text-sm font-medium text-gray-700 mb-2">New Date & Time</label>
+                    <input type="datetime-local" id="newDateTime" name="new_date_time" required 
+                           class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:outline-none">
+                </div>
+                
+                <div class="mb-4">
+                    <label for="notes" class="block text-sm font-medium text-gray-700 mb-2">Notes (Optional)</label>
+                    <textarea id="notes" name="notes" rows="3" 
+                              class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:outline-none"></textarea>
+                </div>
+                
+                <div class="flex gap-3">
+                    <button type="button" onclick="closeRescheduleModal()" 
+                            class="flex-1 px-4 py-2 border border-gray-300 rounded-lg text-gray-700 hover:bg-gray-50">
+                        Cancel
+                    </button>
+                    <button type="submit" 
+                            class="flex-1 px-4 py-2 bg-purple-500 text-white rounded-lg hover:bg-purple-600">
+                        Reschedule
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
 @endsection 

@@ -3,15 +3,24 @@
 namespace App\Http\Controllers;
 
 use App\Models\Resource;
+use App\Models\ResourceShare;
+use App\Models\User;
+use App\Models\Pairing;
+use App\Notifications\ResourceSharedNotification;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Notification;
 
 class ResourceController extends Controller
 {
     public function index()
     {
         $resources = Resource::where('bdsp_id', Auth::id())->get();
+        
+        // Debug: Check what we're getting
+        \Log::info('Resources fetched for BDSP ' . Auth::id() . ': ' . $resources->count() . ' resources');
+        
         return view('dashboard.bdsp-upload-resources', compact('resources'));
     }
 
@@ -37,6 +46,99 @@ class ResourceController extends Controller
         ]);
 
         return redirect()->back()->with('success', 'Resource uploaded successfully.');
+    }
+
+    /**
+     * Show the resource sharing page for BDSPs
+     */
+    public function showSharing(Resource $resource)
+    {
+        $this->authorize('update', $resource);
+        
+        // Check if resource is approved before allowing sharing
+        if (!$resource->is_approved) {
+            return redirect()->back()->with('error', 'This resource needs admin approval before it can be shared. Please wait for approval or contact an administrator.');
+        }
+        
+        // Get paired entrepreneurs for this BDSP
+        $pairings = Pairing::where('pairing_type', 'bdsp_entrepreneur')
+            ->where(function($query) {
+                $query->where('user_one_id', Auth::id())
+                      ->orWhere('user_two_id', Auth::id());
+            })->get();
+
+        $entrepreneurs = $pairings->map(function($pairing) {
+            return $pairing->user_one_id == Auth::id() ? $pairing->userTwo : $pairing->userOne;
+        });
+
+        // Get current shares for this resource
+        $currentShares = $resource->shares()->with('sharedWith')->get();
+
+        return view('bdsp.resource-sharing', compact('resource', 'entrepreneurs', 'currentShares'));
+    }
+
+    /**
+     * Share a resource with entrepreneurs
+     */
+    public function share(Request $request, Resource $resource)
+    {
+        $this->authorize('update', $resource);
+        
+        $request->validate([
+            'entrepreneur_ids' => 'required|array',
+            'entrepreneur_ids.*' => 'exists:users,id',
+            'message' => 'nullable|string|max:500',
+        ]);
+
+        $bdsp = Auth::user();
+        $sharedCount = 0;
+        $entrepreneursToNotify = [];
+
+        foreach ($request->entrepreneur_ids as $entrepreneurId) {
+            // Check if already shared
+            if (!$resource->isSharedWith($entrepreneurId)) {
+                ResourceShare::create([
+                    'resource_id' => $resource->id,
+                    'shared_by' => $bdsp->id,
+                    'shared_with' => $entrepreneurId,
+                    'message' => $request->message,
+                ]);
+                $sharedCount++;
+                
+                // Add to notification list
+                $entrepreneur = User::find($entrepreneurId);
+                if ($entrepreneur) {
+                    $entrepreneursToNotify[] = $entrepreneur;
+                }
+            }
+        }
+
+        // Send notifications to entrepreneurs
+        if (!empty($entrepreneursToNotify)) {
+            Notification::send($entrepreneursToNotify, new ResourceSharedNotification($resource, $bdsp, $request->message));
+        }
+
+        if ($sharedCount > 0) {
+            return redirect()->back()->with('success', "Resource shared with {$sharedCount} entrepreneur(s) successfully!");
+        } else {
+            return redirect()->back()->with('info', 'Resource was already shared with all selected entrepreneurs.');
+        }
+    }
+
+    /**
+     * Remove sharing for a specific entrepreneur
+     */
+    public function unshare(Request $request, Resource $resource)
+    {
+        $this->authorize('update', $resource);
+        
+        $request->validate([
+            'entrepreneur_id' => 'required|exists:users,id',
+        ]);
+
+        $resource->shares()->where('shared_with', $request->entrepreneur_id)->delete();
+
+        return redirect()->back()->with('success', 'Resource sharing removed successfully.');
     }
 
     // Additional methods for admin approval, etc., can be added later

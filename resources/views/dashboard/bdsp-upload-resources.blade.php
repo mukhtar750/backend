@@ -4,6 +4,23 @@
 @section('content')
 <div class="max-w-4xl mx-auto space-y-8">
     <h1 class="text-2xl md:text-3xl font-bold text-center text-gray-800 mb-8">Resource Management</h1>
+    
+    <!-- Info message about approval process -->
+    <div class="bg-blue-50 border border-blue-200 rounded-lg p-4 mb-6">
+        <div class="flex">
+            <div class="flex-shrink-0">
+                <svg class="h-5 w-5 text-blue-400" viewBox="0 0 20 20" fill="currentColor">
+                    <path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z" clip-rule="evenodd" />
+                </svg>
+            </div>
+            <div class="ml-3">
+                <p class="text-sm text-blue-700">
+                    <strong>Note:</strong> Resources must be approved by an administrator before they can be shared with mentees. 
+                    You can still edit and manage unapproved resources while waiting for approval.
+                </p>
+            </div>
+        </div>
+    </div>
     <div class="bg-white rounded-xl shadow p-8 mb-8">
         <h2 class="text-xl font-semibold mb-6">Upload New Resource</h2>
         <form action="{{ route('bdsp.resources.store') }}" method="POST" enctype="multipart/form-data">
@@ -28,16 +45,58 @@
         @if($resources->isEmpty())
             <div class="text-gray-500 text-center py-8">No resources uploaded yet.</div>
         @else
-            <ul>
-                @foreach($resources as $resource)
-                    <li class="border-b py-4">
-                        <div class="font-medium">{{ $resource->name }}</div>
-                        <div class="text-sm text-gray-600">{{ $resource->description }}</div>
-                        <div class="text-sm">Status: {{ $resource->is_approved ? 'Approved' : 'Pending' }}</div>
-                        <a href="{{ Storage::url($resource->file_path) }}" class="text-[#b81d8f] hover:underline">Download</a>
-                    </li>
-                @endforeach
-            </ul>
+            <div class="overflow-x-auto">
+                <table class="min-w-full divide-y divide-gray-200">
+                    <thead class="bg-gray-50">
+                        <tr>
+                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Name</th>
+                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Description</th>
+                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Status</th>
+                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">File</th>
+                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody class="bg-white divide-y divide-gray-200">
+                        @foreach($resources as $resource)
+                        <tr class="hover:bg-gray-50">
+                            <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
+                                {{ $resource->name }}
+                            </td>
+                            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                                {{ $resource->description }}
+                            </td>
+                            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                                @if($resource->is_approved)
+                                    <span class="px-2 py-1 text-xs font-semibold rounded-full bg-green-100 text-green-800">✓ Approved</span>
+                                @else
+                                    <span class="px-2 py-1 text-xs font-semibold rounded-full bg-yellow-100 text-yellow-800">⏳ Pending Approval</span>
+                                @endif
+                            </td>
+                            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                                <a href="{{ Storage::url($resource->file_path) }}" class="text-[#b81d8f] hover:underline">Download</a>
+                            </td>
+                            <td class="px-6 py-4 whitespace-nowrap text-sm font-medium">
+                                <div class="flex space-x-2">
+                                    <a href="{{ route('bdsp.resources.edit', $resource) }}" class="text-blue-600 hover:text-blue-900 font-medium">Edit</a>
+                                    
+                                    @if($resource->is_approved)
+                                        <a href="{{ route('bdsp.resources.sharing', $resource) }}" class="bg-green-500 hover:bg-green-600 text-white px-3 py-1 rounded text-sm font-bold">Share</a>
+                                    @else
+                                        <span class="bg-gray-300 text-gray-500 px-3 py-1 rounded text-sm font-bold cursor-not-allowed" title="Resource needs approval before sharing">Share</span>
+                                    @endif
+                                    
+                                    <form action="{{ route('bdsp.resources.destroy', $resource) }}" method="POST" class="inline" onsubmit="return confirm('Are you sure you want to delete this resource?');">
+                                        @csrf
+                                        @method('DELETE')
+                                        <button type="submit" class="text-red-600 hover:text-red-900 font-medium">Delete</button>
+                                    </form>
+                                </div>
+                            </td>
+                        </tr>
+                        @endforeach
+                    </tbody>
+                </table>
+            </div>
         @endif
     </div>
 </div>

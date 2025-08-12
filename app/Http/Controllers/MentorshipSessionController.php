@@ -92,6 +92,12 @@ class MentorshipSessionController extends Controller
         if ($mentorship_session->scheduled_by !== $user->id && $mentorship_session->scheduled_for !== $user->id) {
             abort(403, 'You are not allowed to cancel this session.');
         }
+        
+        // Prevent cancellation of completed sessions
+        if ($mentorship_session->status === 'completed') {
+            abort(403, 'Cannot cancel a completed session.');
+        }
+        
         $mentorship_session->status = 'cancelled';
         $mentorship_session->save();
         // TODO: Notify both users
@@ -105,10 +111,49 @@ class MentorshipSessionController extends Controller
         if ($mentorship_session->scheduled_by !== $user->id && $mentorship_session->scheduled_for !== $user->id) {
             abort(403, 'You are not allowed to complete this session.');
         }
+        
+        // Prevent completion of already completed sessions
+        if ($mentorship_session->status === 'completed') {
+            abort(403, 'Session is already completed.');
+        }
+        
         $mentorship_session->status = 'completed';
         $mentorship_session->save();
         // TODO: Notify both users
         return redirect()->back()->with('success', 'Session marked as completed.');
+    }
+
+    // Reschedule a session (by either party)
+    public function reschedule(Request $request, MentorshipSession $mentorship_session)
+    {
+        $user = Auth::user();
+        if ($mentorship_session->scheduled_by !== $user->id && $mentorship_session->scheduled_for !== $user->id) {
+            abort(403, 'You are not allowed to reschedule this session.');
+        }
+        
+        // Prevent rescheduling of completed sessions
+        if ($mentorship_session->status === 'completed') {
+            abort(403, 'Cannot reschedule a completed session.');
+        }
+        
+        // Prevent rescheduling of cancelled sessions
+        if ($mentorship_session->status === 'cancelled') {
+            abort(403, 'Cannot reschedule a cancelled session.');
+        }
+        
+        $request->validate([
+            'new_date_time' => 'required|date|after:now',
+            'notes' => 'nullable|string',
+        ]);
+        
+        $mentorship_session->update([
+            'date_time' => $request->new_date_time,
+            'notes' => $request->notes ?? $mentorship_session->notes,
+            'status' => 'pending', // Reset to pending for the new date
+        ]);
+        
+        // TODO: Notify both users
+        return redirect()->back()->with('success', 'Session rescheduled successfully.');
     }
 
     public function create()

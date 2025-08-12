@@ -25,7 +25,10 @@ class BDSPController extends Controller
         // Get stats
         $stats = $this->getStats($bdsp->id);
         
-        return view('dashboard.bdsp', compact('pairedMentees', 'upcomingSessions', 'stats'));
+        // Get recent resources for quick sharing
+        $recentResources = $bdsp->resources()->latest()->take(3)->get();
+        
+        return view('dashboard.bdsp', compact('pairedMentees', 'upcomingSessions', 'stats', 'recentResources'));
     }
     
     private function getPairedMentees($bdspId)
@@ -77,11 +80,19 @@ class BDSPController extends Controller
         ->whereYear('date_time', now()->year)
         ->count();
         
+        // Get actual resource count
+        $resourcesUploaded = \App\Models\Resource::where('bdsp_id', $bdspId)->count();
+        
+        // Get actual average rating from feedback
+        $avgRating = \App\Models\Feedback::where('target_type', 'user')
+            ->where('target_id', $bdspId)
+            ->avg('rating') ?? 4.8;
+        
         return [
             'active_mentees' => $pairedMentees->count(),
             'sessions_this_month' => $sessionsThisMonth,
-            'resources_uploaded' => 0, // Would come from resources table
-            'avg_rating' => 4.8, // Would come from feedback table
+            'resources_uploaded' => $resourcesUploaded,
+            'avg_rating' => round($avgRating, 1),
         ];
     }
     
@@ -269,18 +280,84 @@ class BDSPController extends Controller
 
     public function completeSession(MentorshipSession $session)
     {
+        // Check if the current user is authorized to complete this session
+        if ($session->scheduled_by !== Auth::id() && $session->scheduled_for !== Auth::id()) {
+            return redirect()->back()->with('error', 'You are not authorized to complete this session.');
+        }
+
+        $session->status = 'completed';
+        $session->save();
+
+        return redirect()->back()->with('success', 'Session marked as completed.');
+    }
+
+    public function rescheduleSession(Request $request, MentorshipSession $session)
+    {
         $bdsp = Auth::user();
         
         // Check if the BDSP is involved in this session
         if ($session->scheduled_by !== $bdsp->id && $session->scheduled_for !== $bdsp->id) {
-            return response()->json(['error' => 'You can only complete sessions you are involved in.'], 403);
+            return response()->json(['error' => 'You can only reschedule sessions you are involved in.'], 403);
         }
         
-        $session->update(['status' => 'completed']);
+        // Validate the request
+        $request->validate([
+            'new_date_time' => 'required|date|after:now',
+            'notes' => 'nullable|string',
+        ]);
+        
+        // Update the session
+        $session->update([
+            'date_time' => $request->new_date_time,
+            'notes' => $request->notes ?? $session->notes,
+            'status' => 'pending', // Reset to pending for the new date
+        ]);
         
         return response()->json([
             'success' => true,
-            'message' => 'Session marked as completed!'
+            'message' => 'Session rescheduled successfully!'
         ]);
+    }
+
+    public function reports()
+    {
+        $bdsp = Auth::user();
+        
+        // Get paired mentees
+        $pairedMentees = $this->getPairedMentees($bdsp->id);
+        
+        // Get sessions count
+        $sessionsCount = MentorshipSession::where(function($q) use ($bdsp) {
+            $q->where('scheduled_by', $bdsp->id)->orWhere('scheduled_for', $bdsp->id);
+        })->count();
+        
+        // Get feedback received
+        $feedbackReceived = \App\Models\Feedback::where('target_type', 'user')
+            ->where('target_id', $bdsp->id)
+            ->get();
+        $avgRating = $feedbackReceived->count() > 0 ? round($feedbackReceived->avg('rating'), 1) : 0;
+        
+        // Get resources count
+        $resourcesCount = \App\Models\Resource::where('user_id', $bdsp->id)->count();
+        
+        // Get recent feedback for display
+        $recentFeedback = \App\Models\Feedback::where('target_type', 'user')
+            ->where('target_id', $bdsp->id)
+            ->with('user')
+            ->latest()
+            ->take(6)
+            ->get();
+        
+        // Get resources for engagement section
+        $resources = \App\Models\Resource::where('user_id', $bdsp->id)->get();
+        
+        return view('bdsp.reports', compact(
+            'pairedMentees',
+            'sessionsCount', 
+            'avgRating',
+            'resourcesCount',
+            'recentFeedback',
+            'resources'
+        ));
     }
 } 

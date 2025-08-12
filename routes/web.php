@@ -274,11 +274,18 @@ Route::get('/dashboard/entrepreneur', function () {
     
     // Get all resources uploaded by the entrepreneur's paired BDSPs and mentors
     $allUploaderIds = array_merge($bdspIds->all(), $mentorIds->all(), [$user->id]);
-    $learningResources = \App\Models\Resource::whereIn('bdsp_id', $allUploaderIds)
-        ->where('is_approved', true)
-        ->orderByDesc('created_at')
-        ->take(4)
-        ->get();
+    $learningResources = \App\Models\Resource::where(function($query) use ($allUploaderIds, $user) {
+        // Resources from paired professionals
+        $query->whereIn('bdsp_id', $allUploaderIds)
+              // Plus resources explicitly shared with this entrepreneur
+              ->orWhereHas('shares', function($shareQuery) use ($user) {
+                  $shareQuery->where('shared_with', $user->id);
+              });
+    })
+    ->where('is_approved', true)
+    ->orderByDesc('created_at')
+    ->take(4)
+    ->get();
 
     // Get mentorship sessions for the entrepreneur
     $mentorshipSessions = \App\Models\MentorshipSession::where(function($q) use ($user) {
@@ -300,15 +307,21 @@ Route::middleware(['auth'])->group(function () {
     Route::post('/bdsp/schedule-session', [\App\Http\Controllers\BDSPController::class, 'scheduleSession'])->name('bdsp.schedule-session');
     Route::patch('/bdsp/sessions/{session}/cancel', [\App\Http\Controllers\BDSPController::class, 'cancelSession'])->name('bdsp.sessions.cancel');
     Route::patch('/bdsp/sessions/{session}/complete', [\App\Http\Controllers\BDSPController::class, 'completeSession'])->name('bdsp.sessions.complete');
+    Route::patch('/bdsp/sessions/{session}/reschedule', [\App\Http\Controllers\BDSPController::class, 'rescheduleSession'])->name('bdsp.sessions.reschedule');
     // BDSP Resources
     Route::get('/bdsp/upload-resources', [\App\Http\Controllers\ResourceController::class, 'index'])->name('bdsp.resources.index');
     Route::post('/bdsp/upload-resources', [\App\Http\Controllers\ResourceController::class, 'store'])->name('bdsp.resources.store');
     Route::get('/bdsp/resources/{resource}/edit', [\App\Http\Controllers\ResourceController::class, 'edit'])->name('bdsp.resources.edit');
     Route::put('/bdsp/resources/{resource}', [\App\Http\Controllers\ResourceController::class, 'update'])->name('bdsp.resources.update');
     Route::delete('/bdsp/resources/{resource}', [\App\Http\Controllers\ResourceController::class, 'destroy'])->name('bdsp.resources.destroy');
+    
+    // BDSP Resource Sharing
+    Route::get('/bdsp/resources/{resource}/sharing', [\App\Http\Controllers\ResourceController::class, 'showSharing'])->name('bdsp.resources.sharing');
+    Route::post('/bdsp/resources/{resource}/share', [\App\Http\Controllers\ResourceController::class, 'share'])->name('bdsp.resources.share');
+    Route::delete('/bdsp/resources/{resource}/unshare', [\App\Http\Controllers\ResourceController::class, 'unshare'])->name('bdsp.resources.unshare');
     // BDSP Placeholder Views
     Route::get('/bdsp/sessions', function () { return view('bdsp.sessions'); })->name('bdsp.sessions');
-    Route::get('/bdsp/reports', function () { return view('bdsp.reports'); })->name('bdsp.reports');
+    Route::get('/bdsp/reports', [\App\Http\Controllers\BDSPController::class, 'reports'])->name('bdsp.reports');
     Route::get('/bdsp/messages', [\App\Http\Controllers\MessageController::class, 'index'])->name('bdsp.messages');
     Route::get('/bdsp/messages/{conversation}', [\App\Http\Controllers\MessageController::class, 'show'])->name('bdsp.messages.show');
     Route::post('/bdsp/messages', [\App\Http\Controllers\MessageController::class, 'store'])->name('bdsp.messages.store');
@@ -486,6 +499,7 @@ Route::middleware(['auth'])->group(function () {
     Route::post('mentorship-sessions/{mentorship_session}/confirm', [\App\Http\Controllers\MentorshipSessionController::class, 'confirm'])->name('mentorship-sessions.confirm');
     Route::post('mentorship-sessions/{mentorship_session}/cancel', [\App\Http\Controllers\MentorshipSessionController::class, 'cancel'])->name('mentorship-sessions.cancel');
     Route::post('mentorship-sessions/{mentorship_session}/complete', [\App\Http\Controllers\MentorshipSessionController::class, 'complete'])->name('mentorship-sessions.complete');
+    Route::post('mentorship-sessions/{mentorship_session}/reschedule', [\App\Http\Controllers\MentorshipSessionController::class, 'reschedule'])->name('mentorship-sessions.reschedule');
 });
 
 // Mentorship Forms & Journey

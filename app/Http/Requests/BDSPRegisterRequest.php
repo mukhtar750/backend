@@ -29,8 +29,13 @@ class BDSPRegisterRequest extends FormRequest
             ],
             'services_provided' => [
                 'required',
+                'array',
+                'min:1'
+            ],
+            'services_provided.*' => [
+                'required',
                 'string',
-                'max:255'
+                'in:business_model_review,financial_forecasting,valuation_support,pitch_deck_development,investor_pitch_coaching,capital_raising_strategy,term_sheets,due_diligence_preparation,legal_regulatory_advice,market_sizing,investor_identification,esg_impact_readiness,governance_board_structuring,mentoring_experienced_founders,investor_networks_demo_days,exit_strategy_planning,ip_asset_protection,growth_strategy_post_investment,storytelling_vision_alignment,one_on_one_coaching'
             ],
             'years_of_experience' => [
                 'required',
@@ -76,7 +81,7 @@ class BDSPRegisterRequest extends FormRequest
         $this->merge([
             'name' => trim($this->name),
             'email' => strtolower(trim($this->email)),
-            'services_provided' => trim($this->services_provided),
+            'services_provided' => array_map('trim', $this->services_provided),
             'organization' => $this->organization ? trim($this->organization) : null,
             'certifications' => $this->certifications ? trim($this->certifications) : null,
             'bdsp_linkedin' => $this->bdsp_linkedin ? trim($this->bdsp_linkedin) : null,

@@ -58,6 +58,7 @@ class User extends Authenticatable
             'email_verified_at' => 'datetime',
             'password' => 'hashed',
             'is_approved' => 'boolean',
+            'services_provided' => 'array',
         ];
     }
 
@@ -229,6 +230,56 @@ class User extends Authenticatable
     public function resources()
     {
         return $this->hasMany(Resource::class);
+    }
+
+    /**
+     * Get resources shared by this user (for BDSPs)
+     */
+    public function sharedResources()
+    {
+        return $this->hasMany(ResourceShare::class, 'shared_by');
+    }
+
+    /**
+     * Get resources shared with this user (for entrepreneurs)
+     */
+    public function receivedResourceShares()
+    {
+        return $this->hasMany(ResourceShare::class, 'shared_with');
+    }
+
+    /**
+     * Get all resources accessible to this user (both uploaded and shared)
+     */
+    public function accessibleResources()
+    {
+        // For BDSPs: their own resources
+        if ($this->role === 'bdsp') {
+            return $this->resources();
+        }
+        
+        // For entrepreneurs: resources from paired BDSPs + shared resources
+        return Resource::where(function($query) {
+            $query->whereIn('bdsp_id', $this->getPairedProfessionalIds())
+                  ->orWhereHas('shares', function($shareQuery) {
+                      $shareQuery->where('shared_with', $this->id);
+                  });
+        })->where('is_approved', true);
+    }
+
+    /**
+     * Get IDs of paired professionals (BDSPs and mentors)
+     */
+    public function getPairedProfessionalIds()
+    {
+        $pairings = \App\Models\Pairing::where(function($query) {
+            $query->where('user_one_id', $this->id)
+                  ->orWhere('user_two_id', $this->id);
+        })->get();
+
+        return $pairings->map(function($pairing) {
+            return $pairing->user_one_id == $this->id ? $pairing->user_two_id : $pairing->user_one_id;
+        })->toArray();
     }
 
     protected static function boot()

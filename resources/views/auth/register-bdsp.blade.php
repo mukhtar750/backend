@@ -59,12 +59,90 @@
                     <!-- Services Provided -->
                     <div>
                         <label for="services_provided" class="block text-sm font-medium text-gray-700 mb-1">Services Provided *</label>
-                        <div class="relative">
-                            <input type="text" id="services_provided" name="services_provided" 
-                                   class="input-field w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500"
-                                   placeholder="Enter services separated by commas" value="{{ old('services_provided') }}">
-                            <div id="tagsContainer" class="mt-2 flex flex-wrap"></div>
+                        <div class="space-y-3 max-h-64 overflow-y-auto border border-gray-200 rounded-lg p-4 bg-gray-50">
+                            <div class="flex items-start space-x-3">
+                                <input type="checkbox" id="business_model_review" name="services_provided[]" value="business_model_review" class="mt-1 h-4 w-4 text-purple-600 focus:ring-purple-500 border-gray-300 rounded">
+                                <label for="business_model_review" class="text-sm text-gray-700 cursor-pointer">1. Business Model Review and Validation</label>
+                            </div>
+                            <div class="flex items-start space-x-3">
+                                <input type="checkbox" id="financial_forecasting" name="services_provided[]" value="financial_forecasting" class="mt-1 h-4 w-4 text-purple-600 focus:ring-purple-500 border-gray-300 rounded">
+                                <label for="financial_forecasting" class="text-sm text-gray-700 cursor-pointer">2. Financial Forecasting and Planning</label>
+                            </div>
+                            <div class="flex items-start space-x-3">
+                                <input type="checkbox" id="valuation_support" name="services_provided[]" value="valuation_support" class="mt-1 h-4 w-4 text-purple-600 focus:ring-purple-500 border-gray-300 rounded">
+                                <label for="valuation_support" class="text-sm text-gray-700 cursor-pointer">3. Valuation Support and Benchmarking</label>
+                            </div>
+                            <div class="flex items-start space-x-3">
+                                <input type="checkbox" id="pitch_deck_development" name="services_provided[]" value="pitch_deck_development" class="mt-1 h-4 w-4 text-purple-600 focus:ring-purple-500 border-gray-300 rounded">
+                                <label for="pitch_deck_development" class="text-sm text-gray-700 cursor-pointer">4. Pitch Deck Development and Review</label>
+                            </div>
+                            <div class="flex items-start space-x-3">
+                                <input type="checkbox" id="investor_pitch_coaching" name="services_provided[]" value="investor_pitch_coaching" class="mt-1 h-4 w-4 text-purple-600 focus:ring-purple-500 border-gray-300 rounded">
+                                <label for="investor_pitch_coaching" class="text-sm text-gray-700 cursor-pointer">5. Investor Pitch Coaching and Presentation Skills</label>
+                            </div>
+                            <div class="flex items-start space-x-3">
+                                <input type="checkbox" id="capital_raising_strategy" name="services_provided[]" value="capital_raising_strategy" class="mt-1 h-4 w-4 text-purple-600 focus:ring-purple-500 border-gray-300 rounded">
+                                <label for="capital_raising_strategy" class="text-sm text-gray-700 cursor-pointer">6. Capital Raising Strategy (Debt, Equity, Grants)</label>
+                            </div>
+                            <div class="flex items-start space-x-3">
+                                <input type="checkbox" id="term_sheets" name="services_provided[]" value="term_sheets" class="mt-1 h-4 w-4 text-purple-600 focus:ring-purple-500 border-gray-300 rounded">
+                                <label for="term_sheets" class="text-sm text-gray-700 cursor-pointer">7. Understanding Term Sheets and Investment Structures</label>
+                            </div>
+                            <div class="flex items-start space-x-3">
+                                <input type="checkbox" id="due_diligence_preparation" name="services_provided[]" value="due_diligence_preparation" class="mt-1 h-4 w-4 text-purple-600 focus:ring-purple-500 border-gray-300 rounded">
+                                <label for="due_diligence_preparation" class="text-sm text-gray-700 cursor-pointer">8. Due Diligence Preparation and Data Room Setup</label>
+                            </div>
+                            <div class="flex items-start space-x-3">
+                                <input type="checkbox" id="legal_regulatory_advice" name="services_provided[]" value="legal_regulatory_advice" class="mt-1 h-4 w-4 text-purple-600 focus:ring-purple-500 border-gray-300 rounded">
+                                <label for="legal_regulatory_advice" class="text-sm text-gray-700 cursor-pointer">9. Legal and Regulatory Advice for Investment</label>
+                            </div>
+                            <div class="flex items-start space-x-3">
+                                <input type="checkbox" id="market_sizing" name="services_provided[]" value="market_sizing" class="mt-1 h-4 w-4 text-purple-600 focus:ring-purple-500 border-gray-300 rounded">
+                                <label for="market_sizing" class="text-sm text-gray-700 cursor-pointer">10. Market Sizing and Competitive Positioning</label>
+                            </div>
+                            <div class="flex items-start space-x-3">
+                                <input type="checkbox" id="investor_identification" name="services_provided[]" value="investor_identification" class="mt-1 h-4 w-4 text-purple-600 focus:ring-purple-500 border-gray-300 rounded">
+                                <label for="investor_identification" class="text-sm text-gray-700 cursor-pointer">11. Identifying and Approaching the Right Investors</label>
+                            </div>
+                            <div class="flex items-start space-x-3">
+                                <input type="checkbox" id="esg_impact_readiness" name="services_provided[]" value="esg_impact_readiness" class="mt-1 h-4 w-4 text-purple-600 focus:ring-purple-500 border-gray-300 rounded">
+                                <label for="investor_identification" class="text-sm text-gray-700 cursor-pointer">12. ESG and Impact Readiness for Investment</label>
+                            </div>
+                            <div class="flex items-start space-x-3">
+                                <input type="checkbox" id="governance_board_structuring" name="services_provided[]" value="governance_board_structuring" class="mt-1 h-4 w-4 text-purple-600 focus:ring-purple-500 border-gray-300 rounded">
+                                <label for="governance_board_structuring" class="text-sm text-gray-700 cursor-pointer">13. Governance and Board Structuring Advice</label>
+                            </div>
+                            <div class="flex items-start space-x-3">
+                                <input type="checkbox" id="mentoring_experienced_founders" name="services_provided[]" value="mentoring_experienced_founders" class="mt-1 h-4 w-4 text-purple-600 focus:ring-purple-500 border-gray-300 rounded">
+                                <label for="mentoring_experienced_founders" class="text-sm text-gray-700 cursor-pointer">14. Mentoring by Experienced Founders or Investors</label>
+                            </div>
+                            <div class="flex items-start space-x-3">
+                                <input type="checkbox" id="investor_networks_demo_days" name="services_provided[]" value="investor_networks_demo_days" class="mt-1 h-4 w-4 text-purple-600 focus:ring-purple-500 border-gray-300 rounded">
+                                <label for="investor_networks_demo_days" class="text-sm text-gray-700 cursor-pointer">15. Access to Investor Networks and Demo Days</label>
+                            </div>
+                            <div class="flex items-start space-x-3">
+                                <input type="checkbox" id="exit_strategy_planning" name="services_provided[]" value="exit_strategy_planning" class="mt-1 h-4 w-4 text-purple-600 focus:ring-purple-500 border-gray-300 rounded">
+                                <label for="exit_strategy_planning" class="text-sm text-gray-700 cursor-pointer">16. Exit Strategy Planning</label>
+                            </div>
+                            <div class="flex items-start space-x-3">
+                                <input type="checkbox" id="ip_asset_protection" name="services_provided[]" value="ip_asset_protection" class="mt-1 h-4 w-4 text-purple-600 focus:ring-purple-500 border-gray-300 rounded">
+                                <label for="ip_asset_protection" class="text-sm text-gray-700 cursor-pointer">17. IP and Asset Protection for Investment</label>
+                            </div>
+                            <div class="flex items-start space-x-3">
+                                <input type="checkbox" id="growth_strategy_post_investment" name="services_provided[]" value="growth_strategy_post_investment" class="mt-1 h-4 w-4 text-purple-600 focus:ring-purple-500 border-gray-300 rounded">
+                                <label for="growth_strategy_post_investment" class="text-sm text-gray-700 cursor-pointer">18. Growth Strategy Post-Investment</label>
+                            </div>
+                            <div class="flex items-start space-x-3">
+                                <input type="checkbox" id="storytelling_vision_alignment" name="services_provided[]" value="storytelling_vision_alignment" class="mt-1 h-4 w-4 text-purple-600 focus:ring-purple-500 border-gray-300 rounded">
+                                <label for="storytelling_vision_alignment" class="text-sm text-gray-700 cursor-pointer">19. Storytelling and Vision Alignment for Investors</label>
+                            </div>
+                            <div class="flex items-start space-x-3">
+                                <input type="checkbox" id="one_on_one_coaching" name="services_provided[]" value="one_on_one_coaching" class="mt-1 h-4 w-4 text-purple-600 focus:ring-purple-500 border-gray-300 rounded">
+                                <label for="one_on_one_coaching" class="text-sm text-gray-700 cursor-pointer">20. One-on-One Coaching with Investment Advisors</label>
+                            </div>
                         </div>
+                        <p class="mt-2 text-xs text-gray-500">Select all services you provide by checking the boxes above</p>
+                        <div id="selectedServices" class="mt-3 flex flex-wrap gap-2"></div>
                         @error('services_provided') <div class="text-red-500 text-xs mt-1">{{ $message }}</div> @enderror
                     </div>
                     <!-- Years of Experience -->
@@ -134,35 +212,50 @@
     </main>
     <script>
         document.addEventListener('DOMContentLoaded', function() {
-            const servicesInput = document.getElementById('services_provided');
-            const tagsContainer = document.getElementById('tagsContainer');
-            // Handle services input to create tags
-            servicesInput.addEventListener('keydown', function(e) {
-                if (e.key === ',' || e.key === 'Enter') {
-                    e.preventDefault();
-                    const value = this.value.trim();
-                    if (value) {
-                        createTag(value);
-                        this.value = '';
+            const servicesCheckboxes = document.querySelectorAll('input[name="services_provided[]"]');
+            const selectedServicesContainer = document.getElementById('selectedServices');
+
+            // Function to update selected services display
+            function updateSelectedServicesDisplay() {
+                selectedServicesContainer.innerHTML = ''; // Clear previous tags
+                
+                servicesCheckboxes.forEach(checkbox => {
+                    if (checkbox.checked) {
+                        const tag = document.createElement('div');
+                        tag.className = 'tag';
+                        tag.innerHTML = `
+                            ${checkbox.nextElementSibling.textContent}
+                            <span class="tag-remove" data-value="${checkbox.value}">×</span>
+                        `;
+                        selectedServicesContainer.appendChild(tag);
                     }
-                }
-            });
-            // Remove tag when clicked
-            tagsContainer.addEventListener('click', function(e) {
-                if (e.target.classList.contains('tag-remove')) {
-                    e.target.parentElement.remove();
-                }
-            });
-            // Helper function to create a tag
-            function createTag(value) {
-                const tag = document.createElement('div');
-                tag.className = 'tag';
-                tag.innerHTML = `
-                    ${value}
-                    <span class="tag-remove">×</span>
-                `;
-                tagsContainer.appendChild(tag);
+                });
             }
+
+            // Handle change event on all checkboxes
+            servicesCheckboxes.forEach(checkbox => {
+                checkbox.addEventListener('change', updateSelectedServicesDisplay);
+            });
+
+            // Remove tag when clicked and uncheck the checkbox
+            selectedServicesContainer.addEventListener('click', function(e) {
+                if (e.target.classList.contains('tag-remove')) {
+                    const tagToRemove = e.target.parentElement;
+                    const valueToRemove = e.target.getAttribute('data-value');
+                    
+                    // Uncheck the corresponding checkbox
+                    const checkboxToUncheck = document.querySelector(`input[value="${valueToRemove}"]`);
+                    if (checkboxToUncheck) {
+                        checkboxToUncheck.checked = false;
+                    }
+                    
+                    // Remove the tag
+                    tagToRemove.remove();
+                }
+            });
+
+            // Initialize display
+            updateSelectedServicesDisplay();
         });
     </script>
 </body>

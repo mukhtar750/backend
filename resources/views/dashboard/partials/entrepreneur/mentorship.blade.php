@@ -85,13 +85,28 @@
                             </div>
                         </div>
                     </div>
-                    <span class="px-3 py-1 rounded-full text-xs font-semibold
-                        @if($session->status === 'scheduled') bg-purple-100 text-purple-700
-                        @elseif($session->status === 'completed') bg-green-100 text-green-700
-                        @elseif($session->status === 'cancelled') bg-red-100 text-red-700
-                        @else bg-gray-100 text-gray-700 @endif">
-                        {{ ucfirst($session->status ?? 'scheduled') }}
-                    </span>
+                    <div class="flex items-center gap-2">
+                        <span class="px-3 py-1 rounded-full text-xs font-semibold
+                            @if($session->status === 'scheduled') bg-purple-100 text-purple-700
+                            @elseif($session->status === 'completed') bg-green-100 text-green-700
+                            @elseif($session->status === 'cancelled') bg-red-100 text-red-700
+                            @else bg-gray-100 text-gray-700 @endif">
+                            {{ ucfirst($session->status ?? 'scheduled') }}
+                        </span>
+                        <!-- Action Buttons -->
+                        @if($session->status !== 'completed' && $session->status !== 'cancelled')
+                            <button onclick="event.stopPropagation(); cancelSession({{ $session->id }})" 
+                                    class="text-red-500 hover:text-red-700 text-xs font-semibold">
+                                Cancel
+                            </button>
+                            <button onclick="event.stopPropagation(); openRescheduleModal({{ $session->id }}, '{{ $session->date_time->format('Y-m-d\TH:i') }}', '{{ $session->notes ?? '' }}')" 
+                                    class="text-blue-500 hover:text-blue-700 text-xs font-semibold">
+                                Reschedule
+                            </button>
+                        @else
+                            <span class="text-xs text-gray-400">No actions available</span>
+                        @endif
+                    </div>
                 </li>
             @endforeach
         </ul>
@@ -104,4 +119,125 @@
             <p class="text-gray-500 text-xs mt-1">Book your first session to get started.</p>
         </div>
     @endif
-</div> 
+</div>
+
+<!-- Reschedule Modal -->
+<div id="rescheduleModal" class="fixed inset-0 bg-black bg-opacity-50 z-50 hidden">
+    <div class="flex items-center justify-center min-h-screen p-4">
+        <div class="bg-white rounded-lg max-w-md w-full p-6">
+            <div class="flex items-center justify-between mb-4">
+                <h3 class="text-lg font-semibold text-gray-900">Reschedule Session</h3>
+                <button onclick="closeRescheduleModal()" class="text-gray-400 hover:text-gray-600">
+                    <i class="bi bi-x text-xl"></i>
+                </button>
+            </div>
+            
+            <form id="rescheduleForm">
+                <input type="hidden" id="sessionId" name="session_id">
+                
+                <div class="mb-4">
+                    <label for="newDateTime" class="block text-sm font-medium text-gray-700 mb-2">New Date & Time</label>
+                    <input type="datetime-local" id="newDateTime" name="new_date_time" required 
+                           class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:outline-none">
+                </div>
+                
+                <div class="mb-4">
+                    <label for="notes" class="block text-sm font-medium text-gray-700 mb-2">Notes (Optional)</label>
+                    <textarea id="notes" name="notes" rows="3" 
+                              class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:outline-none"></textarea>
+                </div>
+                
+                <div class="flex gap-3">
+                    <button type="button" onclick="closeRescheduleModal()" 
+                            class="flex-1 px-4 py-2 border border-gray-300 rounded-lg text-gray-700 hover:bg-gray-50">
+                        Cancel
+                    </button>
+                    <button type="submit" 
+                            class="flex-1 px-4 py-2 bg-purple-500 text-white rounded-lg hover:bg-purple-600">
+                        Reschedule
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<script>
+function cancelSession(sessionId) {
+    if (confirm('Are you sure you want to cancel this session?')) {
+        fetch(`/mentorship-sessions/${sessionId}/cancel`, {
+            method: 'POST',
+            headers: {
+                'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content'),
+                'Content-Type': 'application/json',
+            },
+        })
+        .then(response => {
+            if (response.ok) {
+                alert('Session cancelled successfully!');
+                window.location.reload();
+            } else {
+                return response.text().then(text => {
+                    throw new Error(text);
+                });
+            }
+        })
+        .catch(error => {
+            console.error('Error:', error);
+            alert('Failed to cancel session: ' + error.message);
+        });
+    }
+}
+
+function openRescheduleModal(sessionId, currentDateTime, currentNotes) {
+    document.getElementById('sessionId').value = sessionId;
+    document.getElementById('newDateTime').value = currentDateTime;
+    document.getElementById('notes').value = currentNotes;
+    document.getElementById('rescheduleModal').classList.remove('hidden');
+}
+
+function closeRescheduleModal() {
+    document.getElementById('rescheduleModal').classList.add('hidden');
+}
+
+// Initialize reschedule form handler
+document.addEventListener('DOMContentLoaded', function() {
+    const rescheduleForm = document.getElementById('rescheduleForm');
+    if (rescheduleForm) {
+        rescheduleForm.addEventListener('submit', function(e) {
+            e.preventDefault();
+            
+            const sessionId = document.getElementById('sessionId').value;
+            const newDateTime = document.getElementById('newDateTime').value;
+            const notes = document.getElementById('notes').value;
+            
+            fetch(`/mentorship-sessions/${sessionId}/reschedule`, {
+                method: 'POST',
+                headers: {
+                    'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content'),
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({
+                    new_date_time: newDateTime,
+                    notes: notes
+                })
+            })
+            .then(response => {
+                if (response.ok) {
+                    alert('Session rescheduled successfully!');
+                    closeRescheduleModal();
+                    window.location.reload();
+                } else {
+                    return response.text().then(text => {
+                        throw new Error(text);
+                    });
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                alert('Failed to reschedule session: ' + error.message);
+            });
+        });
+    }
+});
+</script> 

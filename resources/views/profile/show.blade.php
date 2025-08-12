@@ -152,7 +152,37 @@
                                 @if($user->services_provided)
                                     <div>
                                         <label class="block text-sm font-semibold text-gray-700 mb-1">Services Provided</label>
-                                        <p class="text-gray-900">{{ $user->services_provided }}</p>
+                                        <div class="space-y-1">
+                                            @foreach($user->services_provided as $service)
+                                                @php
+                                                    $serviceLabels = [
+                                                        'business_model_review' => 'Business Model Review and Validation',
+                                                        'financial_forecasting' => 'Financial Forecasting and Planning',
+                                                        'valuation_support' => 'Valuation Support and Benchmarking',
+                                                        'pitch_deck_development' => 'Pitch Deck Development and Review',
+                                                        'investor_pitch_coaching' => 'Investor Pitch Coaching and Presentation Skills',
+                                                        'capital_raising_strategy' => 'Capital Raising Strategy (Debt, Equity, Grants)',
+                                                        'term_sheets' => 'Understanding Term Sheets and Investment Structures',
+                                                        'due_diligence_preparation' => 'Due Diligence Preparation and Data Room Setup',
+                                                        'legal_regulatory_advice' => 'Legal and Regulatory Advice for Investment',
+                                                        'market_sizing' => 'Market Sizing and Competitive Positioning',
+                                                        'investor_identification' => 'Identifying and Approaching the Right Investors',
+                                                        'esg_impact_readiness' => 'ESG and Impact Readiness for Investment',
+                                                        'governance_board_structuring' => 'Governance and Board Structuring Advice',
+                                                        'mentoring_experienced_founders' => 'Mentoring by Experienced Founders or Investors',
+                                                        'investor_networks_demo_days' => 'Access to Investor Networks and Demo Days',
+                                                        'exit_strategy_planning' => 'Exit Strategy Planning',
+                                                        'ip_asset_protection' => 'IP and Asset Protection for Investment',
+                                                        'growth_strategy_post_investment' => 'Growth Strategy Post-Investment',
+                                                        'storytelling_vision_alignment' => 'Storytelling and Vision Alignment for Investors',
+                                                        'one_on_one_coaching' => 'One-on-One Coaching with Investment Advisors'
+                                                    ];
+                                                @endphp
+                                                <span class="inline-block bg-purple-100 text-purple-800 text-xs px-2 py-1 rounded-full mr-2 mb-1">
+                                                    {{ $serviceLabels[$service] ?? $service }}
+                                                </span>
+                                            @endforeach
+                                        </div>
                                     </div>
                                 @endif
                                 @if($user->years_of_experience)
