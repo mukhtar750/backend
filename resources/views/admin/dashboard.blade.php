@@ -99,7 +99,7 @@
             <i class="bi bi-chat-dots-fill text-gray-600 text-2xl mb-2 block"></i>
             <p class="font-semibold text-sm text-gray-700">Messages</p>
         </a>
-        <a href="#" class="bg-teal-50 p-4 rounded-lg text-center shadow-sm hover:shadow-md transition">
+        <a href="{{ route('admin.training-modules.index') }}" class="bg-teal-50 p-4 rounded-lg text-center shadow-sm hover:shadow-md transition">
             <i class="bi bi-book-fill text-teal-600 text-2xl mb-2 block"></i>
             <p class="font-semibold text-sm text-gray-700">Training Modules</p>
             <p class="text-xs text-teal-600 font-semibold">{{ $trainingModuleStats['total_modules'] }} total</p>
@@ -251,89 +251,45 @@
             </a>
         </div>
         <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-            <!-- Example Event Card -->
-            <div class="bg-white p-6 rounded-lg shadow">
-                <div class="flex justify-between items-center mb-2">
-                    <div>
-                        <div class="font-bold text-gray-800">Q1 Investor Showcase</div>
-                        <div class="text-sm text-gray-500">FinTech</div>
+            @forelse($upcomingEvents as $event)
+                <div class="bg-white p-6 rounded-lg shadow">
+                    <div class="flex justify-between items-center mb-2">
+                        <div>
+                            <div class="font-bold text-gray-800">{{ $event['title'] }}</div>
+                            <div class="text-sm text-gray-500">{{ $event['event_type'] ?? 'Pitch Event' }}</div>
+                        </div>
+                        <span class="bg-blue-100 text-blue-600 text-xs px-2 py-1 rounded">upcoming</span>
                     </div>
-                    <span class="bg-blue-100 text-blue-600 text-xs px-2 py-1 rounded">upcoming</span>
-                </div>
-                <div class="text-sm text-gray-500 mb-2"><i class="bi bi-calendar-event"></i> 2025-02-15 at 2:00 PM</div>
-                <div class="text-sm text-gray-500 mb-2"><i class="bi bi-people"></i> 12/15 participants</div>
-                <div class="text-sm text-gray-500 mb-2"><i class="bi bi-geo-alt"></i> Lagos Innovation Hub</div>
-                <div class="mb-2">
-                    <div class="text-xs text-gray-500 mb-1">Registration Progress</div>
-                    <div class="w-full bg-gray-200 rounded-full h-2">
-                        <div class="bg-[#b81d8f] h-2 rounded-full" style="width: 80%"></div>
+                    <div class="text-sm text-gray-500 mb-2"><i class="bi bi-calendar-event"></i> {{ $event['time'] }}</div>
+                    <div class="text-sm text-gray-500 mb-2"><i class="bi bi-people"></i> {{ $event['participants'] }}</div>
+                    <div class="text-sm text-gray-500 mb-2">
+                        <i class="bi bi-geo-alt"></i> {{ $event['location'] }}
                     </div>
-                </div>
-                <div class="mb-2">
-                    <div class="text-xs text-gray-500 mb-1">Confirmed Investors:</div>
-                    <div class="flex flex-wrap gap-1">
-                        <span class="bg-blue-100 text-blue-600 text-xs px-2 py-1 rounded">Grace Mwangi</span>
-                        <span class="bg-blue-100 text-blue-600 text-xs px-2 py-1 rounded">Michael Chen</span>
-                        <span class="bg-blue-100 text-blue-600 text-xs px-2 py-1 rounded">Sarah Johnson</span>
+                    <div class="mb-2">
+                        <div class="text-xs text-gray-500 mb-1">Event Details</div>
+                        <div class="text-xs text-gray-600">
+                            @if(isset($event['id']))
+                                <a href="{{ route('admin.pitch-events.edit', $event['id']) }}" class="text-blue-600 hover:underline">Edit Event</a>
+                            @endif
+                        </div>
                     </div>
+                    <button class="mt-2 w-full bg-gray-100 text-[#b81d8f] font-semibold py-2 rounded hover:bg-gray-200">
+                        @if(isset($event['id']))
+                            <a href="{{ route('admin.pitch-events.show', $event['id']) }}" class="block">View Details</a>
+                        @else
+                            View Details
+                        @endif
+                    </button>
                 </div>
-                <button class="mt-2 w-full bg-gray-100 text-[#b81d8f] font-semibold py-2 rounded hover:bg-gray-200">View Details</button>
-            </div>
-            <!-- Repeat for other events as needed -->
-            <div class="bg-white p-6 rounded-lg shadow">
-                <div class="flex justify-between items-center mb-2">
-                    <div>
-                        <div class="font-bold text-gray-800">HealthTech Demo Day</div>
-                        <div class="text-sm text-gray-500">HealthTech</div>
+            @empty
+                <div class="col-span-3 text-center py-8">
+                    <div class="text-gray-400 mb-2">
+                        <i class="bi bi-calendar-event text-3xl"></i>
                     </div>
-                    <span class="bg-blue-100 text-blue-600 text-xs px-2 py-1 rounded">upcoming</span>
+                    <p class="text-gray-600">No upcoming pitch events at the moment.</p>
+                    <p class="text-gray-500 text-sm mt-1">Create your first pitch event to get started.</p>
                 </div>
-                <div class="text-sm text-gray-500 mb-2"><i class="bi bi-calendar-event"></i> 2025-02-28 at 10:00 AM</div>
-                <div class="text-sm text-gray-500 mb-2"><i class="bi bi-people"></i> 8/10 participants</div>
-                <div class="text-sm text-gray-500 mb-2"><i class="bi bi-globe"></i> Virtual Event</div>
-                <div class="mb-2">
-                    <div class="text-xs text-gray-500 mb-1">Registration Progress</div>
-                    <div class="w-full bg-gray-200 rounded-full h-2">
-                        <div class="bg-[#b81d8f] h-2 rounded-full" style="width: 80%"></div>
-                    </div>
-                </div>
-                <div class="mb-2">
-                    <div class="text-xs text-gray-500 mb-1">Confirmed Investors:</div>
-                    <div class="flex flex-wrap gap-1">
-                        <span class="bg-blue-100 text-blue-600 text-xs px-2 py-1 rounded">Grace Mwangi</span>
-                        <span class="bg-blue-100 text-blue-600 text-xs px-2 py-1 rounded">David Wilson</span>
-                    </div>
-                </div>
-                <button class="mt-2 w-full bg-gray-100 text-[#b81d8f] font-semibold py-2 rounded hover:bg-gray-200">View Details</button>
-            </div>
-            <div class="bg-white p-6 rounded-lg shadow">
-                <div class="flex justify-between items-center mb-2">
-                    <div>
-                        <div class="font-bold text-gray-800">AgriTech Innovation Pitch</div>
-                        <div class="text-sm text-gray-500">AgriTech</div>
-                    </div>
-                    <span class="bg-green-100 text-green-600 text-xs px-2 py-1 rounded">completed</span>
-                </div>
-                <div class="text-sm text-gray-500 mb-2"><i class="bi bi-calendar-event"></i> 2025-01-20 at 3:00 PM</div>
-                <div class="text-sm text-gray-500 mb-2"><i class="bi bi-people"></i> 15/15 participants</div>
-                <div class="text-sm text-gray-500 mb-2"><i class="bi bi-geo-alt"></i> Abuja Tech Center</div>
-                <div class="mb-2">
-                    <div class="text-xs text-gray-500 mb-1">Registration Progress</div>
-                    <div class="w-full bg-gray-200 rounded-full h-2">
-                        <div class="bg-[#b81d8f] h-2 rounded-full" style="width: 100%"></div>
-                    </div>
-                </div>
-                <div class="mb-2">
-                    <div class="text-xs text-gray-500 mb-1">Confirmed Investors:</div>
-                    <div class="flex flex-wrap gap-1">
-                        <span class="bg-blue-100 text-blue-600 text-xs px-2 py-1 rounded">Grace Mwangi</span>
-                        <span class="bg-blue-100 text-blue-600 text-xs px-2 py-1 rounded">Michael Chen</span>
-                        <span class="bg-blue-100 text-blue-600 text-xs px-2 py-1 rounded">Sarah Johnson</span>
-                        <span class="bg-blue-100 text-blue-600 text-xs px-2 py-1 rounded">David Wilson</span>
-                    </div>
-                </div>
-                <button class="mt-2 w-full bg-gray-100 text-[#b81d8f] font-semibold py-2 rounded hover:bg-gray-200">View Details</button>
-            </div>
+            @endforelse
         </div>
     </div>
 
@@ -397,7 +353,7 @@
             <div class="bg-white p-6 rounded-lg shadow">
                 <div class="flex items-center justify-between mb-4">
                     <h4 class="text-lg font-semibold text-gray-800">Recent Training Modules</h4>
-                    <a href="#" class="text-blue-600 text-sm font-medium hover:underline">View All</a>
+                    <a href="{{ route('admin.training-modules.index') }}" class="text-blue-600 text-sm font-medium hover:underline">View All</a>
                 </div>
                 <div class="space-y-3">
                     @forelse($recentTrainingModules as $module)
@@ -424,7 +380,7 @@
             <div class="bg-white p-6 rounded-lg shadow">
                 <div class="flex items-center justify-between mb-4">
                     <h4 class="text-lg font-semibold text-gray-800">BDSP Module Activity</h4>
-                    <a href="#" class="text-blue-600 text-sm font-medium hover:underline">View All</a>
+                    <a href="{{ route('admin.training-modules.index') }}" class="text-blue-600 text-sm font-medium hover:underline">View All</a>
                 </div>
                 <div class="space-y-3">
                     @forelse($bdspModuleActivity as $activity)

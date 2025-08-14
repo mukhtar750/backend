@@ -192,10 +192,23 @@ class AdminController extends Controller
             ['color' => 'purple', 'text' => 'Pitch event "Innovation Summit" announced', 'time' => '3 days ago'],
         ];
 
-        $upcomingEvents = [
-            ['title' => 'Investor Meetup', 'time' => '2025-07-10 10:00 AM', 'participants' => '25 Investors'],
-            ['title' => 'Webinar: Funding Your Startup', 'time' => '2025-07-15 02:00 PM', 'participants' => '150 Attendees'],
-        ];
+        // Get real upcoming pitch events
+        $upcomingEvents = \App\Models\PitchEvent::where('status', 'published')
+            ->where('event_date', '>=', now())
+            ->orderBy('event_date', 'asc')
+            ->take(5)
+            ->get()
+            ->map(function ($event) {
+                return [
+                    'title' => $event->title,
+                    'time' => $event->event_date->format('M d, Y g:i A'),
+                    'participants' => $event->confirmedStartups()->count() . ' startups',
+                    'location' => $event->is_virtual ? 'Virtual' : ($event->location ?? 'TBD'),
+                    'event_type' => $event->event_type,
+                    'id' => $event->id,
+                ];
+            })
+            ->toArray();
 
         return view('admin.dashboard', compact('totalUsers', 'activePrograms', 'pitchEvents', 'successRate', 'recentActivity', 'upcomingEvents', 'recentSessions', 'pendingApprovals', 'upcomingTrainings', 'approvalCounts', 'totalPending', 'trainingModuleStats', 'recentTrainingModules', 'bdspModuleActivity'));
     }

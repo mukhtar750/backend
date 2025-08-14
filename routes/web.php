@@ -833,6 +833,18 @@ Route::get('/dashboard/investor-pitch-events', [\App\Http\Controllers\InvestorDa
 // Admin Dashboard
 Route::get('/admin/dashboard', [AdminController::class, 'dashboard'])->middleware(['auth', 'role:admin,staff'])->name('admin.dashboard');
 
+// Admin Training Modules Management
+Route::middleware(['auth', 'role:admin,staff'])->prefix('admin')->name('admin.')->group(function () {
+    Route::get('/training-modules', [\App\Http\Controllers\AdminTrainingModuleController::class, 'index'])->name('training-modules.index');
+    Route::get('/training-modules/{module}', [\App\Http\Controllers\AdminTrainingModuleController::class, 'show'])->name('training-modules.show');
+    Route::post('/training-modules/{module}/approve', [\App\Http\Controllers\AdminTrainingModuleController::class, 'approve'])->name('training-modules.approve');
+    Route::post('/training-modules/{module}/reject', [\App\Http\Controllers\AdminTrainingModuleController::class, 'reject'])->name('training-modules.reject');
+    Route::post('/training-modules/{module}/archive', [\App\Http\Controllers\AdminTrainingModuleController::class, 'archive'])->name('training-modules.archive');
+    Route::post('/training-modules/{module}/unarchive', [\App\Http\Controllers\AdminTrainingModuleController::class, 'unarchive'])->name('training-modules.unarchive');
+    Route::get('/training-modules/analytics', [\App\Http\Controllers\AdminTrainingModuleController::class, 'analytics'])->name('training-modules.analytics');
+    Route::get('/training-modules/export', [\App\Http\Controllers\AdminTrainingModuleController::class, 'export'])->name('training-modules.export');
+});
+
 // Entrepreneur module and task routes
 Route::get('/entrepreneur/module/{module}', function ($module) {
     return view('dashboard.entrepreneur-module', ['module' => $module]);
