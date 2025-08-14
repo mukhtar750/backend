@@ -99,6 +99,11 @@
             <i class="bi bi-chat-dots-fill text-gray-600 text-2xl mb-2 block"></i>
             <p class="font-semibold text-sm text-gray-700">Messages</p>
         </a>
+        <a href="#" class="bg-teal-50 p-4 rounded-lg text-center shadow-sm hover:shadow-md transition">
+            <i class="bi bi-book-fill text-teal-600 text-2xl mb-2 block"></i>
+            <p class="font-semibold text-sm text-gray-700">Training Modules</p>
+            <p class="text-xs text-teal-600 font-semibold">{{ $trainingModuleStats['total_modules'] }} total</p>
+        </a>
     </div>
 
     <!-- Main Panel -->
@@ -356,6 +361,87 @@
         </div>
         <div class="mt-4 text-right">
             <a href="{{ route('admin.training_programs') }}" class="btn btn-primary">View All Training Programs</a>
+        </div>
+    </div>
+
+    <!-- Training Modules Overview -->
+    <div class="mt-8">
+        <h3 class="text-lg font-semibold text-gray-800 mb-4">Training Modules Overview</h3>
+        
+        <!-- Training Module Statistics -->
+        <div class="grid grid-cols-1 md:grid-cols-5 gap-4 mb-6">
+            <div class="bg-white p-4 rounded-lg shadow text-center">
+                <div class="text-2xl font-bold text-blue-600">{{ $trainingModuleStats['total_modules'] }}</div>
+                <div class="text-sm text-gray-600">Total Modules</div>
+            </div>
+            <div class="bg-white p-4 rounded-lg shadow text-center">
+                <div class="text-2xl font-bold text-green-600">{{ $trainingModuleStats['published_modules'] }}</div>
+                <div class="text-sm text-gray-600">Published</div>
+            </div>
+            <div class="bg-white p-4 rounded-lg shadow text-center">
+                <div class="text-2xl font-bold text-yellow-600">{{ $trainingModuleStats['draft_modules'] }}</div>
+                <div class="text-sm text-gray-600">Draft</div>
+            </div>
+            <div class="bg-white p-4 rounded-lg shadow text-center">
+                <div class="text-2xl font-bold text-purple-600">{{ $trainingModuleStats['total_entrepreneurs_enrolled'] }}</div>
+                <div class="text-sm text-gray-600">Enrolled</div>
+            </div>
+            <div class="bg-white p-4 rounded-lg shadow text-center">
+                <div class="text-2xl font-bold text-indigo-600">{{ $trainingModuleStats['active_modules'] }}</div>
+                <div class="text-sm text-gray-600">Active</div>
+            </div>
+        </div>
+
+        <!-- Recent Training Modules -->
+        <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+            <div class="bg-white p-6 rounded-lg shadow">
+                <div class="flex items-center justify-between mb-4">
+                    <h4 class="text-lg font-semibold text-gray-800">Recent Training Modules</h4>
+                    <a href="#" class="text-blue-600 text-sm font-medium hover:underline">View All</a>
+                </div>
+                <div class="space-y-3">
+                    @forelse($recentTrainingModules as $module)
+                        <div class="flex items-center justify-between p-3 bg-gray-50 rounded-lg">
+                            <div>
+                                <div class="font-semibold text-sm text-gray-800">{{ $module->title }}</div>
+                                <div class="text-xs text-gray-500">by {{ $module->bdsp->name ?? 'Unknown BDSP' }}</div>
+                                <div class="text-xs text-gray-400">{{ $module->created_at->diffForHumans() }}</div>
+                            </div>
+                            <span class="text-xs px-2 py-1 rounded-full
+                                @if($module->status === 'published') bg-green-100 text-green-800
+                                @elseif($module->status === 'draft') bg-yellow-100 text-yellow-800
+                                @else bg-gray-100 text-gray-800
+                                @endif">
+                                {{ ucfirst($module->status) }}
+                            </span>
+                        </div>
+                    @empty
+                        <div class="text-center text-gray-500 py-4">No training modules yet</div>
+                    @endforelse
+                </div>
+            </div>
+
+            <div class="bg-white p-6 rounded-lg shadow">
+                <div class="flex items-center justify-between mb-4">
+                    <h4 class="text-lg font-semibold text-gray-800">BDSP Module Activity</h4>
+                    <a href="#" class="text-blue-600 text-sm font-medium hover:underline">View All</a>
+                </div>
+                <div class="space-y-3">
+                    @forelse($bdspModuleActivity as $activity)
+                        @if($activity->bdsp)
+                            <div class="flex items-center justify-between p-3 bg-gray-50 rounded-lg">
+                                <div>
+                                    <div class="font-semibold text-sm text-gray-800">{{ $activity->bdsp->name }}</div>
+                                    <div class="text-xs text-gray-500">{{ $activity->module_count }} modules created</div>
+                                </div>
+                                <div class="text-lg font-bold text-blue-600">{{ $activity->module_count }}</div>
+                            </div>
+                        @endif
+                    @empty
+                        <div class="text-center text-gray-500 py-4">No BDSP activity yet</div>
+                    @endforelse
+                </div>
+            </div>
         </div>
     </div>
 @endsection

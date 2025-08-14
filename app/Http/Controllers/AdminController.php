@@ -61,6 +61,29 @@ class AdminController extends Controller
             ->take(3)
             ->get();
 
+        // Get training module statistics
+        $trainingModuleStats = [
+            'total_modules' => \App\Models\TrainingModule::count(),
+            'published_modules' => \App\Models\TrainingModule::where('status', 'published')->count(),
+            'draft_modules' => \App\Models\TrainingModule::where('status', 'draft')->count(),
+            'total_entrepreneurs_enrolled' => \App\Models\ModuleCompletion::distinct('entrepreneur_id')->count(),
+            'active_modules' => \App\Models\TrainingModule::where('status', 'published')->count(),
+        ];
+
+        // Get recent training modules
+        $recentTrainingModules = \App\Models\TrainingModule::with('bdsp')
+            ->orderBy('created_at', 'desc')
+            ->take(5)
+            ->get();
+
+        // Get BDSP module creation activity
+        $bdspModuleActivity = \App\Models\TrainingModule::with('bdsp')
+            ->selectRaw('bdsp_id, COUNT(*) as module_count')
+            ->groupBy('bdsp_id')
+            ->orderByDesc('module_count')
+            ->take(5)
+            ->get();
+
         // Combine all pending items for the dashboard
         $pendingApprovals = collect();
         
@@ -174,7 +197,7 @@ class AdminController extends Controller
             ['title' => 'Webinar: Funding Your Startup', 'time' => '2025-07-15 02:00 PM', 'participants' => '150 Attendees'],
         ];
 
-        return view('admin.dashboard', compact('totalUsers', 'activePrograms', 'pitchEvents', 'successRate', 'recentActivity', 'upcomingEvents', 'recentSessions', 'pendingApprovals', 'upcomingTrainings', 'approvalCounts', 'totalPending'));
+        return view('admin.dashboard', compact('totalUsers', 'activePrograms', 'pitchEvents', 'successRate', 'recentActivity', 'upcomingEvents', 'recentSessions', 'pendingApprovals', 'upcomingTrainings', 'approvalCounts', 'totalPending', 'trainingModuleStats', 'recentTrainingModules', 'bdspModuleActivity'));
     }
 
     public function userManagement()
