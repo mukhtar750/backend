@@ -38,6 +38,9 @@
                 <a href="{{ route('bdsp.resources.index') }}" class="flex items-center gap-3 px-4 py-2 rounded-lg hover:bg-purple-700 {{ $route == 'bdsp.resources.index' ? 'bg-white text-purple-800 font-semibold shadow-sm' : '' }}">
                     <i class="bi bi-upload"></i> Upload Resources
                 </a>
+                <a href="{{ route('bdsp.training-modules.index') }}" class="flex items-center gap-3 px-4 py-2 rounded-lg hover:bg-purple-700 {{ request()->routeIs('bdsp.training-modules.*') ? 'bg-white text-purple-800 font-semibold shadow-sm' : '' }}">
+                    <i class="bi bi-book"></i> Training Modules
+                </a>
                 <a href="{{ route('bdsp.schedule-session-page') }}" class="flex items-center gap-3 px-4 py-2 rounded-lg hover:bg-purple-700 {{ $route == 'bdsp.schedule-session-page' ? 'bg-white text-purple-800 font-semibold shadow-sm' : '' }}">
                     <i class="bi bi-calendar-event"></i> Sessions
                 </a>

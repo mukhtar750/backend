@@ -3,6 +3,7 @@
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="csrf-token" content="{{ csrf_token() }}">
     <title>@yield('title', 'Entrepreneur Dashboard')</title>
     <link rel="preconnect" href="https://fonts.bunny.net">
     <link href="https://fonts.bunny.net/css?family=figtree:400,600&display=swap" rel="stylesheet" />
@@ -24,7 +25,8 @@
             </div>
             <nav class="flex-1 px-2 py-4 space-y-2">
                 <a href="{{ route('dashboard.entrepreneur') }}" class="flex items-center px-4 py-2 text-white hover:bg-[#a01a7d] rounded-lg font-medium"><i class="bi bi-grid-fill mr-3"></i> Dashboard</a>
-                <a href="{{ route('entrepreneur.progress') }}" class="flex items-center px-4 py-2 text-white hover:bg-[#a01a7d] rounded-lg font-medium"><i class="bi bi-bar-chart-fill mr-3"></i> My Progress</a>
+                <a href="{{ route('entrepreneur.progress.dashboard') }}" class="flex items-center px-4 py-2 text-white hover:bg-[#a01a7d] rounded-lg font-medium"><i class="bi bi-bar-chart-fill mr-3"></i> My Progress</a>
+                <a href="{{ route('entrepreneur.training-modules.index') }}" class="flex items-center px-4 py-2 text-white hover:bg-[#a01a7d] rounded-lg font-medium"><i class="bi bi-book-fill mr-3"></i> Training Modules</a>
                 <a href="{{ route('entrepreneur.calendar') }}" class="flex items-center px-4 py-2 text-white hover:bg-[#a01a7d] rounded-lg font-medium"><i class="bi bi-calendar-event-fill mr-3"></i> Training Calendar</a>
                 <a href="{{ route('entrepreneur.mentorship') }}" class="flex items-center px-4 py-2 text-white hover:bg-[#a01a7d] rounded-lg font-medium"><i class="bi bi-people-fill mr-3"></i> Mentorship</a>
                 <a href="{{ route('entrepreneur.pitch') }}" class="flex items-center px-4 py-2 text-white hover:bg-[#a01a7d] rounded-lg font-medium"><i class="bi bi-easel-fill mr-3"></i> Pitch Preparation</a>
@@ -67,7 +69,10 @@
             <!-- Header -->
             <header class="flex items-center justify-between p-4 bg-white border-b shadow-sm">
                 <div class="flex items-center">
-                    <h1 class="text-2xl font-semibold text-gray-800"><i class="bi bi-grid-fill mr-2"></i> Dashboard</h1>
+                    <h1 class="text-2xl font-semibold text-gray-800">
+                        <i class="bi bi-grid-fill mr-2"></i> 
+                        @yield('title', 'Dashboard')
+                    </h1>
                 </div>
                 <div class="flex items-center space-x-4">
                     <div class="relative">

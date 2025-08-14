@@ -425,4 +425,73 @@ class User extends Authenticatable
     {
         return !empty($this->profile_picture);
     }
+
+    // Training Module relationships
+    public function createdModules()
+    {
+        return $this->hasMany(TrainingModule::class, 'bdsp_id');
+    }
+
+    public function moduleProgress()
+    {
+        return $this->hasMany(WeekProgress::class, 'entrepreneur_id');
+    }
+
+    public function getAccessibleModules()
+    {
+        if ($this->role === 'entrepreneur') {
+            // Get modules from paired BDSPs
+            $pairedBdspIds = $this->getPairedProfessionalIds();
+            return TrainingModule::whereIn('bdsp_id', $pairedBdspIds)
+                ->where('status', 'published')
+                ->with(['weeks', 'bdsp'])
+                ->get();
+        }
+        return collect();
+    }
+
+    public function getModuleProgress($moduleId)
+    {
+        if ($this->role === 'entrepreneur') {
+            return $this->moduleProgress()
+                ->where('module_id', $moduleId)
+                ->with(['week', 'module'])
+                ->get();
+        }
+        return collect();
+    }
+
+    // Module completion relationships
+    public function moduleCompletions()
+    {
+        return $this->hasMany(ModuleCompletion::class, 'entrepreneur_id');
+    }
+
+    public function bdspModuleCompletions()
+    {
+        return $this->hasMany(ModuleCompletion::class, 'bdsp_id');
+    }
+
+    public function getEnrolledModules()
+    {
+        if ($this->role === 'entrepreneur') {
+            return $this->moduleCompletions()
+                ->with(['module', 'bdsp'])
+                ->get()
+                ->pluck('module');
+        }
+        return collect();
+    }
+
+    public function getModuleCompletionStatus($moduleId)
+    {
+        if ($this->role === 'entrepreneur') {
+            $completion = $this->moduleCompletions()
+                ->where('module_id', $moduleId)
+                ->first();
+            
+            return $completion ? $completion->status : 'not_enrolled';
+        }
+        return null;
+    }
 }

@@ -6,6 +6,8 @@ use App\Models\PitchEventProposal;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Log;
+use App\Notifications\NewPitchEventProposalNotification;
+use App\Models\User;
 
 class PitchEventProposalController extends Controller
 {
@@ -88,6 +90,12 @@ class PitchEventProposalController extends Controller
                 'investor_id' => Auth::id(),
                 'title' => $proposal->title,
             ]);
+
+            // Send notification to all admin users
+            $adminUsers = User::whereIn('role', ['admin', 'staff'])->get();
+            foreach ($adminUsers as $admin) {
+                $admin->notify(new NewPitchEventProposalNotification($proposal));
+            }
 
             return redirect()->route('investor.proposals.index')
                 ->with('success', 'Your pitch event proposal has been submitted successfully and is under review.');

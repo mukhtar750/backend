@@ -327,6 +327,25 @@ Route::middleware(['auth'])->group(function () {
     Route::post('/bdsp/messages', [\App\Http\Controllers\MessageController::class, 'store'])->name('bdsp.messages.store');
     Route::get('/bdsp/feedback', [\App\Http\Controllers\FeedbackController::class, 'index'])->name('bdsp.feedback');
     Route::delete('/bdsp/feedback/{id}', [\App\Http\Controllers\FeedbackController::class, 'destroy'])->name('bdsp.feedback.destroy');
+    
+    // BDSP Training Modules
+    Route::get('/bdsp/training-modules', [\App\Http\Controllers\TrainingModuleController::class, 'index'])->name('bdsp.training-modules.index');
+    Route::get('/bdsp/training-modules/create', [\App\Http\Controllers\TrainingModuleController::class, 'create'])->name('bdsp.training-modules.create');
+    Route::post('/bdsp/training-modules', [\App\Http\Controllers\TrainingModuleController::class, 'store'])->name('bdsp.training-modules.store');
+    Route::get('/bdsp/training-modules/{module}', [\App\Http\Controllers\TrainingModuleController::class, 'show'])->name('bdsp.training-modules.show');
+    Route::get('/bdsp/training-modules/{module}/edit', [\App\Http\Controllers\TrainingModuleController::class, 'edit'])->name('bdsp.training-modules.edit');
+    Route::put('/bdsp/training-modules/{module}', [\App\Http\Controllers\TrainingModuleController::class, 'update'])->name('bdsp.training-modules.update');
+    Route::delete('/bdsp/training-modules/{module}', [\App\Http\Controllers\TrainingModuleController::class, 'destroy'])->name('bdsp.training-modules.destroy');
+    Route::patch('/bdsp/training-modules/{module}/publish', [\App\Http\Controllers\TrainingModuleController::class, 'publish'])->name('bdsp.training-modules.publish');
+    Route::patch('/bdsp/training-modules/{module}/archive', [\App\Http\Controllers\TrainingModuleController::class, 'archive'])->name('bdsp.training-modules.archive');
+    Route::patch('/bdsp/training-modules/{module}/unarchive', [\App\Http\Controllers\TrainingModuleController::class, 'unarchive'])->name('bdsp.training-modules.unarchive');
+
+    // Module Completion Management
+    Route::get('/bdsp/training-modules/{module}/manage', [\App\Http\Controllers\ModuleCompletionController::class, 'moduleManagement'])->name('bdsp.training-modules.manage');
+    Route::post('/bdsp/training-modules/{module}/entrepreneurs/{entrepreneur}/complete', [\App\Http\Controllers\ModuleCompletionController::class, 'markCompleted'])->name('bdsp.training-modules.complete');
+    Route::patch('/bdsp/training-modules/{module}/entrepreneurs/{entrepreneur}/progress', [\App\Http\Controllers\ModuleCompletionController::class, 'updateProgress'])->name('bdsp.training-modules.update-progress');
+    Route::patch('/bdsp/training-modules/{module}/entrepreneurs/{entrepreneur}/reopen', [\App\Http\Controllers\ModuleCompletionController::class, 'reopenModule'])->name('bdsp.training-modules.reopen');
+    Route::get('/bdsp/training-modules/{module}/entrepreneurs/{entrepreneur}/progress', [\App\Http\Controllers\ModuleCompletionController::class, 'getEntrepreneurProgress'])->name('bdsp.training-modules.get-progress');
 });
 
 Route::get('/dashboard/entrepreneur-messages', function () {
@@ -455,6 +474,19 @@ Route::middleware(['auth'])->group(function () {
         return view('dashboard.entrepreneur-pitch', compact('recommendedEvents', 'learningResources', 'pitchResources'));
     })->middleware('auth')->name('entrepreneur.pitch');
     Route::get('/dashboard/entrepreneur-feedback', [\App\Http\Controllers\FeedbackController::class, 'index'])->name('entrepreneur.feedback');
+    
+    // Entrepreneur Training Modules
+    Route::get('/dashboard/entrepreneur-training-modules', [\App\Http\Controllers\TrainingModuleController::class, 'entrepreneurIndex'])->name('entrepreneur.training-modules.index');
+    Route::get('/dashboard/entrepreneur-training-modules/{module}', [\App\Http\Controllers\TrainingModuleController::class, 'entrepreneurShow'])->name('entrepreneur.training-modules.show');
+    Route::get('/dashboard/entrepreneur-training-modules/{module}/progress', [\App\Http\Controllers\TrainingModuleController::class, 'trackProgress'])->name('entrepreneur.training-modules.progress');
+    Route::post('/dashboard/entrepreneur-training-modules/{module}/weeks/{week}/progress', [\App\Http\Controllers\TrainingModuleController::class, 'updateWeekProgress'])->name('entrepreneur.training-modules.update-progress');
+
+    // Entrepreneur Progress Tracking
+    Route::get('/entrepreneur/progress', [\App\Http\Controllers\EntrepreneurProgressController::class, 'dashboard'])->name('entrepreneur.progress.dashboard');
+    Route::get('/entrepreneur/progress/{module}', [\App\Http\Controllers\EntrepreneurProgressController::class, 'showModuleProgress'])->name('entrepreneur.progress.show');
+    Route::post('/entrepreneur/progress/{module}/start', [\App\Http\Controllers\EntrepreneurProgressController::class, 'startModule'])->name('entrepreneur.progress.start');
+    Route::patch('/entrepreneur/progress/{module}/update', [\App\Http\Controllers\EntrepreneurProgressController::class, 'updatePersonalProgress'])->name('entrepreneur.progress.update');
+    Route::get('/entrepreneur/progress-summary', [\App\Http\Controllers\EntrepreneurProgressController::class, 'getProgressSummary'])->name('entrepreneur.progress.summary');
 });
 
 Route::post('/entrepreneur/feedback', function (\Illuminate\Http\Request $request) {
@@ -536,205 +568,6 @@ Route::middleware(['auth'])->group(function () {
 });
 
 Route::middleware('auth')->group(function () {
-    Route::get('/dashboard/bdsp/resources', [\App\Http\Controllers\ResourceController::class, 'index'])->name('bdsp.resources');
-    Route::post('/dashboard/bdsp/resources', [\App\Http\Controllers\ResourceController::class, 'store']);
-});
-
-Route::post('/events/{event}/register', [\App\Http\Controllers\PitchEventController::class, 'register'])->name('events.register');
-Route::get('/dashboard/investor-pitch-events', [\App\Http\Controllers\InvestorDashboardController::class, 'pitchEvents'])
-    ->middleware('auth')
-    ->name('investor.pitch_events');
-
-Route::get('/admin/dashboard', [AdminController::class, 'dashboard'])->middleware(['auth', 'role:admin,staff'])->name('admin.dashboard');
-Route::get('/entrepreneur/module/{module}', function ($module) {
-    return view('dashboard.entrepreneur-module', ['module' => $module]);
-})->name('entrepreneur.module');
-
-Route::get('/entrepreneur/task/{task}', function ($task) {
-    return view('dashboard.entrepreneur-task', ['task' => $task]);
-})->name('entrepreneur.task');
-
-Route::get('/entrepreneur/mentorship/session/{id}', function ($id) {
-    $user = Auth::user();
-    
-    // Ensure user is authenticated
-    if (!$user) {
-        abort(401, 'You must be logged in to view this session.');
-    }
-    
-    // Find the session with all necessary relationships
-    $session = \App\Models\MentorshipSession::with([
-        'pairing.userOne', 
-        'pairing.userTwo', 
-        'scheduledBy', 
-        'scheduledFor'
-    ])->findOrFail($id);
-    
-    // Enhanced authorization check
-    $isAuthorized = false;
-    
-    // Check if user is directly involved in the session
-    if ($session->scheduled_for === $user->id || $session->scheduled_by === $user->id) {
-        $isAuthorized = true;
-    }
-    
-    // Check if user is part of the pairing (for additional security)
-    if ($session->pairing) {
-        if ($session->pairing->user_one_id === $user->id || $session->pairing->user_two_id === $user->id) {
-            $isAuthorized = true;
-        }
-    }
-    
-    // Check if user is an admin (for support purposes)
-    if ($user->role === 'admin' || $user->role === 'staff') {
-        $isAuthorized = true;
-    }
-    
-    if (!$isAuthorized) {
-        abort(403, 'You are not authorized to view this session.');
-    }
-    
-    return view('dashboard.entrepreneur-mentorship-session', compact('session', 'id'));
-})->middleware(['auth'])->name('entrepreneur.mentorship.session');
-
-Route::get('/entrepreneur/achievements', function () {
-    return view('dashboard.entrepreneur-achievements');
-})->name('entrepreneur.achievements');
-
-Route::get('/entrepreneur/resource/download/{resource}', function ($resource) {
-    return view('dashboard.entrepreneur-resource-download', ['resource' => $resource]);
-})->name('entrepreneur.resource.download');
-
-// Practice Pitch Routes
-Route::middleware(['auth'])->group(function () {
-    // Entrepreneur
-    Route::get('/practice-pitches', [\App\Http\Controllers\PracticePitchController::class, 'index'])->name('practice-pitches.index');
-    Route::post('/practice-pitches', [\App\Http\Controllers\PracticePitchController::class, 'store'])->name('practice-pitches.store');
-    // Mentor/BDSP feedback (for approved pitches)
-    Route::post('/practice-pitches/{id}/feedback', [\App\Http\Controllers\PracticePitchController::class, 'feedback'])->name('practice-pitches.feedback');
-});
-Route::middleware(['auth', 'isAdmin'])->group(function () {
-    // Admin review
-    Route::middleware(['auth', 'isAdmin'])->group(function () {
-    Route::get('/admin/practice-pitches', [\App\Http\Controllers\PracticePitchController::class, 'adminIndex'])->name('admin.practice-pitches.index');
-    Route::post('/admin/practice-pitches/{id}/approve', [\App\Http\Controllers\PracticePitchController::class, 'approve'])->name('admin.practice-pitches.approve');
-    Route::post('/admin/practice-pitches/{id}/reject', [\App\Http\Controllers\PracticePitchController::class, 'reject'])->name('admin.practice-pitches.reject');
-});
-});
-
-
-
-// BDSP specific routes for practice pitches
-Route::middleware(['auth', 'role:bdsp'])->group(function () {
-    Route::get('/bdsp/practice-pitches', [PracticePitchController::class, 'bdspIndex'])->name('bdsp.practice-pitches.index');
-    Route::post('/bdsp/practice-pitches/{id}/feedback', [PracticePitchController::class, 'feedback'])->name('bdsp.practice-pitches.feedback');
-});
-
-Route::get('/mentor/sessions', function () {
-    $mentor = Auth::user();
-    $sessions = \App\Models\MentorshipSession::where(function ($q) use ($mentor) {
-        $q->where('scheduled_by', $mentor->id)
-          ->orWhere('scheduled_for', $mentor->id);
-    })
-    ->where('date_time', '>=', now())
-    ->orderBy('date_time')
-    ->with(['pairing.userOne', 'pairing.userTwo', 'scheduledBy', 'scheduledFor'])
-    ->get();
-    return view('mentor.sessions.index', compact('sessions'));
-})->middleware(['auth'])->name('mentor.sessions.index');
-Route::get('/mentor/sessions/create', [\App\Http\Controllers\MentorshipSessionController::class, 'mentorScheduleSessionPage'])->middleware(['auth'])->name('mentor.sessions.create');
-Route::post('/mentor/sessions/create', [\App\Http\Controllers\MentorshipSessionController::class, 'mentorScheduleSession'])->middleware(['auth']);
-Route::get('/mentor/messages', [\App\Http\Controllers\MessageController::class, 'index'])->middleware(['auth'])->name('mentor.messages.index');
-Route::get('/mentor/messages/{conversation}', [\App\Http\Controllers\MessageController::class, 'show'])->middleware(['auth'])->name('mentor.messages.show');
-Route::get('/mentor/mentees', function () {
-    $mentor = Auth::user();
-    $pairings = \App\Models\Pairing::whereIn('pairing_type', ['mentor_mentee', 'mentor_entrepreneur'])
-        ->where(function ($q) use ($mentor) {
-            $q->where('user_one_id', $mentor->id)->orWhere('user_two_id', $mentor->id);
-        })
-        ->with(['userOne', 'userTwo'])
-        ->get();
-    $mentees = $pairings->map(function ($pairing) use ($mentor) {
-        return $pairing->user_one_id == $mentor->id ? $pairing->userTwo : $pairing->userOne;
-    });
-    return view('mentor.mentees.index', compact('mentees'));
-})->middleware(['auth'])->name('mentor.mentees.index');
-Route::get('/mentor/mentees/{id}', function ($id) {
-    $mentee = \App\Models\User::findOrFail($id);
-    return view('mentor.mentees.show', compact('mentee'));
-})->middleware(['auth'])->name('mentor.mentees.show');
-
-Route::get('/mentor/calendar', function () {
-    $mentor = Auth::user();
-    $sessions = \App\Models\MentorshipSession::where(function ($q) use ($mentor) {
-        $q->where('scheduled_by', $mentor->id)
-          ->orWhere('scheduled_for', $mentor->id);
-    })
-    ->where('date_time', '>=', now())
-    ->orderBy('date_time')
-    ->with(['pairing.userOne', 'pairing.userTwo', 'scheduledBy', 'scheduledFor'])
-    ->get();
-    return view('mentor.calendar', compact('sessions'));
-})->middleware(['auth'])->name('mentor.calendar');
-
-Route::get('/mentor/resources', function () {
-    return view('mentor.resources');
-})->middleware(['auth'])->name('mentor.resources');
-
-Route::get('/mentor/settings', function () {
-    return view('mentor.settings');
-})->middleware(['auth'])->name('mentor.settings');
-
-Route::get('/mentor/forms', [\App\Http\Controllers\MentorshipFormController::class, 'index'])->middleware(['auth'])->name('mentor.forms');
-
-Route::get('/mentor/reports', function () {
-    return view('mentor.reports');
-})->middleware(['auth'])->name('mentor.reports');
-
-// Idea Bank MVP routes
-Route::middleware(['auth'])->group(function () {
-    Route::resource('ideas', IdeaController::class);
-    Route::resource('ideas.comments', CommentController::class)->shallow();
-    Route::resource('ideas.pitches', PitchController::class)->shallow();
-    Route::resource('ideas.votes', VoteController::class)->shallow();
-});
-
-// Admin moderation routes for ideas
-Route::middleware(['auth'])->group(function () {
-    Route::post('admin/ideas/{idea}/approve', [IdeaController::class, 'approve'])->name('admin.ideas.approve');
-    Route::post('admin/ideas/{idea}/reject', [IdeaController::class, 'reject'])->name('admin.ideas.reject');
-});
-
-// Admin moderation routes for pitches
-Route::middleware(['auth'])->group(function () {
-    Route::post('admin/pitches/{pitch}/approve', [PitchController::class, 'approve'])->name('admin.pitches.approve');
-    Route::post('admin/pitches/{pitch}/reject', [PitchController::class, 'reject'])->name('admin.pitches.reject');
-});
-
-// Investor startup profile access routes
-Route::middleware(['auth'])->group(function () {
-    Route::get('/investor/dashboard', [\App\Http\Controllers\InvestorController::class, 'dashboard'])->name('investor.dashboard');
-    Route::post('/investor/startup/{startup}/request-access', [\App\Http\Controllers\InvestorController::class, 'requestAccess'])->name('investor.request_access');
-    Route::get('/investor/startup-profiles', [\App\Http\Controllers\InvestorController::class, 'startupProfiles'])->name('investor.startup_profiles');
-    Route::get('/investor/startup/{startup}', [\App\Http\Controllers\InvestorController::class, 'viewStartup'])->name('investor.view_startup');
-});
-
-// Entrepreneur access request management routes
-Route::middleware(['auth'])->group(function () {
-    Route::get('/entrepreneur/access-requests', [\App\Http\Controllers\StartupController::class, 'accessRequests'])->name('entrepreneur.access_requests');
-    Route::post('/entrepreneur/access-request/{requestId}/approve', [\App\Http\Controllers\StartupController::class, 'approveAccess'])->name('entrepreneur.approve_access');
-    Route::post('/entrepreneur/access-request/{requestId}/reject', [\App\Http\Controllers\StartupController::class, 'rejectAccess'])->name('entrepreneur.reject_access');
-    Route::post('/entrepreneur/access-request/{requestId}/revoke', [\App\Http\Controllers\StartupController::class, 'revokeAccess'])->name('entrepreneur.revoke_access');
-});
-
-// Task submission routes
-Route::middleware(['auth'])->group(function () {
-    Route::post('/tasks/{task}/submissions', [\App\Http\Controllers\TaskSubmissionController::class, 'store'])->name('tasks.submissions.store');
-    Route::get('/submissions/{submission}', [\App\Http\Controllers\TaskSubmissionController::class, 'show'])->name('submissions.show');
-    Route::post('/submissions/{submission}/review', [\App\Http\Controllers\TaskSubmissionController::class, 'review'])->name('submissions.review');
-});
-
-Route::middleware(['auth'])->group(function () {
     Route::get('/bdsp/tasks', [\App\Http\Controllers\TaskController::class, 'bdspIndex'])->name('bdsp.tasks.index');
     Route::get('/mentor/tasks', [\App\Http\Controllers\TaskController::class, 'mentorIndex'])->name('mentor.tasks.index');
 });
@@ -854,3 +687,208 @@ Route::get('/test-storage', function() {
         'content' => Storage::disk('public')->get($testFile)
     ]);
 })->middleware('auth');
+
+// BDSP specific routes for practice pitches
+Route::middleware(['auth', 'role:bdsp'])->group(function () {
+    Route::get('/bdsp/practice-pitches', [PracticePitchController::class, 'bdspIndex'])->name('bdsp.practice-pitches.index');
+    Route::post('/bdsp/practice-pitches/{id}/feedback', [PracticePitchController::class, 'feedback'])->name('bdsp.practice-pitches.feedback');
+});
+
+// Practice Pitch Routes
+Route::middleware(['auth'])->group(function () {
+    // Entrepreneur
+    Route::get('/practice-pitches', [\App\Http\Controllers\PracticePitchController::class, 'index'])->name('practice-pitches.index');
+    Route::post('/practice-pitches', [\App\Http\Controllers\PracticePitchController::class, 'store'])->name('practice-pitches.store');
+    // Mentor/BDSP feedback (for approved pitches)
+    Route::post('/practice-pitches/{id}/feedback', [\App\Http\Controllers\PracticePitchController::class, 'feedback'])->name('practice-pitches.feedback');
+});
+
+// Admin moderation routes for practice pitches
+Route::middleware(['auth', 'isAdmin'])->group(function () {
+    Route::get('/admin/practice-pitches', [\App\Http\Controllers\PracticePitchController::class, 'adminIndex'])->name('admin.practice-pitches.index');
+    Route::post('/admin/practice-pitches/{id}/approve', [\App\Http\Controllers\PracticePitchController::class, 'approve'])->name('admin.practice-pitches.approve');
+    Route::post('/admin/practice-pitches/{id}/reject', [\App\Http\Controllers\PracticePitchController::class, 'reject'])->name('admin.practice-pitches.reject');
+});
+
+// Admin moderation routes for ideas
+Route::middleware(['auth'])->group(function () {
+    Route::post('admin/ideas/{idea}/approve', [IdeaController::class, 'approve'])->name('admin.ideas.approve');
+    Route::post('admin/ideas/{idea}/reject', [IdeaController::class, 'reject'])->name('admin.ideas.reject');
+});
+
+// Admin moderation routes for pitches
+Route::middleware(['auth'])->group(function () {
+    Route::post('admin/pitches/{pitch}/approve', [PitchController::class, 'approve'])->name('admin.pitches.approve');
+    Route::post('admin/pitches/{pitch}/reject', [PitchController::class, 'reject'])->name('admin.pitches.reject');
+});
+
+// Task submission routes
+Route::middleware(['auth'])->group(function () {
+    Route::post('/tasks/{task}/submissions', [\App\Http\Controllers\TaskSubmissionController::class, 'store'])->name('tasks.submissions.store');
+    Route::get('/submissions/{submission}', [\App\Http\Controllers\TaskSubmissionController::class, 'show'])->name('submissions.show');
+    Route::post('/submissions/{submission}/review', [\App\Http\Controllers\TaskSubmissionController::class, 'review'])->name('submissions.review');
+});
+
+// BDSP and Mentor tasks
+Route::middleware(['auth'])->group(function () {
+    Route::get('/bdsp/tasks', [\App\Http\Controllers\TaskController::class, 'bdspIndex'])->name('bdsp.tasks.index');
+    Route::get('/mentor/tasks', [\App\Http\Controllers\TaskController::class, 'mentorIndex'])->name('mentor.tasks.index');
+});
+
+// Idea Bank MVP routes
+Route::middleware(['auth'])->group(function () {
+    Route::resource('ideas', IdeaController::class);
+    Route::resource('ideas.comments', CommentController::class)->shallow();
+    Route::resource('ideas.pitches', PitchController::class)->shallow();
+    Route::resource('ideas.votes', VoteController::class)->shallow();
+});
+
+// Mentor specific routes
+Route::middleware(['auth'])->group(function () {
+    Route::get('/mentor/sessions', function () {
+        $mentor = Auth::user();
+        $sessions = \App\Models\MentorshipSession::where(function ($q) use ($mentor) {
+            $q->where('scheduled_by', $mentor->id)
+              ->orWhere('scheduled_for', $mentor->id);
+        })
+        ->where('date_time', '>=', now())
+        ->orderBy('date_time')
+        ->with(['pairing.userOne', 'pairing.userTwo', 'scheduledBy', 'scheduledFor'])
+        ->get();
+        return view('mentor.sessions.index', compact('sessions'));
+    })->name('mentor.sessions.index');
+    
+    Route::get('/mentor/sessions/create', [\App\Http\Controllers\MentorshipSessionController::class, 'mentorScheduleSessionPage'])->name('mentor.sessions.create');
+    Route::post('/mentor/sessions/create', [\App\Http\Controllers\MentorshipSessionController::class, 'mentorScheduleSession']);
+    Route::get('/mentor/messages', [\App\Http\Controllers\MessageController::class, 'index'])->name('mentor.messages.index');
+    Route::get('/mentor/messages/{conversation}', [\App\Http\Controllers\MessageController::class, 'show'])->name('mentor.messages.show');
+    Route::get('/mentor/mentees', function () {
+        $mentor = Auth::user();
+        $pairings = \App\Models\Pairing::whereIn('pairing_type', ['mentor_mentee', 'mentor_entrepreneur'])
+            ->where(function ($q) use ($mentor) {
+                $q->where('user_one_id', $mentor->id)->orWhere('user_two_id', $mentor->id);
+            })
+            ->with(['userOne', 'userTwo'])
+            ->get();
+        $mentees = $pairings->map(function ($pairing) use ($mentor) {
+            return $pairing->user_one_id == $mentor->id ? $pairing->userTwo : $pairing->userOne;
+        });
+        return view('mentor.mentees.index', compact('mentees'));
+    })->name('mentor.mentees.index');
+    
+    Route::get('/mentor/mentees/{id}', function ($id) {
+        $mentee = \App\Models\User::findOrFail($id);
+        return view('mentor.mentees.show', compact('mentee'));
+    })->name('mentor.mentees.show');
+    
+    Route::get('/mentor/calendar', function () {
+        $mentor = Auth::user();
+        $sessions = \App\Models\MentorshipSession::where(function ($q) use ($mentor) {
+            $q->where('scheduled_by', $mentor->id)
+              ->orWhere('scheduled_for', $mentor->id);
+        })
+        ->where('date_time', '>=', now())
+        ->orderBy('date_time')
+        ->with(['pairing.userOne', 'pairing.userTwo', 'scheduledBy', 'scheduledFor'])
+        ->get();
+        return view('mentor.calendar', compact('sessions'));
+    })->name('mentor.calendar');
+    
+    Route::get('/mentor/resources', function () {
+        return view('mentor.resources');
+    })->name('mentor.resources');
+    
+    Route::get('/mentor/settings', function () {
+        return view('mentor.settings');
+    })->name('mentor.settings');
+    
+    Route::get('/mentor/forms', [\App\Http\Controllers\MentorshipFormController::class, 'index'])->name('mentor.forms');
+    Route::get('/mentor/reports', function () {
+        return view('mentor.reports');
+    })->name('mentor.reports');
+});
+
+// Investor startup profile access routes
+Route::middleware(['auth'])->group(function () {
+    Route::get('/investor/dashboard', [\App\Http\Controllers\InvestorController::class, 'dashboard'])->name('investor.dashboard');
+    Route::post('/investor/startup/{startup}/request-access', [\App\Http\Controllers\InvestorController::class, 'requestAccess'])->name('investor.request_access');
+    Route::get('/investor/startup-profiles', [\App\Http\Controllers\InvestorController::class, 'startupProfiles'])->name('investor.startup_profiles');
+    Route::get('/investor/startup/{startup}', [\App\Http\Controllers\InvestorController::class, 'viewStartup'])->name('investor.startup-profile');
+});
+
+
+
+// Dashboard BDSP resources
+Route::middleware('auth')->group(function () {
+    Route::get('/dashboard/bdsp/resources', [\App\Http\Controllers\ResourceController::class, 'index'])->name('bdsp.resources');
+    Route::post('/dashboard/bdsp/resources', [\App\Http\Controllers\ResourceController::class, 'store']);
+});
+
+// Pitch Event Registration
+Route::post('/events/{event}/register', [\App\Http\Controllers\PitchEventController::class, 'register'])->name('events.register');
+Route::get('/dashboard/investor-pitch-events', [\App\Http\Controllers\InvestorDashboardController::class, 'pitchEvents'])
+    ->middleware('auth')
+    ->name('investor.pitch_events');
+
+// Admin Dashboard
+Route::get('/admin/dashboard', [AdminController::class, 'dashboard'])->middleware(['auth', 'role:admin,staff'])->name('admin.dashboard');
+
+// Entrepreneur module and task routes
+Route::get('/entrepreneur/module/{module}', function ($module) {
+    return view('dashboard.entrepreneur-module', ['module' => $module]);
+})->name('entrepreneur.module');
+
+Route::get('/entrepreneur/task/{task}', function ($task) {
+    return view('dashboard.entrepreneur-task', ['task' => $task]);
+})->name('entrepreneur.task');
+
+Route::get('/entrepreneur/mentorship/session/{id}', function ($id) {
+    $user = Auth::user();
+    
+    // Ensure user is authenticated
+    if (!$user) {
+        abort(401, 'You must be logged in to view this session.');
+    }
+    
+    // Find the session with all necessary relationships
+    $session = \App\Models\MentorshipSession::with([
+        'pairing.userOne', 
+        'pairing.userTwo', 
+        'scheduledBy', 
+        'scheduledFor'
+    ])->findOrFail($id);
+    
+    // Enhanced authorization check
+    $isAuthorized = false;
+    
+    // Check if user is directly involved in the session
+    if ($session->scheduled_for === $user->id || $session->scheduled_by === $user->id) {
+        $isAuthorized = true;
+    }
+    
+    // Check if user is part of the pairing (for additional security)
+    if ($session->pairing) {
+        if ($session->pairing->user_one_id === $user->id || $session->pairing->user_two_id === $user->id) {
+            $isAuthorized = true;
+        }
+    }
+    
+    // Check if user is an admin (for support purposes)
+    if ($user->role === 'admin' || $user->role === 'staff') {
+        $isAuthorized = true;
+    }
+    
+    if (!$isAuthorized) {
+        abort(403, 'You are not authorized to view this session.');
+    }
+    
+    return view('dashboard.entrepreneur-mentorship-session', compact('session', 'id'));
+})->middleware(['auth'])->name('entrepreneur.mentorship.session');
+
+Route::get('/entrepreneur/achievements', function () {
+    return view('dashboard.entrepreneur-achievements');
+})->name('entrepreneur.achievements');
+
+Route::get('/entrepreneur/resource/download/{resource}', function ($resource) {
+    return view('dashboard.entrepreneur-resource-download', ['resource' => $resource]);
+})->name('entrepreneur.resource.download');

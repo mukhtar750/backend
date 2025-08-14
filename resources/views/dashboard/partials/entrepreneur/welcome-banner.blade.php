@@ -18,9 +18,16 @@
                 <span class="font-semibold text-lg text-white">{{ $points ?? '1,250 pts' }}</span>
             </div>
             <div class="flex-1 min-w-[180px] flex flex-col items-center justify-center mt-4 md:mt-0">
-                <a href="{{ route('entrepreneur.progress') }}" class="bg-white/30 hover:bg-white/50 text-white font-semibold px-6 py-2 rounded-lg shadow transition flex items-center gap-2">
-                    <i class="bi bi-flag"></i> View Milestone
-                </a>
+                <div class="flex flex-wrap gap-3">
+                    <a href="{{ route('entrepreneur.training-modules.index') }}" 
+                       class="inline-flex items-center px-4 py-2 bg-[#b81d8f] text-white rounded-lg hover:bg-[#a01a7d] transition">
+                        <i class="bi bi-book mr-2"></i>Training Modules
+                    </a>
+                    <a href="{{ route('entrepreneur.progress.dashboard') }}" 
+                       class="inline-flex items-center px-4 py-2 bg-white text-[#b81d8f] border border-[#b81d8f] rounded-lg hover:bg-[#b81d8f] hover:text-white transition">
+                        <i class="bi bi-graph-up mr-2"></i>My Progress
+                    </a>
+                </div>
             </div>
         </div>
     </div>
