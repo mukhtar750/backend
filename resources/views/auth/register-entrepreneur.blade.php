@@ -140,7 +140,7 @@
                             <div class="relative">
                                 <input type="tel" id="entrepreneur_phone" name="entrepreneur_phone" required value="{{ old('entrepreneur_phone') }}"
                                     class="form-input w-full px-4 py-2 rounded-lg focus:outline-none"
-                                    placeholder="+234 800 000 0000">
+                                    inputmode="tel" pattern="\+?[0-9]{7,15}" maxlength="16" placeholder="+2348000000000">
                                 <div class="absolute inset-y-0 right-0 flex items-center pr-3 pointer-events-none">
                                     <i class="fas fa-phone text-gray-400"></i>
                                 </div>
@@ -255,10 +255,14 @@
                 icon.classList.replace('fa-eye-slash', 'fa-eye');
             }
         });
-        // Phone number formatting
+        // Phone number input: allow optional leading + and up to 15 digits (no spaces)
         document.getElementById('entrepreneur_phone').addEventListener('input', function(e) {
-            const x = e.target.value.replace(/\D/g, '').match(/(\d{0,3})(\d{0,3})(\d{0,4})/);
-            e.target.value = !x[2] ? x[1] : x[1] + ' ' + x[2] + (x[3] ? ' ' + x[3] : '');
+            let value = e.target.value;
+            const hasPlus = value.startsWith('+');
+            value = value.replace(/\D/g, '');
+            value = (hasPlus ? '+' : '') + value;
+            // Limit to + and 15 digits (16 chars total if + present)
+            e.target.value = hasPlus ? value.slice(0, 16) : value.slice(0, 15);
         });
     </script>
 </body>

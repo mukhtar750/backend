@@ -58,7 +58,8 @@ class EntrepreneurRegisterRequest extends FormRequest
             'entrepreneur_phone' => [
                 'required',
                 'string',
-                'max:20'
+                // Allow international format: optional leading + and 7-15 digits
+                'regex:/^\+?[0-9]{7,15}$/'
             ],
             'entrepreneur_linkedin' => [
                 'nullable',
@@ -86,6 +87,12 @@ class EntrepreneurRegisterRequest extends FormRequest
     protected function prepareForValidation()
     {
         // Simple sanitization
+        $phoneRaw = is_string($this->entrepreneur_phone) ? trim($this->entrepreneur_phone) : '';
+        // Keep optional leading +, strip spaces and any non-digits elsewhere
+        $hasPlus = strlen($phoneRaw) > 0 && $phoneRaw[0] === '+';
+        $digitsOnly = preg_replace('/\D+/', '', $phoneRaw);
+        $normalizedPhone = ($hasPlus ? '+' : '') . substr($digitsOnly, 0, 15);
+
         $this->merge([
             'name' => trim($this->name),
             'email' => strtolower(trim($this->email)),
@@ -93,7 +100,7 @@ class EntrepreneurRegisterRequest extends FormRequest
             'sector' => trim($this->sector),
             'cac_number' => strtoupper(trim($this->cac_number)),
             'website' => $this->website ? trim($this->website) : null,
-            'entrepreneur_phone' => trim($this->entrepreneur_phone),
+            'entrepreneur_phone' => $normalizedPhone,
             'entrepreneur_linkedin' => $this->entrepreneur_linkedin ? trim($this->entrepreneur_linkedin) : null,
         ]);
     }
