@@ -5,6 +5,7 @@ namespace App\Policies;
 use App\Models\TrainingModule;
 use App\Models\User;
 use Illuminate\Auth\Access\Response;
+use Illuminate\Support\Facades\Log;
 
 class TrainingModulePolicy
 {
@@ -26,6 +27,12 @@ class TrainingModulePolicy
 
         // BDSPs can view their own modules
         if ($role === 'bdsp' && $trainingModule->bdsp_id === $user->id) {
+            Log::info('Policy:view allow (owner bdsp)', [
+                'user_id' => $user->id,
+                'role' => $role,
+                'module_id' => $trainingModule->id,
+                'module_bdsp_id' => $trainingModule->bdsp_id,
+            ]);
             return true;
         }
 
@@ -33,15 +40,35 @@ class TrainingModulePolicy
         if ($role === 'entrepreneur') {
             $pairedBdspIds = $user->getPairedProfessionalIds();
             if (in_array($trainingModule->bdsp_id, $pairedBdspIds)) {
+                Log::info('Policy:view allow (entrepreneur paired & published)', [
+                    'user_id' => $user->id,
+                    'role' => $role,
+                    'module_id' => $trainingModule->id,
+                    'module_bdsp_id' => $trainingModule->bdsp_id,
+                    'status' => $trainingModule->status,
+                ]);
                 return $trainingModule->status === 'published';
             }
         }
 
         // Admins and staff can view all modules
         if (in_array($role, ['admin', 'staff'])) {
+            Log::info('Policy:view allow (admin/staff)', [
+                'user_id' => $user->id,
+                'role' => $role,
+                'module_id' => $trainingModule->id,
+                'module_bdsp_id' => $trainingModule->bdsp_id,
+            ]);
             return true;
         }
 
+        Log::warning('Policy:view deny', [
+            'user_id' => $user->id,
+            'role' => $role,
+            'module_id' => $trainingModule->id,
+            'module_bdsp_id' => $trainingModule->bdsp_id,
+            'status' => $trainingModule->status,
+        ]);
         return false;
     }
 
@@ -62,14 +89,32 @@ class TrainingModulePolicy
 
         // BDSPs can update their own modules
         if ($role === 'bdsp' && $trainingModule->bdsp_id === $user->id) {
+            Log::info('Policy:update allow (owner bdsp)', [
+                'user_id' => $user->id,
+                'role' => $role,
+                'module_id' => $trainingModule->id,
+                'module_bdsp_id' => $trainingModule->bdsp_id,
+            ]);
             return true;
         }
 
         // Admins and staff can update any module
         if (in_array($role, ['admin', 'staff'])) {
+            Log::info('Policy:update allow (admin/staff)', [
+                'user_id' => $user->id,
+                'role' => $role,
+                'module_id' => $trainingModule->id,
+                'module_bdsp_id' => $trainingModule->bdsp_id,
+            ]);
             return true;
         }
 
+        Log::warning('Policy:update deny', [
+            'user_id' => $user->id,
+            'role' => $role,
+            'module_id' => $trainingModule->id,
+            'module_bdsp_id' => $trainingModule->bdsp_id,
+        ]);
         return false;
     }
 
@@ -82,14 +127,34 @@ class TrainingModulePolicy
 
         // BDSPs can delete their own modules (only if no progress exists)
         if ($role === 'bdsp' && $trainingModule->bdsp_id === $user->id) {
-            return $trainingModule->progress()->count() === 0;
+            $allowed = $trainingModule->progress()->count() === 0;
+            Log::log($allowed ? 'info' : 'warning', 'Policy:delete ' . ($allowed ? 'allow' : 'deny') . ' (owner bdsp)', [
+                'user_id' => $user->id,
+                'role' => $role,
+                'module_id' => $trainingModule->id,
+                'module_bdsp_id' => $trainingModule->bdsp_id,
+                'progress_count' => $trainingModule->progress()->count(),
+            ]);
+            return $allowed;
         }
 
         // Admins and staff can delete any module
         if (in_array($role, ['admin', 'staff'])) {
+            Log::info('Policy:delete allow (admin/staff)', [
+                'user_id' => $user->id,
+                'role' => $role,
+                'module_id' => $trainingModule->id,
+                'module_bdsp_id' => $trainingModule->bdsp_id,
+            ]);
             return true;
         }
 
+        Log::warning('Policy:delete deny', [
+            'user_id' => $user->id,
+            'role' => $role,
+            'module_id' => $trainingModule->id,
+            'module_bdsp_id' => $trainingModule->bdsp_id,
+        ]);
         return false;
     }
 
