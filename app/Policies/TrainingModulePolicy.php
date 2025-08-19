@@ -13,7 +13,8 @@ class TrainingModulePolicy
      */
     public function viewAny(User $user): bool
     {
-        return in_array($user->role, ['bdsp', 'entrepreneur', 'admin']);
+        $role = strtolower($user->role ?? '');
+        return in_array($role, ['bdsp', 'entrepreneur', 'admin', 'staff']);
     }
 
     /**
@@ -21,21 +22,23 @@ class TrainingModulePolicy
      */
     public function view(User $user, TrainingModule $trainingModule): bool
     {
+        $role = strtolower($user->role ?? '');
+
         // BDSPs can view their own modules
-        if ($user->role === 'bdsp' && $trainingModule->bdsp_id === $user->id) {
+        if ($role === 'bdsp' && $trainingModule->bdsp_id === $user->id) {
             return true;
         }
 
         // Entrepreneurs can view modules from their paired BDSPs
-        if ($user->role === 'entrepreneur') {
+        if ($role === 'entrepreneur') {
             $pairedBdspIds = $user->getPairedProfessionalIds();
             if (in_array($trainingModule->bdsp_id, $pairedBdspIds)) {
                 return $trainingModule->status === 'published';
             }
         }
 
-        // Admins can view all modules
-        if ($user->role === 'admin') {
+        // Admins and staff can view all modules
+        if (in_array($role, ['admin', 'staff'])) {
             return true;
         }
 
@@ -55,13 +58,15 @@ class TrainingModulePolicy
      */
     public function update(User $user, TrainingModule $trainingModule): bool
     {
+        $role = strtolower($user->role ?? '');
+
         // BDSPs can update their own modules
-        if ($user->role === 'bdsp' && $trainingModule->bdsp_id === $user->id) {
+        if ($role === 'bdsp' && $trainingModule->bdsp_id === $user->id) {
             return true;
         }
 
-        // Admins can update any module
-        if ($user->role === 'admin') {
+        // Admins and staff can update any module
+        if (in_array($role, ['admin', 'staff'])) {
             return true;
         }
 
@@ -73,13 +78,15 @@ class TrainingModulePolicy
      */
     public function delete(User $user, TrainingModule $trainingModule): bool
     {
+        $role = strtolower($user->role ?? '');
+
         // BDSPs can delete their own modules (only if no progress exists)
-        if ($user->role === 'bdsp' && $trainingModule->bdsp_id === $user->id) {
+        if ($role === 'bdsp' && $trainingModule->bdsp_id === $user->id) {
             return $trainingModule->progress()->count() === 0;
         }
 
-        // Admins can delete any module
-        if ($user->role === 'admin') {
+        // Admins and staff can delete any module
+        if (in_array($role, ['admin', 'staff'])) {
             return true;
         }
 
@@ -91,7 +98,8 @@ class TrainingModulePolicy
      */
     public function restore(User $user, TrainingModule $trainingModule): bool
     {
-        return $user->role === 'admin';
+        $role = strtolower($user->role ?? '');
+        return in_array($role, ['admin', 'staff']);
     }
 
     /**
@@ -99,6 +107,7 @@ class TrainingModulePolicy
      */
     public function forceDelete(User $user, TrainingModule $trainingModule): bool
     {
-        return $user->role === 'admin';
+        $role = strtolower($user->role ?? '');
+        return in_array($role, ['admin', 'staff']);
     }
 }
