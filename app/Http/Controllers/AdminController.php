@@ -362,9 +362,17 @@ public function deleteMentorshipSession(MentorshipSession $session)
             return redirect()->back()->with('error', 'User not found.');
         }
 
-        $user->delete();
-
-        return redirect()->back()->with('success', 'User deleted successfully.');
+        try {
+            $user->delete();
+            return redirect()->back()->with('success', 'User deleted successfully.');
+        } catch (\Throwable $e) {
+            Log::error('Failed to delete user', [
+                'user_id' => $id,
+                'error' => $e->getMessage(),
+            ]);
+            $friendlyMessage = 'Cannot delete this user because there are related records (e.g., training modules, mentorship sessions, pitch events, messages). Consider deactivating the account instead.';
+            return redirect()->back()->with('error', $friendlyMessage);
+        }
     }
 
     // Pairings Management
