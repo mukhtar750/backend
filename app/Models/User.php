@@ -318,13 +318,14 @@ class User extends Authenticatable
                 $user->tasks()->delete();
                 \App\Models\TaskSubmission::where('user_id', $user->id)->delete();
 
-                // Delete startups and related requests if the user is an entrepreneur
+                // Delete startup and related requests if the user is an entrepreneur
                 if ($user->isEntrepreneur()) {
-                    $user->startup->each(function ($startup) {
+                    $startup = $user->startup; // hasOne relation returns a single model or null
+                    if ($startup) {
                         $startup->accessRequests()->delete();
                         $startup->infoRequests()->delete();
                         $startup->delete();
-                    });
+                    }
                 }
 
                 // Delete ideas, comments, pitches, votes, practice pitches, feedback, resources
