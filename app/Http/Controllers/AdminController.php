@@ -39,14 +39,14 @@ class AdminController extends Controller
             ->get();
 
         // Get all types of pending approvals
-        $pendingUsers = \App\Models\User::where('status', 'Pending')->take(3)->get();
+        $pendingUsers = \App\Models\User::where('status', 'pending')->take(3)->get();
         $pendingResources = \App\Models\Resource::where('is_approved', false)->take(3)->get();
         $pendingContent = \App\Models\Content::where('status', 'pending')->take(3)->get();
         $pendingFeedback = \App\Models\Feedback::where('status', 'pending')->take(3)->get();
 
         // Calculate detailed counts for dashboard
         $approvalCounts = [
-            'users' => \App\Models\User::where('status', 'Pending')->count(),
+            'users' => \App\Models\User::where('status', 'pending')->count(),
             'resources' => \App\Models\Resource::where('is_approved', false)->count(),
             'content' => \App\Models\Content::where('status', 'pending')->count(),
             'feedback' => \App\Models\Feedback::where('status', 'pending')->count(),
