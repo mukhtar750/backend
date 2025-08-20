@@ -24,6 +24,21 @@ class TrainingModulePolicy
     public function view(User $user, TrainingModule $trainingModule): bool
     {
         $role = strtolower($user->role ?? '');
+        
+        // Enhanced debugging for production issue
+        Log::info('Policy:view DEBUG - Entry', [
+            'user_id' => $user->id,
+            'user_role_raw' => $user->role,
+            'user_role_processed' => $role,
+            'user_status' => $user->status ?? 'null',
+            'user_is_approved' => $user->is_approved ?? 'null',
+            'module_id' => $trainingModule->id,
+            'module_bdsp_id' => $trainingModule->bdsp_id,
+            'module_status' => $trainingModule->status,
+            'ownership_match' => ($trainingModule->bdsp_id === $user->id),
+            'role_match' => ($role === 'bdsp'),
+            'both_conditions' => ($role === 'bdsp' && $trainingModule->bdsp_id === $user->id),
+        ]);
 
         // BDSPs can view their own modules
         if ($role === 'bdsp' && $trainingModule->bdsp_id === $user->id) {
