@@ -243,7 +243,7 @@ Route::get('/dashboard/investor', function () {
     $pitchesCount = $pitchEventsUpcoming;
     return view('dashboard.investor', compact('approvedStartups', 'startupsCount', 'pitchesCount', 'pitchEvents', 'pitchEventsUpcoming'));
 })->middleware('auth')->name('dashboard.investor');
-Route::get('/dashboard/bdsp', [\App\Http\Controllers\BDSPController::class, 'dashboard'])->middleware('auth')->name('dashboard.bdsp');
+Route::get('/dashboard/bdsp', [\App\Http\Controllers\BDSPController::class, 'dashboard'])->middleware(['auth', 'role:bdsp'])->name('dashboard.bdsp');
 Route::get('/dashboard/entrepreneur', function () {
     $user = Auth::user();
     $pairings = \App\Models\Pairing::with(['userOne', 'userTwo'])
@@ -300,7 +300,7 @@ Route::get('/dashboard/entrepreneur', function () {
 })->middleware('auth')->name('dashboard.entrepreneur');
 
 // BDSP Dashboard and Management (protected)
-Route::middleware(['auth'])->group(function () {
+Route::middleware(['auth', 'role:bdsp'])->group(function () {
     Route::get('/bdsp/dashboard', [\App\Http\Controllers\BDSPController::class, 'dashboard'])->name('bdsp.dashboard');
     Route::get('/bdsp/mentees', [\App\Http\Controllers\BDSPController::class, 'mentees'])->name('bdsp.mentees');
     Route::get('/bdsp/schedule-session', [\App\Http\Controllers\BDSPController::class, 'scheduleSessionPage'])->name('bdsp.schedule-session-page');
@@ -567,8 +567,10 @@ Route::middleware(['auth'])->group(function () {
     Route::post('/feedback', [\App\Http\Controllers\FeedbackController::class, 'store'])->name('feedback.store');
 });
 
-Route::middleware('auth')->group(function () {
+Route::middleware(['auth', 'role:bdsp'])->group(function () {
     Route::get('/bdsp/tasks', [\App\Http\Controllers\TaskController::class, 'bdspIndex'])->name('bdsp.tasks.index');
+});
+Route::middleware(['auth', 'role:mentor'])->group(function () {
     Route::get('/mentor/tasks', [\App\Http\Controllers\TaskController::class, 'mentorIndex'])->name('mentor.tasks.index');
 });
 
@@ -819,7 +821,7 @@ Route::middleware(['auth'])->group(function () {
 
 
 // Dashboard BDSP resources
-Route::middleware('auth')->group(function () {
+Route::middleware(['auth', 'role:bdsp'])->group(function () {
     Route::get('/dashboard/bdsp/resources', [\App\Http\Controllers\ResourceController::class, 'index'])->name('bdsp.resources');
     Route::post('/dashboard/bdsp/resources', [\App\Http\Controllers\ResourceController::class, 'store']);
 });
