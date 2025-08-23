@@ -73,6 +73,21 @@ class ResourcePolicy
      */
     public function delete(User $user, Resource $resource): bool
     {
+        // BDSPs can delete their own resources
+        if ($user->role === 'bdsp' && $resource->bdsp_id === $user->id) {
+            return true;
+        }
+        
+        // Mentors can delete their own resources
+        if ($user->role === 'mentor' && $resource->mentor_id === $user->id) {
+            return true;
+        }
+        
+        // Mentees can delete their own resources
+        if ($user->role === 'mentee' && $resource->mentee_id === $user->id) {
+            return true;
+        }
+        
         return false;
     }
 
