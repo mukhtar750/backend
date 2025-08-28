@@ -43,8 +43,8 @@
                         <div class="w-40 h-40 rounded-full bg-purple-100 opacity-30"></div>
                     </div>
                     <div class="relative z-10">
-                        <div class="w-32 h-32 mx-auto bg-white rounded-full shadow-lg flex items-center justify-center overflow-hidden">
-                            <img src="https://bing.com/th/id/BCO.2f57dbc4-bc0d-41eb-9d56-58161cee45e7.png" alt="BDSP Professional" class="w-full h-full object-cover">
+                        <div class="w-32 h-32 mx-auto bg-white rounded-full shadow-lg flex items-center justify-center">
+                            <i class="fas fa-briefcase text-6xl text-purple-600"></i>
                         </div>
                     </div>
                 </div>
@@ -67,8 +67,8 @@
                         <div class="w-40 h-40 rounded-full bg-pink-100 opacity-30"></div>
                     </div>
                     <div class="relative z-10">
-                        <div class="w-32 h-32 mx-auto bg-white rounded-full shadow-lg flex items-center justify-center overflow-hidden">
-                            <img src="https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=500&q=80" alt="Entrepreneur" class="w-full h-full object-cover">
+                        <div class="w-32 h-32 mx-auto bg-white rounded-full shadow-lg flex items-center justify-center">
+                            <i class="fas fa-rocket text-6xl text-pink-600"></i>
                         </div>
                     </div>
                 </div>
@@ -92,8 +92,8 @@
                         <div class="w-40 h-40 rounded-full bg-blue-100 opacity-30"></div>
                     </div>
                     <div class="relative z-10">
-                        <div class="w-32 h-32 mx-auto bg-white rounded-full shadow-lg flex items-center justify-center overflow-hidden">
-                            <img src="https://images.unsplash.com/photo-1560250097-0b93528c311a?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=500&q=80" alt="Investor" class="w-full h-full object-cover">
+                        <div class="w-32 h-32 mx-auto bg-white rounded-full shadow-lg flex items-center justify-center">
+                            <i class="fas fa-chart-line text-6xl text-blue-600"></i>
                         </div>
                     </div>
                 </div>
@@ -116,8 +116,8 @@
                         <div class="w-40 h-40 rounded-full bg-green-100 opacity-30"></div>
                     </div>
                     <div class="relative z-10">
-                        <div class="w-32 h-32 mx-auto bg-white rounded-full shadow-lg flex items-center justify-center overflow-hidden">
-                            <img src="https://images.unsplash.com/photo-1511367461989-f85a21fda167?auto=format&fit=crop&w=500&q=80" alt="Mentor" class="w-full h-full object-cover">
+                        <div class="w-32 h-32 mx-auto bg-white rounded-full shadow-lg flex items-center justify-center">
+                            <i class="fas fa-chalkboard-teacher text-6xl text-green-600"></i>
                         </div>
                     </div>
                 </div>
@@ -141,8 +141,8 @@
                         <div class="w-40 h-40 rounded-full bg-yellow-100 opacity-30"></div>
                     </div>
                     <div class="relative z-10">
-                        <div class="w-32 h-32 mx-auto bg-white rounded-full shadow-lg flex items-center justify-center overflow-hidden">
-                            <img src="https://images.unsplash.com/photo-1506744038136-46273834b3fb?auto=format&fit=crop&w=500&q=80" alt="Mentee" class="w-full h-full object-cover">
+                        <div class="w-32 h-32 mx-auto bg-white rounded-full shadow-lg flex items-center justify-center">
+                            <i class="fas fa-user-graduate text-6xl text-yellow-600"></i>
                         </div>
                     </div>
                 </div>
@@ -199,4 +199,4 @@
         window.addEventListener('load', animateShapes);
     </script>
 </body>
-</html> 
+</html>
