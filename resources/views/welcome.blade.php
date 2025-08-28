@@ -251,9 +251,9 @@
                 <!-- Testimonial 1 -->
                 <div class="testimonial-card bg-white p-8 rounded-xl shadow-md">
                     <div class="flex items-center mb-6">
-                        <img src="https://randomuser.me/api/portraits/women/43.jpg" 
-                             alt="Amina Johnson" 
-                             class="w-16 h-16 rounded-full object-cover mr-4">
+                        <div class="w-16 h-16 rounded-full bg-green-100 flex items-center justify-center mr-4">
+                            <i class="fas fa-leaf text-green-600 text-2xl"></i>
+                        </div>
                         <div>
                             <h4 class="font-semibold">Amina Johnson</h4>
                             <p class="text-gray-500 text-sm">Founder, GreenTech Solutions</p>
@@ -274,9 +274,9 @@
                 <!-- Testimonial 2 -->
                 <div class="testimonial-card bg-white p-8 rounded-xl shadow-md">
                     <div class="flex items-center mb-6">
-                        <img src="https://randomuser.me/api/portraits/women/65.jpg" 
-                             alt="Sarah Chen" 
-                             class="w-16 h-16 rounded-full object-cover mr-4">
+                        <div class="w-16 h-16 rounded-full bg-blue-100 flex items-center justify-center mr-4">
+                            <i class="fas fa-heartbeat text-blue-600 text-2xl"></i>
+                        </div>
                         <div>
                             <h4 class="font-semibold">Sarah Chen</h4>
                             <p class="text-gray-500 text-sm">CEO, HealthBridge Africa</p>
@@ -297,9 +297,9 @@
                 <!-- Testimonial 3 -->
                 <div class="testimonial-card bg-white p-8 rounded-xl shadow-md">
                     <div class="flex items-center mb-6">
-                        <img src="https://randomuser.me/api/portraits/women/32.jpg" 
-                             alt="Fatima Ndiaye" 
-                             class="w-16 h-16 rounded-full object-cover mr-4">
+                        <div class="w-16 h-16 rounded-full bg-yellow-100 flex items-center justify-center mr-4">
+                            <i class="fas fa-seedling text-yellow-600 text-2xl"></i>
+                        </div>
                         <div>
                             <h4 class="font-semibold">Fatima Ndiaye</h4>
                             <p class="text-gray-500 text-sm">Founder, AgriWomen Co-op</p>
