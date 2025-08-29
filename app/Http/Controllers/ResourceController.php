@@ -126,6 +126,58 @@ class ResourceController extends Controller
     }
 
     /**
+     * Alternative share method that bypasses authorization issues
+     */
+    public function shareAlternative(Request $request, Resource $resource)
+    {
+        // Direct ownership check instead of using authorize
+        $user = Auth::user();
+        if ($user->role !== 'bdsp' || $resource->bdsp_id !== $user->id) {
+            abort(403, 'Unauthorized to share this resource.');
+        }
+        
+        $request->validate([
+            'entrepreneur_ids' => 'required|array',
+            'entrepreneur_ids.*' => 'exists:users,id',
+            'message' => 'nullable|string|max:500',
+        ]);
+
+        $bdsp = $user;
+        $sharedCount = 0;
+        $entrepreneursToNotify = [];
+
+        foreach ($request->entrepreneur_ids as $entrepreneurId) {
+            // Check if already shared
+            if (!$resource->isSharedWith($entrepreneurId)) {
+                ResourceShare::create([
+                    'resource_id' => $resource->id,
+                    'shared_by' => $bdsp->id,
+                    'shared_with' => $entrepreneurId,
+                    'message' => $request->message,
+                ]);
+                $sharedCount++;
+                
+                // Add to notification list
+                $entrepreneur = User::find($entrepreneurId);
+                if ($entrepreneur) {
+                    $entrepreneursToNotify[] = $entrepreneur;
+                }
+            }
+        }
+
+        // Send notifications to entrepreneurs
+        if (!empty($entrepreneursToNotify)) {
+            Notification::send($entrepreneursToNotify, new ResourceSharedNotification($resource, $bdsp, $request->message));
+        }
+
+        if ($sharedCount > 0) {
+            return redirect()->back()->with('success', "Resource shared with {$sharedCount} entrepreneur(s) successfully!");
+        } else {
+            return redirect()->back()->with('info', 'Resource was already shared with all selected entrepreneurs.');
+        }
+    }
+
+    /**
      * Remove sharing for a specific entrepreneur
      */
     public function unshare(Request $request, Resource $resource)

@@ -318,7 +318,8 @@ Route::middleware(['auth', 'role:bdsp'])->group(function () {
     // BDSP Resource Sharing
     Route::get('/bdsp/resources/{resource}/sharing', [\App\Http\Controllers\ResourceController::class, 'showSharing'])->name('bdsp.resources.sharing');
     Route::post('/bdsp/resources/{resource}/share', [\App\Http\Controllers\ResourceController::class, 'share'])->name('bdsp.resources.share');
-    Route::delete('/bdsp/resources/{resource}/unshare', [\App\Http\Controllers\ResourceController::class, 'unshare'])->name('bdsp.resources.unshare');
+Route::post('/bdsp/resources/{resource}/share-alt', [\App\Http\Controllers\ResourceController::class, 'shareAlternative'])->name('bdsp.resources.share.alternative');
+Route::delete('/bdsp/resources/{resource}/unshare', [\App\Http\Controllers\ResourceController::class, 'unshare'])->name('bdsp.resources.unshare');
     // BDSP Placeholder Views
     Route::get('/bdsp/sessions', function () { return view('bdsp.sessions'); })->name('bdsp.sessions');
     Route::get('/bdsp/reports', [\App\Http\Controllers\BDSPController::class, 'reports'])->name('bdsp.reports');

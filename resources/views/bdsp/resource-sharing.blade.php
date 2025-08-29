@@ -28,7 +28,7 @@
         </div>
 
         <!-- Share Form -->
-        <form action="{{ route('bdsp.resources.share', $resource) }}" method="POST" class="mb-8">
+        <form action="{{ route('bdsp.resources.share.alternative', $resource) }}" method="POST" class="mb-8">
             @csrf
             <div class="mb-6">
                 <label class="block text-sm font-medium text-gray-700 mb-2">Select Mentees to Share With</label>
