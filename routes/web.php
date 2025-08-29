@@ -477,17 +477,21 @@ Route::middleware(['auth'])->group(function () {
     Route::get('/dashboard/entrepreneur-feedback', [\App\Http\Controllers\FeedbackController::class, 'index'])->name('entrepreneur.feedback');
     
     // Entrepreneur Training Modules
-    Route::get('/dashboard/entrepreneur-training-modules', [\App\Http\Controllers\TrainingModuleController::class, 'entrepreneurIndex'])->name('entrepreneur.training-modules.index');
-    Route::get('/dashboard/entrepreneur-training-modules/{module}', [\App\Http\Controllers\TrainingModuleController::class, 'entrepreneurShow'])->name('entrepreneur.training-modules.show');
-    Route::get('/dashboard/entrepreneur-training-modules/{module}/progress', [\App\Http\Controllers\TrainingModuleController::class, 'trackProgress'])->name('entrepreneur.training-modules.progress');
-    Route::post('/dashboard/entrepreneur-training-modules/{module}/weeks/{week}/progress', [\App\Http\Controllers\TrainingModuleController::class, 'updateWeekProgress'])->name('entrepreneur.training-modules.update-progress');
+    Route::middleware(['role:entrepreneur'])->group(function () {
+        Route::get('/dashboard/entrepreneur-training-modules', [\App\Http\Controllers\TrainingModuleController::class, 'entrepreneurIndex'])->name('entrepreneur.training-modules.index');
+        Route::get('/dashboard/entrepreneur-training-modules/{module}', [\App\Http\Controllers\TrainingModuleController::class, 'entrepreneurShow'])->name('entrepreneur.training-modules.show');
+        Route::get('/dashboard/entrepreneur-training-modules/{module}/progress', [\App\Http\Controllers\TrainingModuleController::class, 'trackProgress'])->name('entrepreneur.training-modules.progress');
+        Route::post('/dashboard/entrepreneur-training-modules/{module}/weeks/{week}/progress', [\App\Http\Controllers\TrainingModuleController::class, 'updateWeekProgress'])->name('entrepreneur.training-modules.update-progress');
+    });
 
     // Entrepreneur Progress Tracking
-    Route::get('/entrepreneur/progress', [\App\Http\Controllers\EntrepreneurProgressController::class, 'dashboard'])->name('entrepreneur.progress.dashboard');
-    Route::get('/entrepreneur/progress/{module}', [\App\Http\Controllers\EntrepreneurProgressController::class, 'showModuleProgress'])->name('entrepreneur.progress.show');
-    Route::post('/entrepreneur/progress/{module}/start', [\App\Http\Controllers\EntrepreneurProgressController::class, 'startModule'])->name('entrepreneur.progress.start');
-    Route::patch('/entrepreneur/progress/{module}/update', [\App\Http\Controllers\EntrepreneurProgressController::class, 'updatePersonalProgress'])->name('entrepreneur.progress.update');
-    Route::get('/entrepreneur/progress-summary', [\App\Http\Controllers\EntrepreneurProgressController::class, 'getProgressSummary'])->name('entrepreneur.progress.summary');
+    Route::middleware(['role:entrepreneur'])->group(function () {
+        Route::get('/entrepreneur/progress', [\App\Http\Controllers\EntrepreneurProgressController::class, 'dashboard'])->name('entrepreneur.progress.dashboard');
+        Route::get('/entrepreneur/progress/{module}', [\App\Http\Controllers\EntrepreneurProgressController::class, 'showModuleProgress'])->name('entrepreneur.progress.show');
+        Route::post('/entrepreneur/progress/{module}/start', [\App\Http\Controllers\EntrepreneurProgressController::class, 'startModule'])->name('entrepreneur.progress.start');
+        Route::patch('/entrepreneur/progress/{module}/update', [\App\Http\Controllers\EntrepreneurProgressController::class, 'updatePersonalProgress'])->name('entrepreneur.progress.update');
+        Route::get('/entrepreneur/progress-summary', [\App\Http\Controllers\EntrepreneurProgressController::class, 'getProgressSummary'])->name('entrepreneur.progress.summary');
+    });
 });
 
 Route::post('/entrepreneur/feedback', function (\Illuminate\Http\Request $request) {
