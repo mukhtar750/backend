@@ -8,6 +8,7 @@ use App\Models\TrainingModule;
 use App\Models\ModuleCompletion;
 use App\Models\User;
 use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\DB; // Added for DB facade
 
 class AdminTrainingModuleController extends Controller
 {
@@ -155,6 +156,52 @@ class AdminTrainingModuleController extends Controller
         ]);
 
         return redirect()->back()->with('success', 'Module unarchived successfully.');
+    }
+
+    /**
+     * Delete a training module (Admin can delete any module)
+     */
+    public function destroy(TrainingModule $trainingModule)
+    {
+        try {
+            // Admin can delete any module, including orphaned ones
+            $trainingModule->delete();
+            
+            return redirect()->route('admin.training-modules.index')
+                ->with('success', 'Training module deleted successfully!');
+                
+        } catch (\Exception $e) {
+            return back()->with('error', 'Failed to delete training module. Please try again.');
+        }
+    }
+
+    /**
+     * Clean up orphaned modules (Admin only)
+     */
+    public function cleanupOrphaned()
+    {
+        try {
+            // Find orphaned modules
+            $orphanedModules = DB::table('training_modules as tm')
+                ->leftJoin('users as u', 'tm.bdsp_id', '=', 'u.id')
+                ->whereNull('u.id')
+                ->orWhere('u.role', '!=', 'bdsp')
+                ->select('tm.id', 'tm.title')
+                ->get();
+
+            if ($orphanedModules->isNotEmpty()) {
+                foreach ($orphanedModules as $module) {
+                    DB::table('training_modules')->where('id', $module->id)->delete();
+                }
+                
+                return back()->with('success', "Cleaned up {$orphanedModules->count()} orphaned modules.");
+            }
+            
+            return back()->with('info', 'No orphaned modules found.');
+            
+        } catch (\Exception $e) {
+            return back()->with('error', 'Failed to cleanup orphaned modules: ' . $e->getMessage());
+        }
     }
 
     /**
