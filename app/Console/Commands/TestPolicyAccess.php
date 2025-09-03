@@ -25,11 +25,11 @@ class TestPolicyAccess extends Command
             return 1;
         }
         
-        $this->line("User ID: {$user->id}");
+        $this->line("User ID: {$user->id} (Type: " . gettype($user->id) . ")");
         $this->line("User Name: {$user->name}");
-        $this->line("User Role: {$user->role}");
-        $this->line("User Status: {$user->status}");
-        $this->line("User Approved: " . ($user->is_approved ? 'Yes' : 'No'));
+        $this->line("User Role: '{$user->role}' (Type: " . gettype($user->role) . ")");
+        $this->line("User Status: '{$user->status}' (Type: " . gettype($user->status) . ")");
+        $this->line("User Approved: " . ($user->is_approved ? 'Yes' : 'No') . " (Type: " . gettype($user->is_approved) . ")");
         $this->newLine();
         
         // Find user's modules
@@ -37,14 +37,24 @@ class TestPolicyAccess extends Command
         $this->line("User has {$modules->count()} modules:");
         
         foreach ($modules as $module) {
-            $this->line("  - Module ID: {$module->id}");
+            $this->line("  - Module ID: {$module->id} (Type: " . gettype($module->id) . ")");
             $this->line("    Title: {$module->title}");
-            $this->line("    BDSP ID: {$module->bdsp_id}");
-            $this->line("    Status: {$module->status}");
+            $this->line("    BDSP ID: {$module->bdsp_id} (Type: " . gettype($module->bdsp_id) . ")");
+            $this->line("    Status: '{$module->status}' (Type: " . gettype($module->status) . ")");
             $this->newLine();
             
-            // Test policy
+            // Test policy with detailed debugging
             $policy = new TrainingModulePolicy();
+            
+            // Test view permission with detailed comparison
+            $role = strtolower($user->role ?? '');
+            $this->line("Policy Debug for View:");
+            $this->line("  User Role (raw): '{$user->role}'");
+            $this->line("  User Role (lowercase): '{$role}'");
+            $this->line("  Role === 'bdsp': " . ($role === 'bdsp' ? 'true' : 'false'));
+            $this->line("  Module BDSP ID === User ID: " . ($module->bdsp_id === $user->id ? 'true' : 'false'));
+            $this->line("  Both conditions: " . (($role === 'bdsp' && $module->bdsp_id === $user->id) ? 'true' : 'false'));
+            $this->newLine();
             
             $canView = $policy->view($user, $module);
             $canUpdate = $policy->update($user, $module);
