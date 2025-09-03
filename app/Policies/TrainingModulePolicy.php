@@ -41,7 +41,7 @@ class TrainingModulePolicy
         ]);
 
         // BDSPs can view their own modules
-        if ($role === 'bdsp' && $trainingModule->bdsp_id === $user->id) {
+        if ($role === 'bdsp' && (int)$trainingModule->bdsp_id === (int)$user->id) {
             Log::info('Policy:view allow (owner bdsp)', [
                 'user_id' => $user->id,
                 'role' => $role,
@@ -103,7 +103,7 @@ class TrainingModulePolicy
         $role = strtolower($user->role ?? '');
 
         // BDSPs can update their own modules
-        if ($role === 'bdsp' && $trainingModule->bdsp_id === $user->id) {
+        if ($role === 'bdsp' && (int)$trainingModule->bdsp_id === (int)$user->id) {
             Log::info('Policy:update allow (owner bdsp)', [
                 'user_id' => $user->id,
                 'role' => $role,
@@ -141,7 +141,7 @@ class TrainingModulePolicy
         $role = strtolower($user->role ?? '');
 
         // BDSPs can delete their own modules (only if no progress exists)
-        if ($role === 'bdsp' && $trainingModule->bdsp_id === $user->id) {
+        if ($role === 'bdsp' && (int)$trainingModule->bdsp_id === (int)$user->id) {
             $allowed = $trainingModule->progress()->count() === 0;
             Log::log($allowed ? 'info' : 'warning', 'Policy:delete ' . ($allowed ? 'allow' : 'deny') . ' (owner bdsp)', [
                 'user_id' => $user->id,
