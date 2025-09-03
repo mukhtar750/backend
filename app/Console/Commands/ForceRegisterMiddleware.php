@@ -43,7 +43,7 @@ class ForceRegisterMiddleware extends Command
         }
 
         try {
-            $authMiddleware = new Authenticate();
+            $authMiddleware = new Authenticate(app('auth'));
             $this->line('   ✓ Authenticate class can be instantiated');
         } catch (\Exception $e) {
             $this->error('   ✗ Error loading Authenticate: ' . $e->getMessage());
