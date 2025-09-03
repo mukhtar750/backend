@@ -3,7 +3,7 @@
 @section('content')
 <div class="flex justify-between items-center mb-6">
     <h1 class="text-3xl font-bold text-gray-800">Training Programs</h1>
-    <a href="{{ route('admin.training_programs.create') }}" class="bg-magenta text-white px-4 py-2 rounded-lg shadow hover:bg-magenta-700 transition flex items-center">
+    <a href="{{ route('admin.training_programs.create') }}" class="bg-[#b81d8f] hover:bg-[#a01a7d] text-white px-4 py-2 rounded-lg shadow transition flex items-center">
         <i class="bi bi-plus-circle mr-2"></i> Create New Training
     </a>
 </div>

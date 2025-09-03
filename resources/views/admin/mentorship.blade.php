@@ -212,7 +212,7 @@
                 </div>
                 <!-- Add other fields as needed -->
                 <div class="flex justify-end">
-                    <button type="submit" class="bg-magenta hover:bg-magenta-700 text-white font-semibold px-6 py-2 rounded-lg">Save Changes</button>
+                    <button type="submit" class="bg-[#b81d8f] hover:bg-[#a01a7d] text-white font-semibold px-6 py-2 rounded-lg">Save Changes</button>
                 </div>
             </form>
         </div>

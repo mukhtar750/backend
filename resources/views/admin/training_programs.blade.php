@@ -3,7 +3,7 @@
 @section('content')
     <div class="flex justify-between items-center mb-6">
         <h1 class="text-3xl font-bold text-gray-800">Training Programs</h1>
-        <button class="bg-magenta text-white px-4 py-2 rounded-lg shadow hover:bg-magenta-700 transition flex items-center">
+        <button class="bg-[#b81d8f] hover:bg-[#a01a7d] text-white px-4 py-2 rounded-lg shadow transition flex items-center">
             <i class="bi bi-plus-circle mr-2"></i> Create Training
         </button>
     </div>
@@ -12,7 +12,7 @@
     <div class="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
         @php
             $summaryCards = [
-                ['title' => 'Total Programs', 'value' => '3', 'icon' => 'bi-book', 'color' => 'magenta'],
+                ['title' => 'Total Programs', 'value' => '3', 'icon' => 'bi-book', 'color' => 'purple'],
                 ['title' => 'Upcoming', 'value' => '2', 'icon' => 'bi-calendar-check', 'color' => 'blue'],
                 ['title' => 'Total Participants', 'value' => '60', 'icon' => 'bi-people', 'color' => 'green'],
                 ['title' => 'Avg. Attendance', 'value' => '87%', 'icon' => 'bi-clock', 'color' => 'orange'],
@@ -34,7 +34,7 @@
     <div class="mb-6">
         <div class="border-b border-gray-200">
             <nav class="-mb-px flex space-x-8" aria-label="Tabs">
-                <a href="#" class="border-magenta-500 text-magenta-600 whitespace-nowrap py-4 px-1 border-b-2 font-medium text-sm" aria-current="page">Upcoming (2)</a>
+                <a href="#" class="border-[#b81d8f] text-[#b81d8f] whitespace-nowrap py-4 px-1 border-b-2 font-medium text-sm" aria-current="page">Upcoming (2)</a>
                 <a href="#" class="border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300 whitespace-nowrap py-4 px-1 border-b-2 font-medium text-sm">Ongoing (1)</a>
                 <a href="#" class="border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300 whitespace-nowrap py-4 px-1 border-b-2 font-medium text-sm">Completed (0)</a>
             </nav>
@@ -47,7 +47,7 @@
         <div class="bg-white p-6 rounded-lg shadow">
             <div class="flex justify-between items-start mb-4">
                 <h3 class="text-xl font-semibold text-gray-800 flex items-center">
-                    <i class="bi bi-book text-magenta-500 mr-3 text-2xl"></i> Business Model Canvas Workshop
+                    <i class="bi bi-book text-[#b81d8f] mr-3 text-2xl"></i> Business Model Canvas Workshop
                 </h3>
                 <span class="bg-blue-100 text-blue-800 text-xs font-medium px-2.5 py-0.5 rounded-full">Upcoming</span>
             </div>
@@ -61,7 +61,7 @@
             <div class="mb-4">
                 <p class="text-gray-700 text-sm mb-1">Registration Progress</p>
                 <div class="w-full bg-gray-200 rounded-full h-2.5">
-                    <div class="bg-magenta-600 h-2.5 rounded-full" style="width: 72%"></div>
+                    <div class="bg-[#b81d8f] h-2.5 rounded-full" style="width: 72%"></div>
                 </div>
                 <p class="text-right text-gray-500 text-xs mt-1">72%</p>
             </div>
@@ -75,9 +75,9 @@
             </div>
             <div class="flex justify-between items-center border-t border-gray-200 pt-4">
                 <div class="flex space-x-3 text-gray-500">
-                    <i class="bi bi-eye text-lg cursor-pointer hover:text-magenta-600"></i>
-                    <i class="bi bi-pencil text-lg cursor-pointer hover:text-magenta-600"></i>
-                    <i class="bi bi-trash text-lg cursor-pointer hover:text-magenta-600"></i>
+                    <i class="bi bi-eye text-lg cursor-pointer hover:text-[#b81d8f]"></i>
+                    <i class="bi bi-pencil text-lg cursor-pointer hover:text-[#b81d8f]"></i>
+                    <i class="bi bi-trash text-lg cursor-pointer hover:text-[#b81d8f]"></i>
                 </div>
                 <div class="flex gap-3 items-center">
                     <!-- Join Session button (show if meeting link exists) -->
@@ -97,7 +97,7 @@
         <div class="bg-white p-6 rounded-lg shadow">
             <div class="flex justify-between items-start mb-4">
                 <h3 class="text-xl font-semibold text-gray-800 flex items-center">
-                    <i class="bi bi-camera-video text-magenta-500 mr-3 text-2xl"></i> Financial Planning for Startups
+                    <i class="bi bi-camera-video text-[#b81d8f] mr-3 text-2xl"></i> Financial Planning for Startups
                 </h3>
                 <span class="bg-blue-100 text-blue-800 text-xs font-medium px-2.5 py-0.5 rounded-full">Upcoming</span>
             </div>
@@ -111,7 +111,7 @@
             <div class="mb-4">
                 <p class="text-gray-700 text-sm mb-1">Registration Progress</p>
                 <div class="w-full bg-gray-200 rounded-full h-2.5">
-                    <div class="bg-magenta-600 h-2.5 rounded-full" style="width: 73%"></div>
+                    <div class="bg-[#b81d8f] h-2.5 rounded-full" style="width: 73%"></div>
                 </div>
                 <p class="text-right text-gray-500 text-xs mt-1">73%</p>
             </div>
@@ -125,9 +125,9 @@
             </div>
             <div class="flex justify-between items-center border-t border-gray-200 pt-4">
                 <div class="flex space-x-3 text-gray-500">
-                    <i class="bi bi-eye text-lg cursor-pointer hover:text-magenta-600"></i>
-                    <i class="bi bi-pencil text-lg cursor-pointer hover:text-magenta-600"></i>
-                    <i class="bi bi-trash text-lg cursor-pointer hover:text-magenta-600"></i>
+                    <i class="bi bi-eye text-lg cursor-pointer hover:text-[#b81d8f]"></i>
+                    <i class="bi bi-pencil text-lg cursor-pointer hover:text-[#b81d8f]"></i>
+                    <i class="bi bi-trash text-lg cursor-pointer hover:text-[#b81d8f]"></i>
                 </div>
                 <div class="flex gap-3 items-center">
                     <!-- Join Session button (show if meeting link exists) -->
