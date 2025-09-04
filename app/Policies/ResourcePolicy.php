@@ -27,9 +27,9 @@ class ResourcePolicy
         }
         
         // Users can view their own resources
-        if ($resource->bdsp_id === $user->id || 
-            $resource->mentor_id === $user->id || 
-            $resource->mentee_id === $user->id) {
+        if ((int) $resource->bdsp_id === (int) $user->id || 
+            (isset($resource->mentor_id) && (int) $resource->mentor_id === (int) $user->id) || 
+            (isset($resource->mentee_id) && (int) $resource->mentee_id === (int) $user->id)) {
             return true;
         }
         
@@ -51,17 +51,17 @@ class ResourcePolicy
     public function update(User $user, Resource $resource): bool
     {
         // BDSPs can update their own resources
-        if ($user->role === 'bdsp' && $resource->bdsp_id === $user->id) {
+        if ($user->role === 'bdsp' && (int) $resource->bdsp_id === (int) $user->id) {
             return true;
         }
         
         // Mentors can update their own resources
-        if ($user->role === 'mentor' && $resource->mentor_id === $user->id) {
+        if ($user->role === 'mentor' && isset($resource->mentor_id) && (int) $resource->mentor_id === (int) $user->id) {
             return true;
         }
         
         // Mentees can update their own resources
-        if ($user->role === 'mentee' && $resource->mentee_id === $user->id) {
+        if ($user->role === 'mentee' && isset($resource->mentee_id) && (int) $resource->mentee_id === (int) $user->id) {
             return true;
         }
         
@@ -74,17 +74,17 @@ class ResourcePolicy
     public function delete(User $user, Resource $resource): bool
     {
         // BDSPs can delete their own resources
-        if ($user->role === 'bdsp' && $resource->bdsp_id === $user->id) {
+        if ($user->role === 'bdsp' && (int) $resource->bdsp_id === (int) $user->id) {
             return true;
         }
         
         // Mentors can delete their own resources
-        if ($user->role === 'mentor' && $resource->mentor_id === $user->id) {
+        if ($user->role === 'mentor' && isset($resource->mentor_id) && (int) $resource->mentor_id === (int) $user->id) {
             return true;
         }
         
         // Mentees can delete their own resources
-        if ($user->role === 'mentee' && $resource->mentee_id === $user->id) {
+        if ($user->role === 'mentee' && isset($resource->mentee_id) && (int) $resource->mentee_id === (int) $user->id) {
             return true;
         }
         
