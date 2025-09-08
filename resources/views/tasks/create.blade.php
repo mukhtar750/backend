@@ -6,13 +6,18 @@
     <form action="{{ route('tasks.store') }}" method="POST">
         @csrf
         <div class="mb-4">
-            <label class="block font-semibold mb-1">Assign To</label>
-            <select name="assignee_id" class="form-input w-full rounded" required>
-                <option value="">Select user...</option>
+            <label class="block font-semibold mb-2">Assign To</label>
+            <div class="space-y-2 max-h-60 overflow-y-auto p-2 border rounded">
                 @foreach($pairedUsers as $user)
-                    <option value="{{ $user->id }}">{{ $user->name }} (@displayRole($user->role))</option>
+                    <label class="flex items-center space-x-2">
+                        <input type="checkbox" name="assignees[]" value="{{ $user->id }}" class="rounded border-gray-300 text-indigo-600 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50">
+                        <span>{{ $user->name }} <span class="text-gray-500 text-sm">(@displayRole($user->role))</span></span>
+                    </label>
                 @endforeach
-            </select>
+            </div>
+            @error('assignees')
+                <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
+            @enderror
         </div>
         <div class="mb-4">
             <label class="block font-semibold mb-1">Title</label>
