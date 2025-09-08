@@ -17,31 +17,13 @@ class Task extends Model
     protected $fillable = [
         'title',
         'description',
+        'assignee_id',
         'assigner_id',
         'due_date',
         'priority',
         'status',
         'completed_at',
     ];
-    
-    /**
-     * The users assigned to this task.
-     */
-    public function assignees()
-    {
-        return $this->belongsToMany(User::class, 'task_user')
-            ->withPivot('status', 'completed_at')
-            ->withTimestamps();
-    }
-    
-    /**
-     * Get the primary assignee (for backward compatibility).
-     * This will return the first assignee if any exist.
-     */
-    public function assignee()
-    {
-        return $this->assignees()->first();
-    }
     
     /**
      * The attributes that should be cast.
@@ -52,6 +34,14 @@ class Task extends Model
         'due_date' => 'datetime',
         'completed_at' => 'datetime',
     ];
+    
+    /**
+     * Get the user who is assigned to this task.
+     */
+    public function assignee()
+    {
+        return $this->belongsTo(User::class, 'assignee_id');
+    }
     
     /**
      * Get the user who assigned this task.

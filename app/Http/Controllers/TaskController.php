@@ -88,6 +88,33 @@ class TaskController extends Controller
         return redirect()->back()->with('success', 'Task marked as in progress!');
     }
     
+    /**
+     * Admin method to create a new task for an entrepreneur
+     */
+    public function store(Request $request)
+    {
+        $request->validate([
+            'title' => 'required|string|max:255',
+            'description' => 'required|string',
+            'assignee_id' => 'required|exists:users,id',
+            'due_date' => 'required|date',
+            'priority' => 'required|in:low,medium,high',
+        ]);
+        
+        $task = new Task();
+        $task->title = $request->title;
+        $task->description = $request->description;
+        $task->assignee_id = $request->assignee_id;
+        $task->assigner_id = Auth::id();
+        $task->due_date = $request->due_date;
+        $task->priority = $request->priority;
+        $task->status = 'pending';
+        $task->save();
+        
+        $task->assignee->notify(new \App\Notifications\AssignmentAssignedNotification($task));
+        
+        return redirect()->back()->with('success', 'Task assigned successfully!');
+    }
     
     /**
      * Admin method to update a task
@@ -151,57 +178,7 @@ class TaskController extends Controller
         $pairings = $user->allPairings()->get();
         $pairedUsers = $pairings->map(function($pairing) use ($user) {
             return $pairing->user_one_id == $user->id ? $pairing->userTwo : $pairing->userOne;
-        })->unique('id');
-        
+        });
         return view('tasks.create', compact('pairedUsers'));
-    }
-    
-    /**
-     * Store a newly created task in storage.
-     */
-    public function store(Request $request)
-    {
-        $request->validate([
-            'title' => 'required|string|max:255',
-            'description' => 'required|string',
-            'assignees' => 'required|array|min:1',
-            'assignees.*' => 'exists:users,id',
-            'due_date' => 'required|date',
-            'priority' => 'required|in:low,medium,high',
-        ]);
-        
-        // Create the task
-        $task = new Task([
-            'title' => $request->title,
-            'description' => $request->description,
-            'assigner_id' => auth()->id(),
-            'due_date' => $request->due_date,
-            'priority' => $request->priority,
-            'status' => 'pending',
-        ]);
-        
-        $task->save();
-        
-        // Attach assignees to the task
-        $assigneeData = [];
-        foreach ($request->assignees as $assigneeId) {
-            $assigneeData[$assigneeId] = [
-                'status' => 'pending',
-                'created_at' => now(),
-                'updated_at' => now(),
-            ];
-        }
-        
-        $task->assignees()->attach($assigneeData);
-        
-        // Notify each assignee
-        foreach ($request->assignees as $assigneeId) {
-            $user = \App\Models\User::find($assigneeId);
-            if ($user) {
-                $user->notify(new \App\Notifications\AssignmentAssignedNotification($task));
-            }
-        }
-        
-        return redirect()->back()->with('success', 'Task assigned successfully!');
     }
 }

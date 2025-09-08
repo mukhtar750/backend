@@ -92,16 +92,6 @@ class User extends Authenticatable
             ->get();
     }
 
-    /**
-     * Get all tasks assigned to this user.
-     */
-    public function assignedTasks()
-    {
-        return $this->belongsToMany(Task::class, 'task_user')
-            ->withPivot('status', 'completed_at')
-            ->withTimestamps();
-    }
-
     public function getUnreadMessageCount()
     {
         return Message::whereHas('conversation', function ($query) {
