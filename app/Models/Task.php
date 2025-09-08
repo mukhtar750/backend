@@ -27,6 +27,9 @@ class Task extends Model
     /**
      * The users assigned to this task.
      */
+    /**
+     * The users assigned to this task (many-to-many)
+     */
     public function assignees()
     {
         return $this->belongsToMany(User::class, 'task_user')
@@ -35,12 +38,19 @@ class Task extends Model
     }
     
     /**
-     * Get the primary assignee (for backward compatibility).
-     * This will return the first assignee if any exist.
+     * The user who created/assigned the task
      */
-    public function assignee()
+    public function assigner()
     {
         return $this->belongsTo(User::class, 'assigner_id');
+    }
+    
+    /**
+     * For backward compatibility - gets the first assignee
+     */
+    public function getAssigneeAttribute()
+    {
+        return $this->assignees->first();
     }
     
     /**

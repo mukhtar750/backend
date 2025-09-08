@@ -170,38 +170,51 @@ class TaskController extends Controller
             'priority' => 'required|in:low,medium,high',
         ]);
         
-        // Create the task
-        $task = new Task([
-            'title' => $request->title,
-            'description' => $request->description,
-            'assigner_id' => auth()->id(),
-            'due_date' => $request->due_date,
-            'priority' => $request->priority,
-            'status' => 'pending',
-        ]);
+        // Start a database transaction
+        \DB::beginTransaction();
         
-        $task->save();
-        
-        // Attach assignees to the task
-        $assigneeData = [];
-        foreach ($request->assignees as $assigneeId) {
-            $assigneeData[$assigneeId] = [
+        try {
+            // Create the task
+            $task = new Task([
+                'title' => $request->title,
+                'description' => $request->description,
+                'assigner_id' => auth()->id(),
+                'due_date' => $request->due_date,
+                'priority' => $request->priority,
                 'status' => 'pending',
-                'created_at' => now(),
-                'updated_at' => now(),
-            ];
-        }
-        
-        $task->assignees()->attach($assigneeData);
-        
-        // Notify each assignee
-        foreach ($request->assignees as $assigneeId) {
-            $user = \App\Models\User::find($assigneeId);
-            if ($user) {
-                $user->notify(new \App\Notifications\AssignmentAssignedNotification($task));
+            ]);
+            
+            $task->save();
+            
+            // Attach assignees to the task
+            $assigneeData = [];
+            foreach ($request->assignees as $assigneeId) {
+                $assigneeData[$assigneeId] = [
+                    'status' => 'pending',
+                    'created_at' => now(),
+                    'updated_at' => now(),
+                ];
             }
+            
+            $task->assignees()->attach($assigneeData);
+            
+            // Commit the transaction
+            \DB::commit();
+            
+            // Notify each assignee
+            foreach ($request->assignees as $assigneeId) {
+                $user = \App\Models\User::find($assigneeId);
+                if ($user) {
+                    $user->notify(new \App\Notifications\AssignmentAssignedNotification($task));
+                }
+            }
+            
+            return redirect()->back()->with('success', 'Task created and assigned successfully!');
+            
+        } catch (\Exception $e) {
+            // Rollback the transaction on error
+            \DB::rollBack();
+            \Log::error('Task creation failed: ' . $e->getMessage());
+            return redirect()->back()->with('error', 'Failed to create task. Please try again.');
         }
-        
-        return redirect()->back()->with('success', 'Task assigned successfully!');
-    }
 }
