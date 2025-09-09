@@ -64,14 +64,6 @@ class Task extends Model
     ];
     
     /**
-     * Get the user who assigned this task.
-     */
-    public function assigner()
-    {
-        return $this->belongsTo(User::class, 'assigner_id');
-    }
-    
-    /**
      * Check if the task is overdue.
      *
      * @return bool
