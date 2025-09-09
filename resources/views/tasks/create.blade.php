@@ -3,6 +3,18 @@
 @section('content')
 <div class="max-w-lg mx-auto mt-10 bg-white p-8 rounded shadow">
     <h1 class="text-2xl font-bold mb-6">Assign New Task</h1>
+
+    @if (session('success'))
+        <div class="bg-green-100 border border-green-400 text-green-700 px-4 py-3 rounded relative mb-4" role="alert">
+            <span class="block sm:inline">{{ session('success') }}</span>
+        </div>
+    @endif
+
+    @if (session('error'))
+        <div class="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded relative mb-4" role="alert">
+            <span class="block sm:inline">{{ session('error') }}</span>
+        </div>
+    @endif
     <form action="{{ route('tasks.store') }}" method="POST">
         @csrf
         <div class="mb-4">
@@ -42,4 +54,4 @@
         <button type="submit" class="bg-purple-600 text-white px-6 py-2 rounded hover:bg-purple-700">Assign Task</button>
     </form>
 </div>
-@endsection 
+@endsection

@@ -46,7 +46,7 @@ class DatabaseSeeder extends Seeder
             'name' => 'Test Mentor',
             'email' => 'mentor@test.com',
             'password' => Hash::make('password'),
-            'role' => 'mentor',
+            'role' => 'bdsp',
             'is_approved' => true,
         ]);
         
@@ -55,7 +55,7 @@ class DatabaseSeeder extends Seeder
             'name' => 'Test Mentee',
             'email' => 'mentee@test.com',
             'password' => Hash::make('password'),
-            'role' => 'mentee',
+            'role' => 'entrepreneur',
             'is_approved' => true,
         ]);
         

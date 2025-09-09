@@ -1,0 +1,143 @@
+<!DOCTYPE html>
+<html lang="<?php echo e(str_replace('_', '-', app()->getLocale())); ?>">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="csrf-token" content="<?php echo e(csrf_token()); ?>">
+    <title><?php echo $__env->yieldContent('title', 'Admin Dashboard'); ?></title>
+<!-- Bootstrap Icons CDN -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css" rel="stylesheet">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"></script>
+    <style>
+        .active {
+            @apply bg-white text-purple-800 font-semibold shadow-sm;
+        }
+        [x-cloak] { display: none !important; }
+    </style>
+</head>
+<body class="bg-gray-100 font-sans antialiased">
+
+<div class="flex h-screen">
+    <!-- Sidebar -->
+    <aside class="w-64 bg-purple-800 text-white flex flex-col">
+        <div class="px-6 py-4 text-2xl font-bold">VR Portal</div>
+        <div class="px-6 text-sm mb-4">Admin Panel</div>
+        <nav class="flex-1 px-4 space-y-2">
+            <?php $route = Route::currentRouteName(); ?>
+
+            <a href="<?php echo e(route('admin.dashboard')); ?>" class="flex items-center gap-3 px-4 py-2 rounded-lg hover:bg-purple-700 <?php echo e($route == 'admin.dashboard' ? 'active' : ''); ?>">
+                <i class="bi bi-grid-fill"></i> Dashboard
+            </a>
+            <a href="<?php echo e(route('admin.user-management')); ?>" class="flex items-center gap-3 px-4 py-2 rounded-lg hover:bg-purple-700 <?php echo e($route == 'admin.user-management' ? 'active' : ''); ?>">
+                <i class="bi bi-people-fill"></i> User Management
+            </a>
+            <a href="<?php echo e(route('admin.access_requests')); ?>" class="flex items-center gap-3 px-4 py-2 rounded-lg hover:bg-purple-700 <?php echo e($route == 'admin.access_requests' ? 'active' : ''); ?>">
+                <i class="bi bi-key-fill"></i> Access Requests
+            </a>
+            <a href="<?php echo e(route('admin.user-management', ['tab' => 'startup-profiles'])); ?>" class="flex items-center gap-3 px-4 py-2 rounded-lg hover:bg-purple-700 <?php echo e($route == 'admin.user-management' && request('tab') == 'startup-profiles' ? 'active' : ''); ?>">
+                <i class="bi bi-building"></i> Startup Profiles
+            </a>
+            <a href="<?php echo e(route('admin.training_programs')); ?>" class="flex items-center gap-3 px-4 py-2 rounded-lg hover:bg-purple-700 <?php echo e($route == 'admin.training_programs' ? 'active' : ''); ?>">
+                <i class="bi bi-book-fill"></i> Training Programs
+            </a>
+            <a href="<?php echo e(route('admin.mentorship')); ?>" class="flex items-center gap-3 px-4 py-2 rounded-lg hover:bg-purple-700 <?php echo e($route == 'admin.mentorship' ? 'active' : ''); ?>">
+                <i class="bi bi-person-check-fill"></i> Mentorship
+            </a>
+            <div x-data="{ open: <?php echo e(in_array($route, ['admin.pitch-events.index', 'admin.proposals.index']) ? 'true' : 'false'); ?> }">
+                <button @click="open = !open" class="flex items-center justify-between w-full px-4 py-2 rounded-lg hover:bg-purple-700 <?php echo e(in_array($route, ['admin.pitch-events.index', 'admin.proposals.index']) ? 'active' : ''); ?>">
+                    <div class="flex items-center gap-3">
+                        <i class="bi bi-megaphone-fill"></i> Pitch Events
+                    </div>
+                    <i class="bi bi-chevron-down text-sm transition-transform" :class="{ 'rotate-180': open }"></i>
+                </button>
+                <div x-show="open" x-transition class="ml-6 mt-2 space-y-1">
+                    <a href="<?php echo e(route('admin.pitch-events.index')); ?>" class="flex items-center gap-3 px-4 py-2 rounded-lg hover:bg-purple-700 <?php echo e($route == 'admin.pitch-events.index' ? 'active' : ''); ?>">
+                        <i class="bi bi-calendar-event"></i> All Events
+                    </a>
+                    <a href="<?php echo e(route('admin.proposals.index')); ?>" class="flex items-center gap-3 px-4 py-2 rounded-lg hover:bg-purple-700 <?php echo e($route == 'admin.proposals.index' ? 'active' : ''); ?>">
+                        <i class="bi bi-file-earmark-text-fill"></i> Event Proposals
+                    </a>
+                </div>
+            </div>
+            <a href="<?php echo e(route('admin.analytics')); ?>" class="flex items-center gap-3 px-4 py-2 rounded-lg hover:bg-purple-700 <?php echo e($route == 'admin.analytics' ? 'active' : ''); ?>">
+                <i class="bi bi-graph-up"></i> Analytics
+            </a>
+            <a href="<?php echo e(route('admin.feedback')); ?>" class="flex items-center gap-3 px-4 py-2 rounded-lg hover:bg-purple-700 <?php echo e($route == 'admin.feedback' ? 'active' : ''); ?>">
+                <i class="bi bi-chat-dots-fill"></i> Feedback Review
+            </a>
+            <a href="<?php echo e(route('admin.content_management')); ?>" class="flex items-center gap-3 px-4 py-2 rounded-lg hover:bg-purple-700 <?php echo e($route == 'admin.content_management' ? 'active' : ''); ?>">
+                <i class="bi bi-file-earmark-text-fill"></i> Content Management
+            </a>
+            <a href="<?php echo e(route('admin.messages')); ?>" class="flex items-center gap-3 px-4 py-2 rounded-lg hover:bg-purple-700 <?php echo e($route == 'admin.messages' ? 'active' : ''); ?>">
+                <i class="bi bi-envelope-fill"></i> Messages
+            </a>
+        </nav>
+
+        <div class="p-4 border-t border-purple-700">
+            <div class="flex items-center mb-2">
+                <div class="h-10 w-10 rounded-full bg-gray-300 flex items-center justify-center mr-3">
+                    <i class="bi bi-person text-gray-600"></i>
+                </div>
+                <div>
+                    <!--get user name from session -->
+                    <?php if(Auth::check()): ?>
+                        <div class="font-semibold"><?php echo e(Auth::user()->name); ?></div>
+                        <div class="text-sm text-gray-300"><?php echo e(Auth::user()->email); ?></div>
+                    <?php else: ?>
+                        <div class="font-semibold">Guest</div>
+                        <div class="text-sm text-gray-300">guest@example.com</div>
+                    <?php endif; ?>
+                </div>
+            </div>
+            <a href="<?php echo e(route('admin.settings')); ?>" class="flex items-center gap-3 px-4 py-2 text-gray-200 hover:bg-purple-700 rounded-md">
+                <i class="bi bi-gear-fill"></i> Settings
+            </a>
+            <form method="POST" action="<?php echo e(route('logout')); ?>" class="mt-1">
+                <?php echo csrf_field(); ?>
+                <button type="submit" class="flex items-center gap-3 w-full px-4 py-2 text-gray-200 hover:bg-purple-700 rounded-md">
+                    <i class="bi bi-box-arrow-right"></i> Logout
+                </button>
+            </form>
+        </div>
+    </aside>
+
+    <!-- Main Content -->
+    <div class="flex-1 flex flex-col">
+        <!-- Top Navigation -->
+        <header class="flex items-center justify-between bg-white p-4 shadow-sm border-b">
+            <div class="flex items-center gap-3">
+                <img src="/images/logo.jpg" alt="AWN Logo" class="h-7 w-7 mr-2">
+                <h2 class="text-2xl font-semibold text-gray-800">Dashboard</h2>
+            </div>
+            <div class="flex items-center gap-4 flex-1 justify-end">
+                <div class="relative w-80 max-w-xs mr-4">
+                    <input type="text" placeholder="Search..." class="w-full pl-10 pr-4 py-2 border rounded-lg focus:ring-2 focus:ring-purple-500 focus:outline-none">
+                    <i class="bi bi-search text-gray-400 absolute left-3 top-1/2 transform -translate-y-1/2"></i>
+                </div>
+                <a href="<?php echo e(route('admin.messages')); ?>" class="relative text-gray-600 hover:text-gray-800 mr-2">
+                    <i class="bi bi-chat-dots text-xl"></i>
+                </a>
+                <?php echo $__env->make('components.notification-badge', array_diff_key(get_defined_vars(), ['__data' => 1, '__path' => 1]))->render(); ?>
+                <div class="flex items-center">
+                    <div class="h-8 w-8 rounded-full bg-gray-300 flex items-center justify-center mr-2">
+                        <i class="bi bi-person text-gray-600 text-sm"></i>
+                    </div>
+                    <div>
+                        <div class="font-semibold text-gray-800 text-sm"><?php echo e(Auth::user()?->name ?? 'Guest'); ?></div>
+                        
+                    </div>
+                </div>
+            </div>
+        </header>
+
+        <!-- Page Content -->
+        <main class="flex-1 p-6 bg-gray-100 overflow-y-auto">
+            <?php echo $__env->yieldContent('content'); ?>
+        </main>
+    </div>
+</div>
+
+</body>
+</html>
+<?php /**PATH C:\Users\ABU-UMAR\Documents\GitHub\backend\resources\views/admin/layouts/admin.blade.php ENDPATH**/ ?>

@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html lang="<?php echo e(str_replace('_', '-', app()->getLocale())); ?>">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="csrf-token" content="<?php echo e(csrf_token()); ?>">
+    <title><?php echo $__env->yieldContent('title', 'Entrepreneur Dashboard'); ?></title>
+    <link rel="preconnect" href="https://fonts.bunny.net">
+    <link href="https://fonts.bunny.net/css?family=figtree:400,600&display=swap" rel="stylesheet" />
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"></script>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css">
+</head>
+<body class="font-sans antialiased bg-gray-100">
+    <?php $route = Route::currentRouteName(); ?>
+    <?php $role = auth()->user()->role; ?>
+    <div class="flex h-screen bg-gray-100">
+        <!-- Sidebar -->
+        <div class="w-64 bg-[#b81d8f] text-white flex flex-col">
+            <div class="p-4 text-2xl font-bold border-b border-[#a01a7d]">
+                <i class="bi bi-person-badge-fill mr-2"></i> VR Portal
+            </div>
+            <div class="p-4 text-sm border-b border-[#a01a7d] tracking-wide">
+                Entrepreneur Panel
+            </div>
+            <nav class="flex-1 px-2 py-4 space-y-2">
+                <a href="<?php echo e(route('dashboard.entrepreneur')); ?>" class="flex items-center px-4 py-2 text-white hover:bg-[#a01a7d] rounded-lg font-medium"><i class="bi bi-grid-fill mr-3"></i> Dashboard</a>
+                <a href="<?php echo e(route('entrepreneur.progress.dashboard')); ?>" class="flex items-center px-4 py-2 text-white hover:bg-[#a01a7d] rounded-lg font-medium"><i class="bi bi-bar-chart-fill mr-3"></i> My Progress</a>
+                <a href="<?php echo e(route('entrepreneur.training-modules.index')); ?>" class="flex items-center px-4 py-2 text-white hover:bg-[#a01a7d] rounded-lg font-medium"><i class="bi bi-book-fill mr-3"></i> Training Modules</a>
+                <a href="<?php echo e(route('entrepreneur.calendar')); ?>" class="flex items-center px-4 py-2 text-white hover:bg-[#a01a7d] rounded-lg font-medium"><i class="bi bi-calendar-event-fill mr-3"></i> Training Calendar</a>
+                <a href="<?php echo e(route('entrepreneur.mentorship')); ?>" class="flex items-center px-4 py-2 text-white hover:bg-[#a01a7d] rounded-lg font-medium"><i class="bi bi-people-fill mr-3"></i> Mentorship</a>
+                <a href="<?php echo e(route('entrepreneur.pitch')); ?>" class="flex items-center px-4 py-2 text-white hover:bg-[#a01a7d] rounded-lg font-medium"><i class="bi bi-easel-fill mr-3"></i> Pitch Preparation</a>
+                <a href="<?php echo e(route('entrepreneur.startup-profile')); ?>" class="flex items-center px-4 py-2 text-white hover:bg-[#a01a7d] rounded-lg font-medium"><i class="bi bi-building mr-3"></i> My Startup Profile</a>
+                <a href="<?php echo e(route('entrepreneur.tasks')); ?>" class="flex items-center px-4 py-2 text-white hover:bg-[#a01a7d] rounded-lg font-medium"><i class="bi bi-check2-square mr-3"></i> Assignments & Tasks</a>
+                <a href="<?php echo e(route('messages.index')); ?>" class="flex items-center gap-3 px-4 py-2 rounded-lg hover:bg-purple-700 <?php echo e($route == 'messages.index' ? 'bg-white text-purple-800 font-semibold shadow-sm' : ''); ?>">
+                    <i class="bi bi-chat-dots"></i> Messages
+                </a>
+                <a href="<?php echo e(route('entrepreneur.feedback')); ?>" class="flex items-center px-4 py-2 text-white hover:bg-[#a01a7d] rounded-lg font-medium"><i class="bi bi-chat-dots-fill mr-3"></i> Feedback</a>
+                <a href="<?php echo e(route('ideas.index')); ?>" class="flex items-center px-4 py-2 text-white hover:bg-yellow-400 hover:text-[#b81d8f] rounded-lg font-medium <?php echo e(request()->routeIs('ideas.*') ? 'bg-white text-[#b81d8f] font-semibold shadow-sm' : ''); ?>">
+                    <i class="bi bi-lightbulb mr-3"></i> Ideas Bank
+                </a>
+            </nav>
+            <div class="p-4 border-t border-[#a01a7d]">
+                <div class="flex items-center mb-3">
+                    <img class="h-10 w-10 rounded-full mr-3 border border-white object-cover" 
+                         src="<?php echo e(Auth::user()->getProfilePictureUrl()); ?>" 
+                         alt="<?php echo e(Auth::user()->name); ?>">
+                    <div>
+                        <div class="font-semibold"><?php echo e(Auth::user()->name); ?></div>
+                        <div class="text-sm text-pink-100"><?php echo e(Auth::user()->email); ?></div>
+                    </div>
+                </div>
+                <a href="<?php echo e(route('profile.show')); ?>" class="flex items-center px-4 py-2 text-white hover:bg-[#a01a7d] rounded-lg font-medium">
+                    <i class="bi bi-person-fill mr-3"></i> My Profile
+                </a>
+                <a href="#" class="flex items-center px-4 py-2 text-white hover:bg-[#a01a7d] rounded-lg font-medium">
+                    <i class="bi bi-gear-fill mr-3"></i> Settings
+                </a>
+                <form action="<?php echo e(route('logout')); ?>" method="POST" class="mt-1">
+                    <?php echo csrf_field(); ?>
+                    <button type="submit" class="flex items-center w-full px-4 py-2 text-white hover:bg-[#a01a7d] rounded-lg font-medium">
+                        <i class="bi bi-box-arrow-right mr-3"></i> Logout
+                    </button>
+                </form>
+            </div>
+        </div>
+        <!-- Main content -->
+        <div class="flex-1 flex flex-col overflow-hidden">
+            <!-- Header -->
+            <header class="flex items-center justify-between p-4 bg-white border-b shadow-sm">
+                <div class="flex items-center">
+                    <h1 class="text-2xl font-semibold text-gray-800">
+                        <i class="bi bi-grid-fill mr-2"></i> 
+                        <?php echo $__env->yieldContent('title', 'Dashboard'); ?>
+                    </h1>
+                </div>
+                <div class="flex items-center space-x-4">
+                    <div class="relative">
+                        <input type="text" placeholder="Search..." class="border border-gray-300 rounded-md py-2 px-4 pl-10 focus:outline-none focus:ring-2 focus:ring-[#b81d8f]">
+                        <i class="bi bi-search absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400"></i>
+                    </div>
+                    <?php echo $__env->make('components.notification-badge', array_diff_key(get_defined_vars(), ['__data' => 1, '__path' => 1]))->render(); ?>
+                    <a href="<?php echo e(route('messages.index')); ?>" class="relative text-gray-600 hover:text-gray-800 mr-2">
+                        <i class="bi bi-chat-dots-fill text-xl"></i>
+                        <?php
+                            $unreadMessages = auth()->check() ? auth()->user()->getUnreadMessageCount() : 0;
+                        ?>
+                        <?php if($unreadMessages > 0): ?>
+                            <span class="absolute -top-1 -right-1 inline-flex items-center justify-center px-2 py-1 text-xs font-bold leading-none text-white bg-blue-600 rounded-full">
+                                <?php echo e($unreadMessages > 99 ? '99+' : $unreadMessages); ?>
+
+                            </span>
+                        <?php endif; ?>
+                    </a>
+                    <div class="flex items-center">
+                        <img class="h-8 w-8 rounded-full mr-2 object-cover" 
+                             src="<?php echo e(Auth::user()->getProfilePictureUrl()); ?>" 
+                             alt="<?php echo e(Auth::user()->name); ?>">
+                        <div>
+                            <div class="font-semibold text-gray-800"><?php echo e(Auth::user()->name); ?></div>
+                            <div class="text-sm text-gray-500">Entrepreneur</div>
+                        </div>
+                    </div>
+                </div>
+            </header>
+            <!-- Page Content -->
+            <main class="flex-1 overflow-x-hidden overflow-y-auto bg-gray-100 p-6">
+                <?php echo $__env->yieldContent('content'); ?>
+            </main>
+        </div>
+    </div>
+</body>
+</html><?php /**PATH C:\Users\ABU-UMAR\Documents\GitHub\backend\resources\views/layouts/entrepreneur.blade.php ENDPATH**/ ?>

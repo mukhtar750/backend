@@ -150,6 +150,26 @@ class Task extends Model
         };
     }
 
+    /**
+     * Get the CSS class for the status badge (alias for backward compatibility)
+     *
+     * @return string
+     */
+    public function getStatusClass()
+    {
+        return $this->status_class;
+    }
+
+    /**
+     * Get the status label for display (alias for backward compatibility).
+     *
+     * @return string
+     */
+    public function getStatusLabel()
+    {
+        return $this->status_label;
+    }
+
     public function submissions()
     {
         return $this->hasMany(TaskSubmission::class);

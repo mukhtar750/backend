@@ -65,14 +65,14 @@ class TestUsersSeeder extends Seeder
                 'name' => 'Lisa Mentor',
                 'email' => 'mentor@test.com',
                 'password' => Hash::make('password'),
-                'role' => 'mentor',
+                'role' => 'bdsp',
                 'is_approved' => true,
             ],
             [
                 'name' => 'David Mentee',
                 'email' => 'mentee@test.com',
                 'password' => Hash::make('password'),
-                'role' => 'mentee',
+                'role' => 'entrepreneur',
                 'is_approved' => true,
             ],
         ];
