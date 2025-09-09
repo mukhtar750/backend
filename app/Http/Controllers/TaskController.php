@@ -148,10 +148,17 @@ class TaskController extends Controller
     public function create()
     {
         $user = auth()->user();
-        $pairings = $user->allPairings()->get();
-        $pairedUsers = $pairings->map(function($pairing) use ($user) {
-            return $pairing->user_one_id == $user->id ? $pairing->userTwo : $pairing->userOne;
-        })->unique('id');
+        $pairings = $user->allPairings()->with(['userOne', 'userTwo'])->get();
+        $pairedUsers = collect();
+        
+        foreach ($pairings as $pairing) {
+            $pairedUser = $pairing->user_one_id == $user->id ? $pairing->userTwo : $pairing->userOne;
+            if ($pairedUser) {
+                $pairedUsers->push($pairedUser);
+            }
+        }
+        
+        $pairedUsers = $pairedUsers->unique('id');
         
         return view('tasks.create', compact('pairedUsers'));
     }
