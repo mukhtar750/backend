@@ -1,4 +1,4 @@
-@extends('layouts.' . auth()->user()->role)
+@extends('layouts.' . (auth()->check() ? auth()->user()->role : 'app'))
 
 @section('content')
 <div class="max-w-lg mx-auto mt-10 bg-white p-8 rounded shadow">
