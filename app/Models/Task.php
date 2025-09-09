@@ -32,9 +32,10 @@ class Task extends Model
      */
     public function assignees()
     {
-        return $this->belongsToMany(User::class, 'task_user')
+        return $this->belongsToMany(User::class, 'task_user', 'task_id', 'user_id')
             ->withPivot('status', 'completed_at')
-            ->withTimestamps();
+            ->withTimestamps()
+            ->using('App\Models\Pivots\TaskUser');
     }
     
     /**
@@ -64,13 +65,27 @@ class Task extends Model
     ];
     
     /**
+     * The relationships that should always be loaded.
+     *
+     * @var array
+     */
+    protected $with = ['assigner', 'assignees'];
+    
+    /**
+     * The accessors to append to the model's array form.
+     *
+     * @var array
+     */
+    protected $appends = ['is_overdue', 'status_label', 'priority_label', 'priority_class', 'status_class'];
+    
+    /**
      * Check if the task is overdue.
      *
      * @return bool
      */
-    public function isOverdue()
+    public function getIsOverdueAttribute()
     {
-        return $this->status !== 'completed' && $this->due_date < now();
+        return $this->status !== 'completed' && $this->due_date && $this->due_date->isPast();
     }
     
     /**
@@ -78,7 +93,7 @@ class Task extends Model
      *
      * @return string
      */
-    public function getStatusLabel()
+    public function getStatusLabelAttribute()
     {
         return match($this->status) {
             'pending' => 'Pending',
@@ -94,7 +109,7 @@ class Task extends Model
      *
      * @return string
      */
-    public function getPriorityLabel()
+    public function getPriorityLabelAttribute()
     {
         return match($this->priority) {
             'low' => 'Low',
@@ -109,7 +124,7 @@ class Task extends Model
      *
      * @return string
      */
-    public function getPriorityClass()
+    public function getPriorityClassAttribute()
     {
         return match($this->priority) {
             'low' => 'bg-blue-100 text-blue-800',
@@ -124,7 +139,7 @@ class Task extends Model
      *
      * @return string
      */
-    public function getStatusClass()
+    public function getStatusClassAttribute()
     {
         return match($this->status) {
             'pending' => 'bg-gray-100 text-gray-800',

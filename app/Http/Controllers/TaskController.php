@@ -147,20 +147,29 @@ class TaskController extends Controller
 
     public function create()
     {
-        $user = auth()->user();
-        $pairings = $user->allPairings()->with(['userOne', 'userTwo'])->get();
-        $pairedUsers = collect();
-        
-        foreach ($pairings as $pairing) {
-            $pairedUser = $pairing->user_one_id == $user->id ? $pairing->userTwo : $pairing->userOne;
-            if ($pairedUser) {
-                $pairedUsers->push($pairedUser);
-            }
+        try {
+            $user = auth()->user();
+            
+            // Get all users this user is paired with, with eager loading
+            $pairings = $user->allPairings()
+                ->with(['userOne', 'userTwo'])
+                ->get();
+            
+            // Extract unique users from pairings
+            $pairedUsers = $pairings->map(function($pairing) use ($user) {
+                return $pairing->user_one_id == $user->id 
+                    ? $pairing->userTwo 
+                    : $pairing->userOne;
+            })->filter() // Remove nulls
+             ->unique('id')
+             ->values(); // Reset keys
+            
+            return view('tasks.create', compact('pairedUsers'));
+            
+        } catch (\Exception $e) {
+            \Log::error('Error in TaskController@create: ' . $e->getMessage());
+            return redirect()->back()->with('error', 'Failed to load task creation form. Please try again.');
         }
-        
-        $pairedUsers = $pairedUsers->unique('id');
-        
-        return view('tasks.create', compact('pairedUsers'));
     }
     
     /**
@@ -168,12 +177,13 @@ class TaskController extends Controller
      */
     public function store(Request $request)
     {
-        $request->validate([
+        // Validate the request
+        $validated = $request->validate([
             'title' => 'required|string|max:255',
             'description' => 'required|string',
             'assignees' => 'required|array|min:1',
             'assignees.*' => 'exists:users,id',
-            'due_date' => 'required|date',
+            'due_date' => 'required|date|after_or_equal:today',
             'priority' => 'required|in:low,medium,high',
         ]);
         
@@ -182,47 +192,53 @@ class TaskController extends Controller
         
         try {
             // Create the task
-            $task = new Task([
-                'title' => $request->title,
-                'description' => $request->description,
+            $task = new Task();
+            $task->fill([
+                'title' => $validated['title'],
+                'description' => $validated['description'],
                 'assigner_id' => auth()->id(),
-                'due_date' => $request->due_date,
-                'priority' => $request->priority,
+                'due_date' => $validated['due_date'],
+                'priority' => $validated['priority'],
                 'status' => 'pending',
             ]);
             
             $task->save();
             
-            // Attach assignees to the task
-            $assigneeData = [];
-            foreach ($request->assignees as $assigneeId) {
-                $assigneeData[$assigneeId] = [
-                    'status' => 'pending',
-                    'created_at' => now(),
-                    'updated_at' => now(),
-                ];
-            }
+            // Prepare assignee data
+            $assigneeData = collect($validated['assignees'])
+                ->mapWithKeys(fn($id) => [
+                    $id => [
+                        'status' => 'pending',
+                        'created_at' => now(),
+                        'updated_at' => now(),
+                    ]
+                ])->toArray();
             
-            $task->assignees()->attach($assigneeData);
+            // Attach assignees
+            $task->assignees()->syncWithoutDetaching($assigneeData);
+            
+            // Load assignees for notification
+            $assignees = \App\Models\User::whereIn('id', $validated['assignees'])->get();
             
             // Commit the transaction
             \DB::commit();
             
-            // Notify each assignee
-            foreach ($request->assignees as $assigneeId) {
-                $user = \App\Models\User::find($assigneeId);
-                if ($user) {
-                    $user->notify(new \App\Notifications\AssignmentAssignedNotification($task));
-                }
+            // Send notifications
+            foreach ($assignees as $assignee) {
+                $assignee->notify(new \App\Notifications\AssignmentAssignedNotification($task));
             }
             
-            return redirect()->back()->with('success', 'Task created and assigned successfully!');
-            
+            return redirect()->back()
+                ->with('success', 'Task created and assigned successfully!');
+                
         } catch (\Exception $e) {
-            // Rollback the transaction on error
             \DB::rollBack();
             \Log::error('Task creation failed: ' . $e->getMessage());
-            return redirect()->back()->with('error', 'Failed to create task. Please try again.');
+            \Log::error($e->getTraceAsString());
+            
+            return redirect()->back()
+                ->withInput()
+                ->with('error', 'Failed to create task. Please try again.');
         }
     }
 }
