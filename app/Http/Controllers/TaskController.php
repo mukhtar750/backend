@@ -217,4 +217,5 @@ class TaskController extends Controller
             \Log::error('Task creation failed: ' . $e->getMessage());
             return redirect()->back()->with('error', 'Failed to create task. Please try again.');
         }
+    }
 }
