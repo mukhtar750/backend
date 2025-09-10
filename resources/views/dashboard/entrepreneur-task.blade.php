@@ -5,4 +5,4 @@
     <h1 class="text-2xl font-bold mb-4">Task: {{ ucfirst(str_replace('-', ' ', $task)) }}</h1>
     <p>This is a placeholder for the {{ $task }} task page.</p>
 </div>
-@endsection 
+@endsection
