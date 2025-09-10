@@ -133,7 +133,7 @@ class TaskController extends Controller
     public function bdspIndex()
     {
         $user = auth()->user();
-        $tasks = \App\Models\Task::with('assignee')->where('assigner_id', $user->id)->orderBy('due_date')->get();
+        $tasks = \App\Models\Task::with('assignees')->where('assigner_id', $user->id)->orderBy('due_date')->get();
         return view('bdsp.tasks', compact('tasks'));
     }
 
