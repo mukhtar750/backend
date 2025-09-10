@@ -16,7 +16,7 @@
                 <span class="px-2 py-1 rounded text-xs {{ $task->getStatusClass() }}">{{ $task->getStatusLabel() }}</span>
             </div>
             <div class="mb-2 text-gray-700">{{ $task->description }}</div>
-            <div class="text-xs text-gray-500">Assigned to: {{ $task->assignee->name }}</div>
+            <div class="text-xs text-gray-500">Assigned to: {{ $task->assignee->name ?? 'N/A' }}</div>
             @if($task->submissions->count())
                 <div class="mt-4">
                     <h3 class="font-semibold mb-2">Submissions</h3>
@@ -40,4 +40,4 @@
         </div>
     @endforelse
 </div>
-@endsection 
+@endsection
