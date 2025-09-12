@@ -29,7 +29,7 @@ class ResourceController extends Controller
         $request->validate([
             'name' => 'required|string|max:255',
             'description' => 'nullable|string',
-            'file' => 'required|file|mimes:pdf,doc,docx,jpg,png,mp4|max:20480', // 20MB max
+            'file' => 'required|file|mimes:pdf,doc,docx,ppt,pptx,jpg,png,mp4|max:20480', // 20MB max
         ]);
 
         $file = $request->file('file');
