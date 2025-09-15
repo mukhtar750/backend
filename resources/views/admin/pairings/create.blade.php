@@ -66,13 +66,15 @@
                             <option value="{{ $b->id }}">{{ $b->name }} ({{ $b->email }})</option>
                         @endforeach
                     </select>
-                    <label class="block text-gray-700 font-semibold mb-2">Entrepreneur</label>
-                    <select name="user_two_id" class="w-full border-gray-300 rounded-md shadow-sm">
-                        <option value="">Select Entrepreneur</option>
+                    <label class="block text-gray-700 font-semibold mb-2">Entrepreneur(s)</label>
+                    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-2">
                         @foreach($entrepreneurs as $e)
-                            <option value="{{ $e->id }}">{{ $e->name }} ({{ $e->email }})</option>
+                            <label class="inline-flex items-center">
+                                <input type="checkbox" name="user_two_id[]" value="{{ $e->id }}" class="form-checkbox">
+                                <span class="ml-2">{{ $e->name }} ({{ $e->email }})</span>
+                            </label>
                         @endforeach
-                    </select>
+                    </div>
                 </div>
                 <div class="mb-4" id="investor_entrepreneur_selectors" style="display:none;">
                     <label class="block text-gray-700 font-semibold mb-2">Investor</label>
@@ -82,13 +84,15 @@
                             <option value="{{ $inv->id }}">{{ $inv->name }} ({{ $inv->email }})</option>
                         @endforeach
                     </select>
-                    <label class="block text-gray-700 font-semibold mb-2">Entrepreneur</label>
-                    <select name="user_two_id" class="w-full border-gray-300 rounded-md shadow-sm">
-                        <option value="">Select Entrepreneur</option>
+                    <label class="block text-gray-700 font-semibold mb-2">Entrepreneur(s)</label>
+                    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-2">
                         @foreach($entrepreneurs as $e)
-                            <option value="{{ $e->id }}">{{ $e->name }} ({{ $e->email }})</option>
+                            <label class="inline-flex items-center">
+                                <input type="checkbox" name="user_two_id[]" value="{{ $e->id }}" class="form-checkbox">
+                                <span class="ml-2">{{ $e->name }} ({{ $e->email }})</span>
+                            </label>
                         @endforeach
-                    </select>
+                    </div>
                 </div>
                 <div class="mb-4" id="mentor_entrepreneur_selectors" style="display:none;">
                     <label class="block text-gray-700 font-semibold mb-2">Mentor</label>
@@ -132,25 +136,28 @@ document.addEventListener('DOMContentLoaded', function() {
             mentorEntrepreneur.style.display = 'none';
             mentorEntrepreneur.querySelectorAll('select').forEach(sel => sel.removeAttribute('name'));
         }
-        mentorMentee.querySelectorAll('select').forEach(sel => sel.removeAttribute('name'));
-        bdspEntrepreneur.querySelectorAll('select').forEach(sel => sel.removeAttribute('name'));
-        investorEntrepreneur.querySelectorAll('select').forEach(sel => sel.removeAttribute('name'));
+        // Clear name attributes from all possible user_one_id and user_two_id elements
+        document.querySelectorAll('[name="user_one_id"], [name="user_two_id"], [name="user_two_id[]"]').forEach(el => {
+            el.removeAttribute('name');
+        });
+
+        // Set name attributes for the active section
         if (pairingType.value === 'mentor_mentee') {
             mentorMentee.style.display = 'block';
-            mentorMentee.querySelectorAll('select')[0].setAttribute('name', 'user_one_id');
-            mentorMentee.querySelectorAll('select')[1].setAttribute('name', 'user_two_id');
+            mentorMentee.querySelector('select:nth-of-type(1)').setAttribute('name', 'user_one_id');
+            mentorMentee.querySelector('select:nth-of-type(2)').setAttribute('name', 'user_two_id');
         } else if (pairingType.value === 'bdsp_entrepreneur') {
             bdspEntrepreneur.style.display = 'block';
-            bdspEntrepreneur.querySelectorAll('select')[0].setAttribute('name', 'user_one_id');
-            bdspEntrepreneur.querySelectorAll('select')[1].setAttribute('name', 'user_two_id');
+            bdspEntrepreneur.querySelector('select:nth-of-type(1)').setAttribute('name', 'user_one_id');
+            bdspEntrepreneur.querySelectorAll('input[type="checkbox"]').forEach(chk => chk.setAttribute('name', 'user_two_id[]'));
         } else if (pairingType.value === 'investor_entrepreneur') {
             investorEntrepreneur.style.display = 'block';
-            investorEntrepreneur.querySelectorAll('select')[0].setAttribute('name', 'user_one_id');
-            investorEntrepreneur.querySelectorAll('select')[1].setAttribute('name', 'user_two_id');
+            investorEntrepreneur.querySelector('select:nth-of-type(1)').setAttribute('name', 'user_one_id');
+            investorEntrepreneur.querySelectorAll('input[type="checkbox"]').forEach(chk => chk.setAttribute('name', 'user_two_id[]'));
         } else if (pairingType.value === 'mentor_entrepreneur') {
             mentorEntrepreneur.style.display = 'block';
-            mentorEntrepreneur.querySelectorAll('select')[0].setAttribute('name', 'user_one_id');
-            mentorEntrepreneur.querySelectorAll('select')[1].setAttribute('name', 'user_two_id');
+            mentorEntrepreneur.querySelector('select:nth-of-type(1)').setAttribute('name', 'user_one_id');
+            mentorEntrepreneur.querySelector('select:nth-of-type(2)').setAttribute('name', 'user_two_id');
         }
     }
     pairingType.addEventListener('change', updateSelectors);
@@ -202,4 +209,4 @@ document.addEventListener('DOMContentLoaded', function() {
     });
 });
 </script>
-@endsection 
+@endsection

@@ -392,17 +392,53 @@ public function deleteMentorshipSession(MentorshipSession $session)
 \Illuminate\Support\Facades\Log::info('Pairing: Received request', $request->all());
         $validator = \Illuminate\Support\Facades\Validator::make($request->all(), [
             'pairing_type' => 'required|in:mentor_mentee,bdsp_entrepreneur,investor_entrepreneur,mentor_entrepreneur',
-            'user_one_id' => 'required|exists:users,id|different:user_two_id',
-            'user_two_id' => 'required|exists:users,id',
+            'user_one_id' => 'required|exists:users,id',
+            'user_two_id' => 'required|array',
+            'user_two_id.*' => 'required|exists:users,id|different:user_one_id',
         ], [
-            'user_one_id.different' => 'You cannot pair a user with themselves.',
+            'user_two_id.*.different' => 'You cannot pair a user with themselves.',
         ]);
         if ($validator->fails()) {
-\Illuminate\Support\Facades\Log::warning('Pairing: Validation failed', $validator->errors()->toArray());
-            if ($request->expectsJson()) {
-                return response()->json(['errors' => $validator->errors()], 422);
-            }
             return redirect()->back()->withErrors($validator)->withInput();
+        }
+
+        $pairingType = $request->input('pairing_type');
+        $userOneId = $request->input('user_one_id');
+        $userTwoIds = $request->input('user_two_id');
+
+        $successfulPairings = 0;
+        $failedPairings = [];
+
+        foreach ($userTwoIds as $userTwoId) {
+            // Check for existing pairing to prevent duplicates
+            $existingPairing = Pairing::where(function ($query) use ($userOneId, $userTwoId) {
+                $query->where(['user_one_id' => $userOneId, 'user_two_id' => $userTwoId]);
+            })->orWhere(function ($query) use ($userOneId, $userTwoId) {
+                $query->where(['user_one_id' => $userTwoId, 'user_two_id' => $userOneId]);
+            })->where('pairing_type', $pairingType)->exists();
+
+            if (!$existingPairing) {
+                Pairing::create([
+                    'user_one_id' => $userOneId,
+                    'user_two_id' => $userTwoId,
+                    'pairing_type' => $pairingType,
+                ]);
+                $successfulPairings++;
+            } else {
+                $failedPairings[] = $userTwoId;
+            }
+        }
+
+        if ($successfulPairings > 0) {
+            $message = "Successfully paired {$successfulPairings} entrepreneur(s).";
+            if (!empty($failedPairings)) {
+                $failedUsernames = User::whereIn('id', $failedPairings)->pluck('name')->implode(', ');
+                $message .= " Some entrepreneurs ({$failedUsernames}) were already paired.";
+            }
+            return redirect()->back()->with('success', $message);
+        } else {
+            $failedUsernames = User::whereIn('id', $failedPairings)->pluck('name')->implode(', ');
+            return redirect()->back()->with('error', "All selected entrepreneurs ({$failedUsernames}) were already paired or an error occurred.");
         }
         if (Pairing::isPaired($request->user_one_id, $request->user_two_id, $request->pairing_type)) {
             $msg = 'These users are already paired for this type.';
