@@ -55,7 +55,7 @@
                     <!-- Download Button - Push to bottom -->
                     <div class="mt-auto">
                         @if($resource->file_path)
-                            <a href="{{ asset('storage/' . $resource->file_path) }}" 
+                            <a href="{{ route('entrepreneur.resource.download', $resource->id) }}" 
                                class="w-full bg-[#b81d8f] hover:bg-[#a259e6] text-white text-xs font-semibold px-4 py-2 rounded-lg transition text-center block">
                                 Download
                             </a>

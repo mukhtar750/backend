@@ -73,7 +73,7 @@
                                 @endif
                             </td>
                             <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                                <a href="{{ Storage::url($resource->file_path) }}" class="text-[#b81d8f] hover:underline">Download</a>
+                                <a href="{{ route('bdsp.resources.download', $resource) }}" class="text-[#b81d8f] hover:underline">Download</a>
                             </td>
                             <td class="px-6 py-4 whitespace-nowrap text-sm font-medium">
                                 <div class="flex space-x-2">

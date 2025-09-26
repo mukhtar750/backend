@@ -71,7 +71,7 @@
                                 
                                 <!-- Actions -->
                                 <div class="flex space-x-2">
-                                    <a href="{{ asset('storage/' . $resource->file_path) }}" target="_blank" class="text-purple-600 hover:text-purple-800 underline text-sm">Download</a>
+                                    <a href="{{ route('bdsp.resources.download', $resource) }}" class="text-purple-600 hover:text-purple-800 underline text-sm">Download</a>
                                     <a href="{{ route('bdsp.resources.edit', $resource) }}" class="text-blue-600 hover:text-blue-800 text-sm font-medium">Edit</a>
                                     <a href="{{ route('bdsp.resources.sharing', $resource) }}" class="bg-green-500 hover:bg-green-600 text-white px-3 py-1 rounded text-sm font-bold">Share</a>
                                     <form action="{{ route('bdsp.resources.destroy', $resource) }}" method="POST" class="inline" onsubmit="return confirm('Are you sure you want to delete this resource?');">

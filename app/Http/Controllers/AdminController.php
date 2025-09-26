@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Storage;
 
 use App\Models\User;
 use App\Models\PitchEventProposal;
@@ -681,6 +682,24 @@ public function deleteMentorshipSession(MentorshipSession $session)
         $resource = Resource::findOrFail($id);
         $resource->delete();
         return back()->with('success', 'Resource deleted successfully.');
+    }
+
+    public function downloadResource($id)
+    {
+        $resource = Resource::findOrFail($id);
+        
+        // Check if file exists
+        if (!$resource->file_path) {
+            abort(404, 'File not found.');
+        }
+
+        $path = Storage::disk('public')->path($resource->file_path);
+        
+        if (!file_exists($path)) {
+            abort(404, 'File not found on server.');
+        }
+
+        return response()->download($path, $resource->file_name);
     }
 
     // Admin: Content Moderation

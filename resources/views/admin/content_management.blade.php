@@ -416,7 +416,7 @@
                                             @method('DELETE')
                                             <button type="submit" class="text-red-600 hover:text-red-900">Delete</button>
                                         </form>
-                                        <a href="{{ asset('storage/' . $resource->file_path) }}" target="_blank" class="text-blue-600 hover:text-blue-900">View</a>
+                                        <a href="{{ route('admin.resources.download', $resource->id) }}" class="text-blue-600 hover:text-blue-900">Download</a>
                                     </td>
                                 </tr>
                             @empty

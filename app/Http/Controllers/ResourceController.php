@@ -224,4 +224,62 @@ class ResourceController extends Controller
         $resource->delete();
         return redirect()->back()->with('success', 'Resource deleted successfully.');
     }
+
+    /**
+     * Download a resource for entrepreneurs (with sharing authorization)
+     */
+    public function downloadForEntrepreneur($resourceId)
+    {
+        $user = Auth::user();
+        $resource = Resource::findOrFail($resourceId);
+        
+        // Check if user is an entrepreneur and has access to this resource
+        if ($user->role !== 'entrepreneur') {
+            abort(403, 'Only entrepreneurs can download resources.');
+        }
+        
+        // Check if resource is shared with this entrepreneur
+        if (!$resource->isSharedWith($user->id)) {
+            abort(403, 'You do not have access to this resource.');
+        }
+        
+        // Check if file exists
+        if (!$resource->file_path) {
+            abort(404, 'File not found.');
+        }
+
+        $path = Storage::disk('public')->path($resource->file_path);
+        
+        if (!file_exists($path)) {
+            abort(404, 'File not found on server.');
+        }
+
+        return response()->download($path, $resource->file_name);
+    }
+
+    /**
+     * Download a resource for BDSPs (resource owner)
+     */
+    public function downloadForBdsp(Resource $resource)
+    {
+        $user = Auth::user();
+        
+        // Check if user is the owner of this resource
+        if ($user->role !== 'bdsp' || $resource->bdsp_id !== $user->id) {
+            abort(403, 'You can only download your own resources.');
+        }
+        
+        // Check if file exists
+        if (!$resource->file_path) {
+            abort(404, 'File not found.');
+        }
+
+        $path = Storage::disk('public')->path($resource->file_path);
+        
+        if (!file_exists($path)) {
+            abort(404, 'File not found on server.');
+        }
+
+        return response()->download($path, $resource->file_name);
+    }
 }

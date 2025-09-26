@@ -15,7 +15,7 @@
                 <div class="text-sm text-gray-500 mb-2">{{ $resource->description }}</div>
                 <div class="text-xs text-gray-400 mb-1">Uploaded by: {{ optional($resource->bdsp)->name ?? 'You' }}</div>
                 <div class="text-xs text-gray-400 mb-2">{{ strtoupper($resource->file_type) }} • {{ number_format($resource->file_size / 1024, 1) }} KB</div>
-                <a href="{{ asset('storage/' . $resource->file_path) }}" target="_blank" class="mt-auto bg-[#b81d8f] text-white px-4 py-2 rounded-lg font-medium text-center hover:bg-[#a01a7d] transition">Download</a>
+                <a href="{{ route('entrepreneur.resource.download', $resource->id) }}" class="mt-auto bg-[#b81d8f] text-white px-4 py-2 rounded-lg font-medium text-center hover:bg-[#a01a7d] transition">Download</a>
             </div>
         @empty
             <div class="bg-white rounded-xl shadow p-5 flex flex-col col-span-3">

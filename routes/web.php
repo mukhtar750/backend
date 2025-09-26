@@ -201,6 +201,7 @@ Route::middleware(['auth', 'role:admin,staff'])->prefix('admin')->name('admin.')
     Route::patch('/resources/{id}/approve', [AdminController::class, 'approveResource'])->name('resources.approve');
     Route::patch('/resources/{id}/reject', [AdminController::class, 'rejectResource'])->name('resources.reject');
     Route::delete('/resources/{id}', [AdminController::class, 'destroyResource'])->name('resources.destroy');
+    Route::get('/resources/{id}/download', [AdminController::class, 'downloadResource'])->name('resources.download');
 
     // Admin Content Moderation
     Route::patch('/contents/{id}/approve', [AdminController::class, 'approveContent'])->name('contents.approve');
@@ -320,6 +321,7 @@ Route::middleware(['auth', 'role:bdsp'])->group(function () {
     Route::get('/bdsp/resources/{resource}/edit', [\App\Http\Controllers\ResourceController::class, 'edit'])->name('bdsp.resources.edit');
     Route::put('/bdsp/resources/{resource}', [\App\Http\Controllers\ResourceController::class, 'update'])->name('bdsp.resources.update');
     Route::delete('/bdsp/resources/{resource}', [\App\Http\Controllers\ResourceController::class, 'destroy'])->name('bdsp.resources.destroy');
+    Route::get('/bdsp/resources/{resource}/download', [\App\Http\Controllers\ResourceController::class, 'downloadForBdsp'])->name('bdsp.resources.download');
     
     // BDSP Resource Sharing
     Route::get('/bdsp/resources/{resource}/sharing', [\App\Http\Controllers\ResourceController::class, 'showSharing'])->name('bdsp.resources.sharing');
@@ -914,6 +916,4 @@ Route::get('/entrepreneur/achievements', function () {
     return view('dashboard.entrepreneur-achievements');
 })->name('entrepreneur.achievements');
 
-Route::get('/entrepreneur/resource/download/{resource}', function ($resource) {
-    return view('dashboard.entrepreneur-resource-download', ['resource' => $resource]);
-})->name('entrepreneur.resource.download');
+Route::get('/entrepreneur/resource/download/{resource}', [\App\Http\Controllers\ResourceController::class, 'downloadForEntrepreneur'])->name('entrepreneur.resource.download');
